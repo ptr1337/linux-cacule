@@ -12,6 +12,12 @@
         - linux-cacule-rc                      https://aur.archlinux.org/packages/linux-cacule-rc/
         - linux-cacule-rdb-rc                  https://aur.archlinux.org/packages/linux-cacule-rdb-rc/
 
+ ---
+ ### RT-KERNELS
+ 
+    ä linux-xanmod-cacule-rt 5.11.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt/
+    # linux-xanmod-cacule-rt 5.12.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt-stable/
+
 
 - When building the kernel, you can edit the PKGBUILD to your prefences regarding the user specific wishes
 - Also at building the kernel, you will be asked for some things like your cpu architecture, disabling debug settings for better performance, ... 
