@@ -6,11 +6,11 @@
 
     # Linux 5.11.y
         - linux-cacule                         https://aur.archlinux.org/packages/linux-cacule/
-        - linux-cacule-rdb                 https://aur.archlinux.org/packages/linux-cacule-rdb/
-        - linux-hardened-cacule        https://aur.archlinux.org/packages/linux-hardened-cacule/
+        - linux-cacule-rdb                     https://aur.archlinux.org/packages/linux-cacule-rdb/
+        - linux-hardened-cacule                https://aur.archlinux.org/packages/linux-hardened-cacule/
     # Linux 5.12-rc
-        - linux-cacule-rc                    https://aur.archlinux.org/packages/linux-cacule-rc/
-        - linux-cacule-rdb-rc             https://aur.archlinux.org/packages/linux-cacule-rdb-rc/
+        - linux-cacule-rc                      https://aur.archlinux.org/packages/linux-cacule-rc/
+        - linux-cacule-rdb-rc                  https://aur.archlinux.org/packages/linux-cacule-rdb-rc/
 
 
 - When building the kernel, you can edit the PKGBUILD to your prefences regarding the user specific wishes
@@ -19,9 +19,9 @@
 ### aarch64/armv7h
 
     # Linux 5.11.y
-    - linux-raspberrypi4-cacule-stable      https://aur.archlinux.org/packages/linux-raspberrypi4-cacule-stable/
+        - linux-raspberrypi4-cacule-stable      https://aur.archlinux.org/packages/linux-raspberrypi4-cacule-stable/
     # Linux 5.10.y
-    - linux-raspberrypi4-cacule                 https://aur.archlinux.org/packages/linux-raspberrypi4-cacule/
+        - linux-raspberrypi4-cacule             https://aur.archlinux.org/packages/linux-raspberrypi4-cacule/
 
 
 Some infos for building  arm devices:
@@ -30,6 +30,17 @@ Some infos for building  arm devices:
 
 
 ## General Informations
+
+### Tips & Tricks:
+
+You can tune the scheduler with following commands:
+
+        sysctl kernel.sched_interactivity_factor=50
+        sysctl kernel.sched_max_lifetime_ms=60000
+        sysctl kernel.sched_harsh_mode_enabled=0 #should be disabled!
+        
+ Also you can play with these different factors regarding your system. 
+        
 
 ### prebuilt Kernels
 
