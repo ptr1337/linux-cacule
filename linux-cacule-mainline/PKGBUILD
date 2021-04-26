@@ -76,7 +76,7 @@ license=('GPL2')
 options=('!strip')
 makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz')
-_patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/5.12"
+_patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.12"
 source=(#"https://www.kernel.org/pub/linux/kernel/v5.x/linux-${_stablerc}.tar.xz"
         "https://git.kernel.org/torvalds/t/linux-5.12.tar.gz"
         "config"
@@ -98,7 +98,7 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v5.x/linux-${_stablerc}.tar.xz
         "${_patchsource}/zstd-dev-patches/0001-zstd-dev-patches.patch"
         "${_patchsource}/clearlinux-patches/0001-clearlinux-patches.patch"
         "${_patchsource}/initramfs-patches/0001-initramfs-patches.patch")
-        
+
 sha512sums=('a9d1da6a1bb5a2ef4c8dbd58089b8f6f3e8de61cf725434785f35821bd3f433c29019b9e0245a990c8ea035c0e8b60645b42bdf2f3b2eed3974284c8daee4d1e'
             'ab1954ccaab6d77d34b6e1b2ba9ce5dfb2ab4eae5777e071dddbd41dacdbb67e786fd210a96089f6166cae373cabaf22be89c40fea70b3b1cee4960bd5ba1ad1'
             '01a59958b88f4f0fae72943883937bccb5be2a1ceeac9ba8a689c4b47125edcd3360aa6a94a535b6dae24ea8b1ac52002431ad72b2a623373c905901af2b3609'
