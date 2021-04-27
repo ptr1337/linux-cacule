@@ -18,7 +18,7 @@ _futex2=y
 
 _winesync=
 ### Disable Debug options - can give a better performance
-_disable_debugoption=y
+_disable_debugoption=
 ### Enable protect file mappings under memory pressure
 _mm_protect=y
 ### Set performance governor as default
