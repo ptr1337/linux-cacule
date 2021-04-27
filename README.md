@@ -1,6 +1,10 @@
 # Linux-Cacule Kernels for several architectures (armv7/aarch64 and x86_64)
 
-## ARCH AUR LINKS
+## General Informations
+
+    - the cacule-rdb scheduler is still a expermential thing, so dont expect to much from it. 
+    - Use linux-cacule before using the expermential version
+    - Follow the readme, the sysctl options can improve much your expierence!!!
 
 ### amd64 /  x86_64
 
@@ -86,13 +90,13 @@ You can check with following command if bbr2 is enabled:
 
         Then it should be enabled
 
-### prebuilt Kernels
+## prebuilt Kernels
 
 Im providing a fileserver where i upload my builded kernels, if you want to use them just  watch their:
 
 https://repo.ptr1337.dev 
 
-###  more explained Informations for the cacule scheduler
+##  more explained Informations for the cacule scheduler
 
 Here you find the repo from the creator of the scheduler:
 
