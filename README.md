@@ -4,11 +4,12 @@
 
 ### amd64 /  x86_64
 
-    # Linux 5.11.y
+    # Linux 5.12.y
         - linux-cacule                         https://aur.archlinux.org/packages/linux-cacule/
         - linux-cacule-rdb                     https://aur.archlinux.org/packages/linux-cacule-rdb/
+    # Linux 5.11.y
         - linux-hardened-cacule                https://aur.archlinux.org/packages/linux-hardened-cacule/
-    # Linux 5.12-rc
+    # Linux 5.13-rc (not updated right now)
         - linux-cacule-rc                      https://aur.archlinux.org/packages/linux-cacule-rc/
         - linux-cacule-rdb-rc                  https://aur.archlinux.org/packages/linux-cacule-rdb-rc/
 
@@ -16,7 +17,7 @@
  ### RT-KERNELS
  
     ä linux-xanmod-cacule-rt 5.11.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt/
-    # linux-xanmod-cacule-rt 5.12.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt-stable/
+    # linux-xanmod-cacule-rt 5.10.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt-stable/
 
 
 - When building the kernel, you can edit the PKGBUILD to your prefences regarding the user specific wishes
