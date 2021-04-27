@@ -1,4 +1,4 @@
-From b745a1932b00ef5c8f217cf00e4d90c70c3a01ab Mon Sep 17 00:00:00 2001
+From fc478faa52be01280ba6d56097a0b7d1da5c4515 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:38 +0300
 Subject: [PATCH 01/10] fs/ntfs3: Add headers and misc files
@@ -2534,10 +2534,10 @@ index 000000000..9617382ac
 +	return diff2 ? diff2 : diff1;
 +}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 13911eb6350fb4569841d4ff92f08ffe570189fc Mon Sep 17 00:00:00 2001
+From cb3c5eb826ec3192ee59a515020da1181fc752ea Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:39 +0300
 Subject: [PATCH 02/10] fs/ntfs3: Add initialization of super block
@@ -11297,10 +11297,10 @@ index 000000000..c56343124
 +module_init(init_ntfs_fs);
 +module_exit(exit_ntfs_fs);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 736c71da1e655557450463f84a9dbfcc06507e97 Mon Sep 17 00:00:00 2001
+From 4b1844d339d7cf9957d6dcb0b70362ca3ae38ec4 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:40 +0300
 Subject: [PATCH 03/10] fs/ntfs3: Add bitmap
@@ -12982,10 +12982,10 @@ index 000000000..32aab0031
 +	return err;
 +}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From eaf3044591f5f2f47fc6f1094bda8a9967b934f0 Mon Sep 17 00:00:00 2001
+From beb44709b4f45b73e382217493aaf0520db98356 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:41 +0300
 Subject: [PATCH 04/10] fs/ntfs3: Add file operations and implementation
@@ -20138,10 +20138,10 @@ index 000000000..5cdf6efe6
 +	return 0;
 +}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 16cc989e3cdec94de62e3fdbe57e66f3f67e3b9f Mon Sep 17 00:00:00 2001
+From f3f033afeba67d6860a09cfc1ccf354bbf109a52 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:42 +0300
 Subject: [PATCH 05/10] fs/ntfs3: Add attrib operations
@@ -23761,10 +23761,10 @@ index 000000000..759df507c
 +	NULL,
 +};
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 2bad7f7347a797510894db47b76e82c3e91b50be Mon Sep 17 00:00:00 2001
+From bf89f4dcc8aec7830fad6df81e5b254cc0c0f681 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:43 +0300
 Subject: [PATCH 06/10] fs/ntfs3: Add compression
@@ -25831,10 +25831,10 @@ index 000000000..ead9ab7d6
 +	return PtrOffset(unc, unc_chunk);
 +}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 2f41890fb5bd75ba1d6a5cca0c29c3b54f07571c Mon Sep 17 00:00:00 2001
+From 81418aa1858d5d238ea0db1f256c40386d2c33d4 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:44 +0300
 Subject: [PATCH 07/10] fs/ntfs3: Add NTFS journal
@@ -31035,10 +31035,10 @@ index 000000000..53da12252
 +	return err;
 +}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 5a048f82321b4091c5f37bcfe78f203a14f45dd3 Mon Sep 17 00:00:00 2001
+From 297e861fe47e55f9ee98e735ea9e8a023e0972a4 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:45 +0300
 Subject: [PATCH 08/10] fs/ntfs3: Add Kconfig, Makefile and doc
@@ -31262,10 +31262,10 @@ index 000000000..b06a06cc0
 +		)
 \ No newline at end of file
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 3283abeedd935e20f2d57a2b4b7807063a194230 Mon Sep 17 00:00:00 2001
+From 9aeaab83e61d16d1b598bcbc0bef906a289b1065 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:46 +0300
 Subject: [PATCH 09/10] fs/ntfs3: Add NTFS3 in fs/Kconfig and fs/Makefile
@@ -31303,10 +31303,10 @@ index 3215fe205..6bdfcf712 100644
  obj-$(CONFIG_EFS_FS)		+= efs/
  obj-$(CONFIG_JFFS2_FS)		+= jffs2/
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 6e06650a666ac521a9b8d3fd1c15e328949323a9 Mon Sep 17 00:00:00 2001
+From 0e50accb2a49325889592b98c45631462f347f6c Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:47 +0300
 Subject: [PATCH 10/10] fs/ntfs3: Add MAINTAINERS
@@ -31319,10 +31319,10 @@ Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
  1 file changed, 7 insertions(+)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 7fdc51339..eaba0851f 100644
+index 3c4388f2d..4cbfbf592 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -12773,6 +12773,13 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/aia21/ntfs.git
+@@ -12775,6 +12775,13 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/aia21/ntfs.git
  F:	Documentation/filesystems/ntfs.rst
  F:	fs/ntfs/
  
@@ -31337,5 +31337,5 @@ index 7fdc51339..eaba0851f 100644
  M:	Finn Thain <fthain@telegraphics.com.au>
  L:	linux-m68k@lists.linux-m68k.org
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

@@ -1,4 +1,4 @@
-From 162248cd5a41a686340a44d46e0bcc88634740ef Mon Sep 17 00:00:00 2001
+From 4abd6357eb9a9ef00e1ea5f7dc0dd60019bfa0cc Mon Sep 17 00:00:00 2001
 From: Nick Terrell <terrelln@fb.com>
 Date: Tue, 30 Mar 2021 12:57:54 -0700
 Subject: [PATCH 4/4] Import zstd-1.4.10 for kernel
@@ -3455,5 +3455,5 @@ index 000000000..15005cdb9
 +MODULE_LICENSE("Dual BSD/GPL");
 +MODULE_DESCRIPTION("Zstd Decompressor");
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

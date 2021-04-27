@@ -1,4 +1,4 @@
-From 2187498bac87bfaa7f575a7ec26edd91284a2c8e Mon Sep 17 00:00:00 2001
+From a343e1a24fb00fc0553f1562c288c562aa239feb Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 17:28:14 -0600
 Subject: [PATCH 08/24] smpboot: reuse timer calibration
@@ -24,5 +24,5 @@ index f70dffc27..dfb9f6055 100644
  	if (sibling < nr_cpu_ids)
  		return cpu_data(sibling).loops_per_jiffy;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

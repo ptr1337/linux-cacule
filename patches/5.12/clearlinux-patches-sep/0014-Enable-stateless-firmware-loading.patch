@@ -1,4 +1,4 @@
-From fcc61802a22cc03727ef91301b148ff0e60d32f2 Mon Sep 17 00:00:00 2001
+From 7b653f435fb1374cd41a245cbb59a4b79a4fa729 Mon Sep 17 00:00:00 2001
 From: William Douglas <william.douglas@intel.com>
 Date: Wed, 20 Jun 2018 17:23:21 +0000
 Subject: [PATCH 14/24] Enable stateless firmware loading
@@ -24,5 +24,5 @@ index 78355095e..7e2c79e2a 100644
  	"/lib/firmware/updates",
  	"/lib/firmware/" UTS_RELEASE,
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

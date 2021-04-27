@@ -1,4 +1,4 @@
-From 372b43a2bc01ed6e3b58393e452d28a704a453dd Mon Sep 17 00:00:00 2001
+From 5fa6066466c61fa84a59642f0b90134844231988 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Fri, 3 Jul 2020 12:58:15 +0200
 Subject: [PATCH 4/7] block: Add CONFIG to rename the mq-deadline scheduler
@@ -64,5 +64,5 @@ index f3631a287..bf0b7d9fc 100644
  	.elevator_owner = THIS_MODULE,
  };
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

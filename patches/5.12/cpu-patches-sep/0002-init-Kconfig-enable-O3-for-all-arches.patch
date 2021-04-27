@@ -1,4 +1,4 @@
-From a0ac4bad5ede0b4cbf61a956ea5dfec8d70e5469 Mon Sep 17 00:00:00 2001
+From c32a001e2c9c22a9aef08f05ccb642d0b714eeb5 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Fri, 15 May 2020 16:58:29 +0200
 Subject: [PATCH 2/2] init/Kconfig: enable -O3 for all arches
@@ -9,10 +9,10 @@ Signed-off-by: Piotr Gorski <lucjan.lucjanov@gmail.com>
  1 file changed, 1 deletion(-)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index afd708ed0..258cd48cc 100644
+index 5f5c776ef..c0f7ef4b4 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1332,7 +1332,6 @@ config CC_OPTIMIZE_FOR_PERFORMANCE
+@@ -1316,7 +1316,6 @@ config CC_OPTIMIZE_FOR_PERFORMANCE
  
  config CC_OPTIMIZE_FOR_PERFORMANCE_O3
  	bool "Optimize more for performance (-O3)"
@@ -21,5 +21,5 @@ index afd708ed0..258cd48cc 100644
  	  Choosing this option will pass "-O3" to your compiler to optimize
  	  the kernel yet more for performance.
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

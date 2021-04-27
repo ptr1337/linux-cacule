@@ -1,7 +1,7 @@
-From bb5d07f37129898a967cc198ea5ebe47c8817315 Mon Sep 17 00:00:00 2001
+From e9255a92fc6aebe382ebbdc06b379b4fc5cbfa41 Mon Sep 17 00:00:00 2001
 From: Pavel Reichl <preichl@redhat.com>
 Date: Sat, 20 Feb 2021 23:15:49 +0100
-Subject: [PATCH 19/26] xfs: Skip repetitive warnings about mount options
+Subject: [PATCH 19/24] xfs: Skip repetitive warnings about mount options
 
 Skip the warnings about mount option being deprecated if we are
 remounting and deprecated option state is not changing.
@@ -64,5 +64,5 @@ index e5e0713be..832b6abba 100644
  		mp->m_flags |= XFS_MOUNT_NOATTR2;
  		return 0;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

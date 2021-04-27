@@ -1,4 +1,4 @@
-From 419c19c7d3f5c1fbdbd899dd0d8a1a3606ebe086 Mon Sep 17 00:00:00 2001
+From a2088731d98bf2f5140a6cfdc2b3997877130107 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:24 +0000
 Subject: [PATCH 3/6] block, bfq: make shared queues inherit wakers
@@ -18,7 +18,7 @@ Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
  1 file changed, 39 insertions(+), 3 deletions(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index df840f378..b00dcc46b 100644
+index df840f3..b00dcc4 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
 @@ -2822,6 +2822,29 @@ bfq_merge_bfqqs(struct bfq_data *bfqd, struct bfq_io_cq *bic,
@@ -88,5 +88,5 @@ index df840f378..b00dcc46b 100644
  		}
  	}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

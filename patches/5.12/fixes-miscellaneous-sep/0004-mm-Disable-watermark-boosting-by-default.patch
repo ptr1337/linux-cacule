@@ -1,7 +1,7 @@
-From d6e5fa3aad8af2de8a9a2dbcae71b76451f2cdd2 Mon Sep 17 00:00:00 2001
+From d1fb92aa6373ac5d583cd61379c846646a8b608e Mon Sep 17 00:00:00 2001
 From: Sultan Alsawaf <sultan@kerneltoast.com>
 Date: Sat, 28 Mar 2020 13:06:28 -0700
-Subject: [PATCH 04/26] mm: Disable watermark boosting by default
+Subject: [PATCH 04/24] mm: Disable watermark boosting by default
 
 What watermark boosting does is preemptively fire up kswapd to free
 memory when there hasn't been an allocation failure. It does this by
@@ -56,5 +56,5 @@ index cfc728739..63ee666a1 100644
  
  static unsigned long nr_kernel_pages __initdata;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

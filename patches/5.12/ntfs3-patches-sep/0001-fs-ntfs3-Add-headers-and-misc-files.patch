@@ -1,4 +1,4 @@
-From b745a1932b00ef5c8f217cf00e4d90c70c3a01ab Mon Sep 17 00:00:00 2001
+From fc478faa52be01280ba6d56097a0b7d1da5c4515 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:38 +0300
 Subject: [PATCH 01/10] fs/ntfs3: Add headers and misc files
@@ -2534,5 +2534,5 @@ index 000000000..9617382ac
 +	return diff2 ? diff2 : diff1;
 +}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

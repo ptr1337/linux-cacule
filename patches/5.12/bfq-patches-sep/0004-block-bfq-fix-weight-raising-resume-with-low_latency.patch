@@ -1,7 +1,7 @@
-From 9561a2c16475eddd5fc3f722f0280ed8ab1fbe2d Mon Sep 17 00:00:00 2001
+From 4543431f710421a6d02dbed4eeaf46c6027448a0 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:25 +0000
-Subject: [PATCH 4/8] block, bfq: fix weight-raising resume with !low_latency
+Subject: [PATCH 04/10] block, bfq: fix weight-raising resume with !low_latency
 
 When the io_latency heuristic is off, bfq_queues must not start to be
 weight-raised. Unfortunately, by mistake, this may happen when the
@@ -43,5 +43,5 @@ index b00dcc46b..2a84294b0 100644
  	bfqq->wr_start_at_switch_to_srt = bic->saved_wr_start_at_switch_to_srt;
  	bfqq->last_wr_start_finish = bic->saved_last_wr_start_finish;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

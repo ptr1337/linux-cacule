@@ -1,7 +1,7 @@
-From 0fb95f2c296ebc9561be18a5bbe017408ed7da6f Mon Sep 17 00:00:00 2001
+From f7abd9cac2c2160eb55b8ae7f6d18580657ca499 Mon Sep 17 00:00:00 2001
 From: "Jan Alexander Steffens (heftig)" <heftig@archlinux.org>
 Date: Mon, 3 Aug 2020 21:18:53 +0200
-Subject: [PATCH 10/26] ZEN: Add OpenRGB patches
+Subject: [PATCH 10/24] ZEN: Add OpenRGB patches
 
 Squashed commit of the following:
 
@@ -744,5 +744,5 @@ index 8c1b31ed0..0b1b36fa0 100644
  	/* If the SMBus is still busy, we give up */
  	if (timeout == MAX_TIMEOUT) {
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

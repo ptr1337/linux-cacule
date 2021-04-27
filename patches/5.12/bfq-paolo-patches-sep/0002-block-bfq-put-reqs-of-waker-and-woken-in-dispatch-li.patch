@@ -1,4 +1,4 @@
-From 8b603d7984eb95d2bf141e524268e95c16aeebed Mon Sep 17 00:00:00 2001
+From d0f06f590ed1d8db37b702abc555e1e4835d3508 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:23 +0000
 Subject: [PATCH 2/6] block, bfq: put reqs of waker and woken in dispatch list
@@ -19,7 +19,7 @@ Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
  1 file changed, 43 insertions(+), 1 deletion(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index eb2497750..df840f378 100644
+index eb24977..df840f3 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
 @@ -5649,7 +5649,49 @@ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
@@ -74,5 +74,5 @@ index eb2497750..df840f378 100644
  			list_add(&rq->queuelist, &bfqd->dispatch);
  		else
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

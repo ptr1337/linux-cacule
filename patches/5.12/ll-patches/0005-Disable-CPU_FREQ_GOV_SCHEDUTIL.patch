@@ -1,4 +1,4 @@
-From d5625c44dfcf81010e6656614a8ba116a87e4834 Mon Sep 17 00:00:00 2001
+From 4c1a21abc9a1e48acb8f4512f9851cf84ea36e13 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Fri, 5 Jun 2020 20:32:22 +0200
 Subject: [PATCH 5/6] Disable CPU_FREQ_GOV_SCHEDUTIL
@@ -36,5 +36,5 @@ index 92701a18b..7f49f2402 100644
  	  This driver provides a P state for Intel core processors.
  	  The driver implements an internal governor and will become
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

@@ -1,4 +1,4 @@
-From abeccb7c759f3e5a620e7dc79a72e993d4da5838 Mon Sep 17 00:00:00 2001
+From 348b39982d9e3d0ec414aa29a065c92e30c54605 Mon Sep 17 00:00:00 2001
 From: Nick Terrell <terrelln@fb.com>
 Date: Mon, 14 Sep 2020 12:54:12 -0700
 Subject: [PATCH 2/4] lib: zstd: Add decompress_sources.h for decompress_unzstd
@@ -64,5 +64,5 @@ index 000000000..d82cea431
 +#include "zstd_common.c"
 +#include "decompress.c"
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

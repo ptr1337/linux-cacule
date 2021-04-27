@@ -1,7 +1,7 @@
-From 3fa3cdee3cef49355a81126ef8a3b0dfae96c9f2 Mon Sep 17 00:00:00 2001
+From d020b3c4fe8e6805e55b2ce164df05e750cd796f Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Mon, 17 Aug 2020 22:48:47 +0200
-Subject: [PATCH 01/26] net/sched: allow configuring cake qdisc as default
+Subject: [PATCH 01/24] net/sched: allow configuring cake qdisc as default
 
 Signed-off-by: Piotr Gorski <lucjan.lucjanov@gmail.com>
 ---
@@ -31,5 +31,5 @@ index 1e8ab4749..75122fd65 100644
  endif
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

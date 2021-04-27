@@ -1,4 +1,4 @@
-From a443cfada78570912a97b26040585f60516d4be2 Mon Sep 17 00:00:00 2001
+From f775884ea4ba70064b3986ca387cfa8615b95931 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 13 Dec 2018 01:00:49 +0000
 Subject: [PATCH 17/24] do accept() in LIFO order for cache efficiency
@@ -85,5 +85,5 @@ index fd472eae4..d85f68c9f 100644
  		release_sock(sk);
  		if (reqsk_queue_empty(&icsk->icsk_accept_queue))
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

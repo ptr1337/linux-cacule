@@ -1,4 +1,4 @@
-From 4bb456351ee61ec1600c3be7eae485aaac8c3361 Mon Sep 17 00:00:00 2001
+From 2ba41ffb46dc45c215f3427bd7b13b6024b3baa2 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Tue, 13 Apr 2021 16:13:25 +0200
 Subject: [PATCH] android: export symbold and enable building ashmem and binder
@@ -22,7 +22,7 @@ Signed-off-by: Piotr Gorski <lucjan.lucjanov@gmail.com>
  13 files changed, 22 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/android/Kconfig b/drivers/android/Kconfig
-index 53b22e262..f3c50236e 100644
+index 53b22e2..f3c5023 100644
 --- a/drivers/android/Kconfig
 +++ b/drivers/android/Kconfig
 @@ -9,7 +9,7 @@ config ANDROID
@@ -35,7 +35,7 @@ index 53b22e262..f3c50236e 100644
  	default n
  	help
 diff --git a/drivers/android/Makefile b/drivers/android/Makefile
-index c9d3d0c99..55411d9a9 100644
+index c9d3d0c..55411d9 100644
 --- a/drivers/android/Makefile
 +++ b/drivers/android/Makefile
 @@ -1,6 +1,7 @@
@@ -50,7 +50,7 @@ index c9d3d0c99..55411d9a9 100644
 +binder_linux-$(CONFIG_ANDROID_BINDERFS)	+= binderfs.o
 +binder_linux-$(CONFIG_ANDROID_BINDER_IPC_SELFTEST) += binder_alloc_selftest.o
 diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
-index 7caf74ad2..9202a44bd 100644
+index 7caf74a..9202a44 100644
 --- a/drivers/android/binder_alloc.c
 +++ b/drivers/android/binder_alloc.c
 @@ -38,7 +38,7 @@ enum {
@@ -63,7 +63,7 @@ index 7caf74ad2..9202a44bd 100644
  
  #define binder_alloc_debug(mask, x...) \
 diff --git a/drivers/staging/android/Kconfig b/drivers/staging/android/Kconfig
-index 70498adb1..5c35653ed 100644
+index 70498ad..5c35653 100644
 --- a/drivers/staging/android/Kconfig
 +++ b/drivers/staging/android/Kconfig
 @@ -4,7 +4,7 @@ menu "Android"
@@ -76,7 +76,7 @@ index 70498adb1..5c35653ed 100644
  	help
  	  The ashmem subsystem is a new shared memory allocator, similar to
 diff --git a/drivers/staging/android/Makefile b/drivers/staging/android/Makefile
-index e9a55a5e6..60cb8eacc 100644
+index e9a55a5..60cb8ea 100644
 --- a/drivers/staging/android/Makefile
 +++ b/drivers/staging/android/Makefile
 @@ -1,4 +1,5 @@
@@ -87,7 +87,7 @@ index e9a55a5e6..60cb8eacc 100644
 +obj-$(CONFIG_ASHMEM)			+= ashmem_linux.o
 +ashmem_linux-y				+= ashmem.o
 diff --git a/drivers/staging/android/ashmem.c b/drivers/staging/android/ashmem.c
-index d66a64e42..2a2297743 100644
+index d66a64e..2a22977 100644
 --- a/drivers/staging/android/ashmem.c
 +++ b/drivers/staging/android/ashmem.c
 @@ -24,6 +24,7 @@
@@ -105,7 +105,7 @@ index d66a64e42..2a2297743 100644
 +
 +MODULE_LICENSE("GPL v2");
 diff --git a/fs/file.c b/fs/file.c
-index f63334802..e05d2bfea 100644
+index f633348..e05d2bf 100644
 --- a/fs/file.c
 +++ b/fs/file.c
 @@ -771,6 +771,7 @@ int __close_fd_get_file(unsigned int fd, struct file **res)
@@ -117,7 +117,7 @@ index f63334802..e05d2bfea 100644
  /*
   * variant of close_fd that gets a ref on the file for later fput.
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 426cd0c51..954ef4b18 100644
+index 426cd0c..954ef4b 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -1128,6 +1128,7 @@ void mmput_async(struct mm_struct *mm)
@@ -129,7 +129,7 @@ index 426cd0c51..954ef4b18 100644
  
  /**
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 98191218d..1982ea328 100644
+index 9819121..1982ea3 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -5765,6 +5765,7 @@ int can_nice(const struct task_struct *p, const int nice)
@@ -141,7 +141,7 @@ index 98191218d..1982ea328 100644
  #ifdef __ARCH_WANT_SYS_NICE
  
 diff --git a/kernel/task_work.c b/kernel/task_work.c
-index 9cde96187..5c8dea45d 100644
+index 9cde961..5c8dea4 100644
 --- a/kernel/task_work.c
 +++ b/kernel/task_work.c
 @@ -57,6 +57,7 @@ int task_work_add(struct task_struct *task, struct callback_head *work,
@@ -153,7 +153,7 @@ index 9cde96187..5c8dea45d 100644
  /**
   * task_work_cancel - cancel a pending work added by task_work_add()
 diff --git a/mm/memory.c b/mm/memory.c
-index 550405fc3..6252abc31 100644
+index 550405f..6252abc 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
 @@ -1548,6 +1548,7 @@ void zap_page_range(struct vm_area_struct *vma, unsigned long start,
@@ -165,7 +165,7 @@ index 550405fc3..6252abc31 100644
  /**
   * zap_page_range_single - remove user pages in a given range
 diff --git a/mm/shmem.c b/mm/shmem.c
-index b2db4ed0f..5f50dca34 100644
+index b2db4ed..5f50dca 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
 @@ -4233,6 +4233,7 @@ int shmem_zero_setup(struct vm_area_struct *vma)
@@ -177,7 +177,7 @@ index b2db4ed0f..5f50dca34 100644
  /**
   * shmem_read_mapping_page_gfp - read into page cache, using specified page allocation flags.
 diff --git a/security/security.c b/security/security.c
-index 5ac96b16f..40cce276e 100644
+index 5ac96b1..40cce27 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -727,24 +727,28 @@ int security_binder_set_context_mgr(struct task_struct *mgr)
@@ -210,5 +210,5 @@ index 5ac96b16f..40cce276e 100644
  int security_ptrace_access_check(struct task_struct *child, unsigned int mode)
  {
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

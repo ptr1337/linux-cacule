@@ -1,4 +1,4 @@
-From c48a925845f4facc7c2d038c8e779046f55be22a Mon Sep 17 00:00:00 2001
+From bf0ac61c7eed957fb0e1435861e1792f10393ee3 Mon Sep 17 00:00:00 2001
 From: Steven Barrett <steven@liquorix.net>
 Date: Mon, 30 Nov 2020 08:22:45 -0600
 Subject: [PATCH 1/2] Revert "net: tso: add UDP segmentation support"
@@ -85,5 +85,5 @@ index 4148f6d48..9f3551881 100644
  	tso->ipv6 = vlan_get_protocol(skb) == htons(ETH_P_IPV6);
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

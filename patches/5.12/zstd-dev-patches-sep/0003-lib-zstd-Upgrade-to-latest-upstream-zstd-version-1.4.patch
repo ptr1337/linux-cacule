@@ -1,4 +1,4 @@
-From 9a93d617ef791097f2a3042741035b8a0eb76555 Mon Sep 17 00:00:00 2001
+From 307971346cdc53783efa89a26b4140b8fdbc4716 Mon Sep 17 00:00:00 2001
 From: Nick Terrell <terrelln@fb.com>
 Date: Fri, 11 Sep 2020 16:37:08 -0700
 Subject: [PATCH 3/3] lib: zstd: Upgrade to latest upstream zstd version 1.4.10
@@ -40501,5 +40501,5 @@ index 55e1b4cba..000000000
 -
 -#endif /* ZSTD_OPT_H_91842398743 */
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

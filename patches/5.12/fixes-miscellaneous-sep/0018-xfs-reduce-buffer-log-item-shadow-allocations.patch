@@ -1,7 +1,7 @@
-From 0f309fd05a2dae85c5957e802028e0f38ddffc64 Mon Sep 17 00:00:00 2001
+From aab050f77b6c3f61db87bcb3ae7aff6ad85efc01 Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Thu, 28 Jan 2021 15:41:54 +1100
-Subject: [PATCH 18/26] xfs: reduce buffer log item shadow allocations
+Subject: [PATCH 18/24] xfs: reduce buffer log item shadow allocations
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -95,5 +95,5 @@ index 17960b1ce..0628a65d9 100644
  }
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

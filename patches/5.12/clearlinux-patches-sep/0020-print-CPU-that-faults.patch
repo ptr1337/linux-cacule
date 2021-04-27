@@ -1,4 +1,4 @@
-From 80d79a5235b84acc8891b9830ab48ccce2171f68 Mon Sep 17 00:00:00 2001
+From ab90288761a6763bff02b6cb08d61b47a6da266b Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 10 Aug 2019 03:19:04 +0000
 Subject: [PATCH 20/24] print CPU that faults
@@ -25,5 +25,5 @@ index a73347e2c..f6cd80163 100644
  	print_vma_addr(KERN_CONT " in ", regs->ip);
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

@@ -1,7 +1,7 @@
-From b2802bcd4ea5816556631887f4e06c421a6a8d18 Mon Sep 17 00:00:00 2001
+From 04455d8075c618c5b9eb0fcf04ebd8b5f9e2e5a0 Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Thu, 28 Jan 2021 15:41:50 +1100
-Subject: [PATCH 14/26] xfs: log stripe roundoff is a property of the log
+Subject: [PATCH 14/24] xfs: log stripe roundoff is a property of the log
 
 We don't need to look at the xfs_mount and superblock every time we
 need to do an iclog roundoff calculation. The property is fixed for
@@ -169,5 +169,5 @@ index 1c6fdbf3d..037950cf1 100644
  
  #define XLOG_BUF_CANCEL_BUCKET(log, blkno) \
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

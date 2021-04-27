@@ -1,4 +1,4 @@
-From eaf3044591f5f2f47fc6f1094bda8a9967b934f0 Mon Sep 17 00:00:00 2001
+From beb44709b4f45b73e382217493aaf0520db98356 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:41 +0300
 Subject: [PATCH 04/10] fs/ntfs3: Add file operations and implementation
@@ -7151,5 +7151,5 @@ index 000000000..5cdf6efe6
 +	return 0;
 +}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

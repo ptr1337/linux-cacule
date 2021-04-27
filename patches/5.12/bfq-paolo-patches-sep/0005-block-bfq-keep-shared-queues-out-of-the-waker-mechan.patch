@@ -1,4 +1,4 @@
-From 0c0146a5327be06021addc51c5e7557c2447df9d Mon Sep 17 00:00:00 2001
+From 14843c9073157427f5c9d76d354bbd37facf708a Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:26 +0000
 Subject: [PATCH 5/6] block, bfq: keep shared queues out of the waker mechanism
@@ -17,7 +17,7 @@ Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
  1 file changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 2a84294b0..a3f59d306 100644
+index 2a84294..a3f59d3 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
 @@ -5860,7 +5860,17 @@ static void bfq_completed_request(struct bfq_queue *bfqq, struct bfq_data *bfqd)
@@ -40,5 +40,5 @@ index 2a84294b0..a3f59d306 100644
  	/*
  	 * If we are waiting to discover whether the request pattern
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

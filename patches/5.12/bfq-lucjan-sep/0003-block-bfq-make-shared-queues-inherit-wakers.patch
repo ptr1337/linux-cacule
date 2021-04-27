@@ -1,7 +1,7 @@
-From b21d63d3affba0877f0223302eb664a576a3b530 Mon Sep 17 00:00:00 2001
+From 752d1513945d02b24323f03e25679b444522885a Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:24 +0000
-Subject: [PATCH 03/23] block, bfq: make shared queues inherit wakers
+Subject: [PATCH 03/21] block, bfq: make shared queues inherit wakers
 
 Consider a bfq_queue bfqq that is about to be merged with another
 bfq_queue new_bfqq. The processes associated with bfqq are cooperators
@@ -18,7 +18,7 @@ Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
  1 file changed, 39 insertions(+), 3 deletions(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index df840f378..b00dcc46b 100644
+index df840f3..b00dcc4 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
 @@ -2822,6 +2822,29 @@ bfq_merge_bfqqs(struct bfq_data *bfqd, struct bfq_io_cq *bic,
@@ -88,5 +88,5 @@ index df840f378..b00dcc46b 100644
  		}
  	}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

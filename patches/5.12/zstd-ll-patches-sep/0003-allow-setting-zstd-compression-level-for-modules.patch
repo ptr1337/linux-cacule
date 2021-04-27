@@ -1,4 +1,4 @@
-From 6075e9937d3111a73a38811fe9901c2f864c153a Mon Sep 17 00:00:00 2001
+From b5e88894e4e332319f04165655054c823b8d8874 Mon Sep 17 00:00:00 2001
 From: torvic9 <torvic9@mailbox.org>
 Date: Fri, 2 Apr 2021 16:00:26 +0200
 Subject: [PATCH 3/4] allow setting zstd compression level for modules
@@ -10,7 +10,7 @@ Signed-off-by: torvic9 <torvic9@mailbox.org>
  2 files changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 978abdc54..4993e846e 100644
+index e5536960a..7c4c6f602 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1078,7 +1078,7 @@ ifdef CONFIG_MODULE_COMPRESS
@@ -23,10 +23,10 @@ index 978abdc54..4993e846e 100644
  endif # CONFIG_MODULE_COMPRESS
  export mod_compress_cmd
 diff --git a/init/Kconfig b/init/Kconfig
-index f9c850072..a16e83ce6 100644
+index 34384e4a1..98197e83f 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -2272,6 +2272,14 @@ config MODULE_COMPRESS_ZSTD
+@@ -2284,6 +2284,14 @@ config MODULE_COMPRESS_ZSTD
  
  endchoice
  
@@ -42,5 +42,5 @@ index f9c850072..a16e83ce6 100644
  	bool "Allow loading of modules with missing namespace imports"
  	help
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

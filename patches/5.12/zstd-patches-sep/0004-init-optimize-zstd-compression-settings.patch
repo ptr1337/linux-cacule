@@ -1,4 +1,4 @@
-From 9319ba011581cc1035ff65e570c56482acb1f8b1 Mon Sep 17 00:00:00 2001
+From 12e3e44bb0d9c0115eba4e759436939f1d4e4629 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Sat, 10 Apr 2021 02:06:47 +0200
 Subject: [PATCH 4/4] init: optimize zstd compression settings
@@ -13,7 +13,7 @@ Signed-off-by: Piotr Gorski <lucjan.lucjanov@gmail.com>
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 4993e846e..f44386069 100644
+index 7c4c6f602..51d28efd8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1078,7 +1078,7 @@ ifdef CONFIG_MODULE_COMPRESS
@@ -26,10 +26,10 @@ index 4993e846e..f44386069 100644
  endif # CONFIG_MODULE_COMPRESS
  export mod_compress_cmd
 diff --git a/init/Kconfig b/init/Kconfig
-index a16e83ce6..8ce091162 100644
+index 98197e83f..1bae85dc4 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -2276,7 +2276,7 @@ config MODULE_COMPRESS_ZSTD_LEVEL
+@@ -2288,7 +2288,7 @@ config MODULE_COMPRESS_ZSTD_LEVEL
      int "Compression level (1-19)"
      depends on MODULE_COMPRESS_ZSTD
      range 1 19
@@ -39,5 +39,5 @@ index a16e83ce6..8ce091162 100644
          Compression level used by zstd for compressing modules.
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

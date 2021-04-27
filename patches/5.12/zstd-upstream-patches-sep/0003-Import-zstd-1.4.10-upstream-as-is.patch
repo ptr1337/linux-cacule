@@ -1,4 +1,4 @@
-From 9e0a1f414e1795ee34d37cbeb001e9cb41c06abe Mon Sep 17 00:00:00 2001
+From 530ba10f1235024160c5f3bc47873b36b5b5b889 Mon Sep 17 00:00:00 2001
 From: Nick Terrell <terrelln@fb.com>
 Date: Tue, 30 Mar 2021 12:57:41 -0700
 Subject: [PATCH 3/4] Import zstd-1.4.10 upstream as-is
@@ -41514,5 +41514,5 @@ index 55e1b4cba..000000000
 -
 -#endif /* ZSTD_OPT_H_91842398743 */
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

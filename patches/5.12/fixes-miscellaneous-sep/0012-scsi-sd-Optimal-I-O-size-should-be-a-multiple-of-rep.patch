@@ -1,7 +1,7 @@
-From 1676710ede84c157099d1ff9e0884f5c71889ecc Mon Sep 17 00:00:00 2001
+From 0595dd1b8bca01af76045701b614d7e94f49f561 Mon Sep 17 00:00:00 2001
 From: "Martin K. Petersen" <martin.petersen@oracle.com>
 Date: Sun, 22 Mar 2020 16:57:06 -0400
-Subject: [PATCH 12/26] scsi: sd: Optimal I/O size should be a multiple of
+Subject: [PATCH 12/24] scsi: sd: Optimal I/O size should be a multiple of
  reported granularity
 
 Commit a83da8a4509d ("scsi: sd: Optimal I/O size should be a multiple of
@@ -129,5 +129,5 @@ index b59136c41..4154030c8 100644
  	u32		opt_xfer_blocks;
  	u32		max_ws_blocks;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

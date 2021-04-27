@@ -1,4 +1,4 @@
-From 1d055e2b6b165e738e51e970e4a8550348dbdff9 Mon Sep 17 00:00:00 2001
+From 22dd6599c5d261925175a2f8a661c1c5d8755211 Mon Sep 17 00:00:00 2001
 From: torvic9 <torvic9@mailbox.org>
 Date: Fri, 2 Apr 2021 15:56:36 +0200
 Subject: [PATCH 2/4] allow setting zstd compression level for kernel
@@ -29,7 +29,7 @@ index e0bc3988c..59ed10c61 100644
  suffix-$(CONFIG_KERNEL_GZIP)	:= gz
  suffix-$(CONFIG_KERNEL_BZIP2)	:= bz2
 diff --git a/init/Kconfig b/init/Kconfig
-index 0a9d5c63e..f9c850072 100644
+index ecaccccd0..34384e4a1 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -309,6 +309,25 @@ config KERNEL_UNCOMPRESSED
@@ -76,5 +76,5 @@ index 8cd67b1b6..f2dfaa5a0 100644
  # ASM offsets
  # ---------------------------------------------------------------------------
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

@@ -1,4 +1,4 @@
-From 7800b872766dfed7c86c48602165fe6b7f893b3e Mon Sep 17 00:00:00 2001
+From d44dbc571f18b6c9d479bae0043962b19d26be45 Mon Sep 17 00:00:00 2001
 From: Oleksandr Natalenko <oleksandr@redhat.com>
 Date: Tue, 14 May 2019 10:40:56 +0200
 Subject: [PATCH 2/4] mm/ksm: introduce ksm_madvise_unmerge() helper
@@ -78,5 +78,5 @@ index 4c088d37d..61fa1a929 100644
  	}
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

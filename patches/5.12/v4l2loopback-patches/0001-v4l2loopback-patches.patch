@@ -1,4 +1,4 @@
-From 1c24d99853df109ffeb20c61580e38692bc8ad2f Mon Sep 17 00:00:00 2001
+From 3375ad66001238ba278b0cefafa8d1f83674c312 Mon Sep 17 00:00:00 2001
 From: Oleksandr Natalenko <oleksandr@natalenko.name>
 Date: Mon, 1 Mar 2021 16:15:52 +0100
 Subject: [PATCH 1/2] v4l2loopback-5.12: merge v0.12.5
@@ -3484,10 +3484,10 @@ index 000000000..6cb6f842c
 +	},
 +#endif /* V4L2_PIX_FMT_HEVC */
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From c431970863aaf4504740d29018d6c95bc18811ce Mon Sep 17 00:00:00 2001
+From fba12e9fee9f70065d5974bc00febe109646e514 Mon Sep 17 00:00:00 2001
 From: Oleksandr Natalenko <oleksandr@natalenko.name>
 Date: Mon, 1 Mar 2021 16:15:59 +0100
 Subject: [PATCH 2/2] v4l2loopback-5.12: confine v4l2loopback_cleanup_module
@@ -3518,5 +3518,5 @@ index 030bc5cf9..74af58d55 100644
  MODULE_ALIAS_MISCDEV(MISC_DYNAMIC_MINOR);
  MODULE_ALIAS("devname:v4l2loopback");
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

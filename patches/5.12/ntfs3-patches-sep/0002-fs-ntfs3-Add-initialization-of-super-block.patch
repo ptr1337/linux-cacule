@@ -1,4 +1,4 @@
-From 13911eb6350fb4569841d4ff92f08ffe570189fc Mon Sep 17 00:00:00 2001
+From cb3c5eb826ec3192ee59a515020da1181fc752ea Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:39 +0300
 Subject: [PATCH 02/10] fs/ntfs3: Add initialization of super block
@@ -8758,5 +8758,5 @@ index 000000000..c56343124
 +module_init(init_ntfs_fs);
 +module_exit(exit_ntfs_fs);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

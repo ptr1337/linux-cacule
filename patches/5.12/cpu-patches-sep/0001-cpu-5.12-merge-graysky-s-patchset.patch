@@ -1,4 +1,4 @@
-From c8fa6b073b375aff4af844fa9301fd2b1d9e9092 Mon Sep 17 00:00:00 2001
+From 43060897726b28e9b470bb76c34fe9ddb684e3a3 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Mon, 12 Apr 2021 15:51:38 +0200
 Subject: [PATCH 1/2] cpu-5.12: merge graysky's patchset
@@ -582,5 +582,5 @@ index 75884d2cd..4e6a08d4c 100644
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

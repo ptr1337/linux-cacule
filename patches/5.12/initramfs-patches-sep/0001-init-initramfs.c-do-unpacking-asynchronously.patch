@@ -1,4 +1,4 @@
-From 8056887376a66e7ff99027c0b2c1b57b44c479ca Mon Sep 17 00:00:00 2001
+From 252ed521cf668d0a085436e294537ae80195c883 Mon Sep 17 00:00:00 2001
 From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Date: Sat, 13 Mar 2021 22:25:27 +0100
 Subject: [PATCH 1/2] init/initramfs.c: do unpacking asynchronously
@@ -211,5 +211,5 @@ index 3f646613a..61f6b82c3 100644
  			       (const char *const *)sub_info->argv,
  			       (const char *const *)sub_info->envp);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

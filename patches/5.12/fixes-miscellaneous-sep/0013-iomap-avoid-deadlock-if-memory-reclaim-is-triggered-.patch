@@ -1,7 +1,7 @@
-From 6561752542ac60b33d8297e980b7f3d6d91131c3 Mon Sep 17 00:00:00 2001
+From 18d6481ca884ba7cbcc6e8e9fcfb441380b5ec85 Mon Sep 17 00:00:00 2001
 From: Yafang Shao <laoar.shao@gmail.com>
 Date: Thu, 4 Jun 2020 03:05:47 -0400
-Subject: [PATCH 13/26] iomap: avoid deadlock if memory reclaim is triggered in
+Subject: [PATCH 13/24] iomap: avoid deadlock if memory reclaim is triggered in
  writepage path
 
 Recently there is a XFS deadlock on our server with an old kernel.
@@ -119,5 +119,5 @@ index 414769a6a..8b841f7b6 100644
  redirty:
  	redirty_page_for_writepage(wbc, page);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

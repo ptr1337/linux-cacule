@@ -1,4 +1,4 @@
-From cdf5ba3283f76d5c92b9d2faf9c95f7334d08e9a Mon Sep 17 00:00:00 2001
+From fadbac9dd11fb92f1a40abbc1641057e0c57633a Mon Sep 17 00:00:00 2001
 From: Jim Kukunas <james.t.kukunas@linux.intel.com>
 Date: Sat, 2 Nov 2019 00:59:52 +0000
 Subject: [PATCH 21/24] fix bug in ucode force reload revision check
@@ -22,5 +22,5 @@ index 7e8e07bdd..1ef03ab31 100644
  		goto out;
  	}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

@@ -1,4 +1,4 @@
-From ce218232bbbb7e0b4d750d11b880ea79b4ee6ce1 Mon Sep 17 00:00:00 2001
+From 6541d9940d502207b4caab57163f606fe4a76bc0 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:22 +0000
 Subject: [PATCH 1/6] block, bfq: always inject I/O of queues blocked by wakers
@@ -114,10 +114,10 @@ index 070e34a7f..7a462df71 100644
 +	}
  }
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 8b603d7984eb95d2bf141e524268e95c16aeebed Mon Sep 17 00:00:00 2001
+From d0f06f590ed1d8db37b702abc555e1e4835d3508 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:23 +0000
 Subject: [PATCH 2/6] block, bfq: put reqs of waker and woken in dispatch list
@@ -193,10 +193,10 @@ index eb2497750..df840f378 100644
  			list_add(&rq->queuelist, &bfqd->dispatch);
  		else
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 419c19c7d3f5c1fbdbd899dd0d8a1a3606ebe086 Mon Sep 17 00:00:00 2001
+From a2088731d98bf2f5140a6cfdc2b3997877130107 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:24 +0000
 Subject: [PATCH 3/6] block, bfq: make shared queues inherit wakers
@@ -286,10 +286,10 @@ index df840f378..b00dcc46b 100644
  		}
  	}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 93b7de7af66f774b7c4e5f894007646e211e5a8a Mon Sep 17 00:00:00 2001
+From 25bd75e09a6b3c176752c24c049bdfa62b5b28d7 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:25 +0000
 Subject: [PATCH 4/6] block, bfq: fix weight-raising resume with !low_latency
@@ -334,10 +334,10 @@ index b00dcc46b..2a84294b0 100644
  	bfqq->wr_start_at_switch_to_srt = bic->saved_wr_start_at_switch_to_srt;
  	bfqq->last_wr_start_finish = bic->saved_last_wr_start_finish;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 0c0146a5327be06021addc51c5e7557c2447df9d Mon Sep 17 00:00:00 2001
+From 14843c9073157427f5c9d76d354bbd37facf708a Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:26 +0000
 Subject: [PATCH 5/6] block, bfq: keep shared queues out of the waker mechanism
@@ -379,10 +379,10 @@ index 2a84294b0..a3f59d306 100644
  	/*
  	 * If we are waiting to discover whether the request pattern
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From b8bb41b1dc4972fe052cbbfbae00fe603d1b226b Mon Sep 17 00:00:00 2001
+From 43e202f45c0ad84ef67311384dff5e00e3721d8d Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:27 +0000
 Subject: [PATCH 6/6] block, bfq: merge bursts of newly-created queues
@@ -891,5 +891,5 @@ index b8e793c34..99c2a3cb0 100644
  	u64 last_empty_occupied_ns;
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

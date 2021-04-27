@@ -1,4 +1,4 @@
-From 2bad7f7347a797510894db47b76e82c3e91b50be Mon Sep 17 00:00:00 2001
+From bf89f4dcc8aec7830fad6df81e5b254cc0c0f681 Mon Sep 17 00:00:00 2001
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Date: Fri, 2 Apr 2021 18:53:43 +0300
 Subject: [PATCH 06/10] fs/ntfs3: Add compression
@@ -2065,5 +2065,5 @@ index 000000000..ead9ab7d6
 +	return PtrOffset(unc, unc_chunk);
 +}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

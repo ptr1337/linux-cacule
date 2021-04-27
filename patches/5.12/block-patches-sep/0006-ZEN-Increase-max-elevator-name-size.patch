@@ -1,4 +1,4 @@
-From d31a31747b691adbbfd3f4f15f83d8f018320df3 Mon Sep 17 00:00:00 2001
+From aa088bd0bee8e665c49e37bde0a29fbf57b050c2 Mon Sep 17 00:00:00 2001
 From: Steven Barrett <steven@liquorix.net>
 Date: Wed, 27 Jan 2021 17:39:54 -0600
 Subject: [PATCH 6/7] ZEN: Increase max elevator name size
@@ -28,5 +28,5 @@ index 1fe8e105b..e7726cf62 100644
  struct elv_fs_entry {
  	struct attribute attr;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

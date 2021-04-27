@@ -1,7 +1,7 @@
-From c759313bb81e553ebf0aa4656dd9146fe50d9d1b Mon Sep 17 00:00:00 2001
+From 961508609689aa3eccd84fdd3572e34e886d928a Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Thu, 28 Jan 2021 15:41:52 +1100
-Subject: [PATCH 16/26] xfs: journal IO cache flush reductions
+Subject: [PATCH 16/24] xfs: journal IO cache flush reductions
 
 Currently every journal IO is issued as REQ_PREFLUSH | REQ_FUA to
 guarantee the ordering requirements the journal has w.r.t. metadata
@@ -237,5 +237,5 @@ index a7ac85aaf..9f1e627cc 100644
  
  	/* Callback structures need their own cacheline */
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

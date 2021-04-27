@@ -1,4 +1,4 @@
-From e6acdd0281a9dcbc5458a92801268a2556f53304 Mon Sep 17 00:00:00 2001
+From 0a0598d0093f6ab3202f9b39b7aea85d144cb9db Mon Sep 17 00:00:00 2001
 From: Nick Terrell <terrelln@fb.com>
 Date: Fri, 11 Sep 2020 16:49:00 -0700
 Subject: [PATCH 1/4] lib: zstd: Add kernel-specific API
@@ -3488,5 +3488,5 @@ index 66cd487a3..02e92c2cb 100644
  MODULE_LICENSE("Dual BSD/GPL");
  MODULE_DESCRIPTION("Zstd Decompressor");
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

@@ -1,4 +1,4 @@
-From f13da6f25c464538d03712921fa85c96bf9ee7f3 Mon Sep 17 00:00:00 2001
+From 7229895c1a6432219d05b02c8702189ab65570b3 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Tue, 13 Apr 2021 16:06:05 +0200
 Subject: [PATCH] futex: resync from gitlab.collabora.com
@@ -497,5 +497,5 @@ index 00febd6de..6859dd7ca 100644
  }
  #endif /* CONFIG_COMPAT_32BIT_TIME */
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

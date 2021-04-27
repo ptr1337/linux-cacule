@@ -1,7 +1,7 @@
-From 39b3f2eeae6f352c961c4b24be5c0add23a84cd8 Mon Sep 17 00:00:00 2001
+From d8ed335db256f6f1760bb3e028d1e26aaf9a3fce Mon Sep 17 00:00:00 2001
 From: Khazhismel Kumykov <khazhy@google.com>
 Date: Thu, 18 Mar 2021 23:00:15 -0700
-Subject: [PATCH 07/22] bfq: silence lockdep for bfqd/ioc lock inversion
+Subject: [PATCH 07/20] bfq: silence lockdep for bfqd/ioc lock inversion
 
 lockdep warns of circular locking due to inversion between
 bfq_insert_requests and bfq_exit_icq. If we end freeing a request when
@@ -24,7 +24,7 @@ Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
  1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 9b7678ad5..5bfe5c129 100644
+index 9b7678a..5bfe5c1 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
 @@ -5144,7 +5144,14 @@ static void bfq_exit_icq_bfqq(struct bfq_io_cq *bic, bool is_sync)
@@ -44,5 +44,5 @@ index 9b7678ad5..5bfe5c129 100644
  		bfq_exit_bfqq(bfqd, bfqq);
  		bic_set_bfqq(bic, NULL, is_sync);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

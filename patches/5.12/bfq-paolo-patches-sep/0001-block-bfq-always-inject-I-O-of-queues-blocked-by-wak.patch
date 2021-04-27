@@ -1,4 +1,4 @@
-From ce218232bbbb7e0b4d750d11b880ea79b4ee6ce1 Mon Sep 17 00:00:00 2001
+From 6541d9940d502207b4caab57163f606fe4a76bc0 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:22 +0000
 Subject: [PATCH 1/6] block, bfq: always inject I/O of queues blocked by wakers
@@ -21,7 +21,7 @@ Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
  2 files changed, 35 insertions(+), 5 deletions(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 955861371..eb2497750 100644
+index 9558613..eb24977 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
 @@ -4491,9 +4491,15 @@ static struct bfq_queue *bfq_select_queue(struct bfq_data *bfqd)
@@ -97,7 +97,7 @@ index 955861371..eb2497750 100644
  			 (bfqq->wr_coeff == 1 || bfqd->wr_busy_queues > 1 ||
  			  !bfq_bfqq_has_short_ttime(bfqq)))
 diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
-index 070e34a7f..7a462df71 100644
+index 070e34a..7a462df 100644
 --- a/block/bfq-wf2q.c
 +++ b/block/bfq-wf2q.c
 @@ -1706,4 +1706,12 @@ void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq)
@@ -114,5 +114,5 @@ index 070e34a7f..7a462df71 100644
 +	}
  }
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

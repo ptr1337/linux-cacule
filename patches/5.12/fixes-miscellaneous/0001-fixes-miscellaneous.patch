@@ -1,7 +1,7 @@
-From 3fa3cdee3cef49355a81126ef8a3b0dfae96c9f2 Mon Sep 17 00:00:00 2001
+From d020b3c4fe8e6805e55b2ce164df05e750cd796f Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Mon, 17 Aug 2020 22:48:47 +0200
-Subject: [PATCH 01/26] net/sched: allow configuring cake qdisc as default
+Subject: [PATCH 01/24] net/sched: allow configuring cake qdisc as default
 
 Signed-off-by: Piotr Gorski <lucjan.lucjanov@gmail.com>
 ---
@@ -31,13 +31,13 @@ index 1e8ab4749..75122fd65 100644
  endif
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 5da37d47373a0876a0cd5d1b8e6c16482b6b4d65 Mon Sep 17 00:00:00 2001
+From 37877ad5269c5eab83b8d5054064d1ad1c00673b Mon Sep 17 00:00:00 2001
 From: "Jan Alexander Steffens (heftig)" <jan.steffens@gmail.com>
 Date: Fri, 26 Oct 2018 11:22:33 +0100
-Subject: [PATCH 02/26] infiniband: Fix __read_overflow2 error with -O3
+Subject: [PATCH 02/24] infiniband: Fix __read_overflow2 error with -O3
  inlining
 
 ---
@@ -57,13 +57,13 @@ index 65e3e7df8..b41afee77 100644
  	int ret;
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 1d1f7ede68d6bdaf539494ef9b2e109388844f87 Mon Sep 17 00:00:00 2001
+From 50d89ecaecf28cb284e7c2f26e217c81a0068bdd Mon Sep 17 00:00:00 2001
 From: Seth Forshee <seth.forshee@canonical.com>
 Date: Tue, 9 Jul 2019 13:49:19 -0500
-Subject: [PATCH 03/26] kbuild: add -fcf-protection=none to retpoline flags
+Subject: [PATCH 03/24] kbuild: add -fcf-protection=none to retpoline flags
 
 -mindirect-branch and -fcf-protection are not compatible, and
 so kernel builds fail with a gcc build where -fcf-protection is
@@ -76,7 +76,7 @@ Signed-off-by: Seth Forshee <seth.forshee@canonical.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/Makefile b/Makefile
-index 4730cf156..efd36974e 100644
+index 3a10a8e08..cbd6b4f37 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -676,6 +676,10 @@ RETPOLINE_CFLAGS_CLANG := -mretpoline-external-thunk
@@ -91,13 +91,13 @@ index 4730cf156..efd36974e 100644
  export RETPOLINE_VDSO_CFLAGS
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From d6e5fa3aad8af2de8a9a2dbcae71b76451f2cdd2 Mon Sep 17 00:00:00 2001
+From d1fb92aa6373ac5d583cd61379c846646a8b608e Mon Sep 17 00:00:00 2001
 From: Sultan Alsawaf <sultan@kerneltoast.com>
 Date: Sat, 28 Mar 2020 13:06:28 -0700
-Subject: [PATCH 04/26] mm: Disable watermark boosting by default
+Subject: [PATCH 04/24] mm: Disable watermark boosting by default
 
 What watermark boosting does is preemptively fire up kswapd to free
 memory when there hasn't been an allocation failure. It does this by
@@ -152,13 +152,13 @@ index cfc728739..63ee666a1 100644
  
  static unsigned long nr_kernel_pages __initdata;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 5dd96ee965489e2d9e0ace5edd520ad1a75dd03f Mon Sep 17 00:00:00 2001
+From 6f009848227d7e3225ef53087089aeffee94f82c Mon Sep 17 00:00:00 2001
 From: Sultan Alsawaf <sultan@kerneltoast.com>
 Date: Thu, 20 Feb 2020 20:30:52 -0800
-Subject: [PATCH 05/26] mm: Stop kswapd early when nothing's waiting for it to
+Subject: [PATCH 05/24] mm: Stop kswapd early when nothing's waiting for it to
  free pages
 
 Keeping kswapd running when all the failed allocations that invoked it
@@ -252,13 +252,13 @@ index 562e87cbd..64376dd49 100644
  
  		/*
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 39ddbb99245a127f8f3eaf625712893740f3c322 Mon Sep 17 00:00:00 2001
+From f8a769488ab976b37aeb90f682ebd3404d9ffb62 Mon Sep 17 00:00:00 2001
 From: Sultan Alsawaf <sultan@kerneltoast.com>
 Date: Thu, 9 Apr 2020 00:20:25 -0700
-Subject: [PATCH 06/26] mm: Fully disable watermark boosting when it isn't used
+Subject: [PATCH 06/24] mm: Fully disable watermark boosting when it isn't used
 
 The watermark boosting code still wakes kswapd even when there's no
 watermark boost in effect. Change it to only wake kswapd when there is
@@ -288,13 +288,13 @@ index e80a20658..0d9183af7 100644
  	/* We are not allowed to try stealing from the whole block */
  	if (!whole_block)
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From b11e035377e9388c2e2fc5147aa6adafe399752b Mon Sep 17 00:00:00 2001
+From 25ce9cc5d7cdc72481e2dc3fe5a1efc008cc6473 Mon Sep 17 00:00:00 2001
 From: Sultan Alsawaf <sultan@kerneltoast.com>
 Date: Wed, 20 May 2020 09:55:17 -0700
-Subject: [PATCH 07/26] mm: Don't stop kswapd on a per-node basis when there
+Subject: [PATCH 07/24] mm: Don't stop kswapd on a per-node basis when there
  are no waiters
 
 The page allocator wakes all kswapds in an allocation context's allowed
@@ -395,13 +395,13 @@ index 64376dd49..d62430e2c 100644
  
  		/*
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From de3fc19c22c4eb1cbb3605728fe379b35262da2e Mon Sep 17 00:00:00 2001
+From 7bf8f88bcc88d9040f36bc4a35718f97fe1cd1bd Mon Sep 17 00:00:00 2001
 From: Sultan Alsawaf <sultan@kerneltoast.com>
 Date: Sun, 8 Mar 2020 00:31:35 -0800
-Subject: [PATCH 08/26] kbuild: Disable stack conservation for GCC
+Subject: [PATCH 08/24] kbuild: Disable stack conservation for GCC
 
 There's plenty of room on the stack for a few more inlined bytes here
 and there. The measured stack usage at runtime is still safe without
@@ -414,7 +414,7 @@ Signed-off-by: Sultan Alsawaf <sultan@kerneltoast.com>
  1 file changed, 3 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index efd36974e..eabec3b0c 100644
+index cbd6b4f37..65963ec9b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -960,9 +960,6 @@ KBUILD_CFLAGS	+= -fno-strict-overflow
@@ -428,13 +428,13 @@ index efd36974e..eabec3b0c 100644
  KBUILD_CFLAGS   += -Werror=date-time
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From a983786f6628ab2451deedf9fce3a7cb629a51fc Mon Sep 17 00:00:00 2001
+From 6331dbd38d250db13c92a1877cc5c617d13ab6fa Mon Sep 17 00:00:00 2001
 From: Mark Weiman <mark.weiman@markzz.com>
 Date: Sun, 12 Aug 2018 11:36:21 -0400
-Subject: [PATCH 09/26] pci: Enable overrides for missing ACS capabilities
+Subject: [PATCH 09/24] pci: Enable overrides for missing ACS capabilities
 
 This an updated version of Alex Williamson's patch from:
 https://lkml.org/lkml/2013/5/30/513
@@ -626,13 +626,13 @@ index 653660e3b..af8534a51 100644
  };
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 0fb95f2c296ebc9561be18a5bbe017408ed7da6f Mon Sep 17 00:00:00 2001
+From f7abd9cac2c2160eb55b8ae7f6d18580657ca499 Mon Sep 17 00:00:00 2001
 From: "Jan Alexander Steffens (heftig)" <heftig@archlinux.org>
 Date: Mon, 3 Aug 2020 21:18:53 +0200
-Subject: [PATCH 10/26] ZEN: Add OpenRGB patches
+Subject: [PATCH 10/24] ZEN: Add OpenRGB patches
 
 Squashed commit of the following:
 
@@ -1375,13 +1375,13 @@ index 8c1b31ed0..0b1b36fa0 100644
  	/* If the SMBus is still busy, we give up */
  	if (timeout == MAX_TIMEOUT) {
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From a21af31b212b0ed60ac597cee79efe9f13507a50 Mon Sep 17 00:00:00 2001
+From e7f4ef08727326809dca295f4d47b63a8d7da656 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Fri, 25 Sep 2020 13:22:05 +0200
-Subject: [PATCH 11/26] tty: Allow setting the number of available virtual TTYs
+Subject: [PATCH 11/24] tty: Allow setting the number of available virtual TTYs
 
 Signed-off-by: Piotr Gorski <lucjan.lucjanov@gmail.com>
 ---
@@ -1445,13 +1445,13 @@ index e9d39c485..3bceead8d 100644
  		   consoles 16 and higher (since it returns a short) */
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 1676710ede84c157099d1ff9e0884f5c71889ecc Mon Sep 17 00:00:00 2001
+From 0595dd1b8bca01af76045701b614d7e94f49f561 Mon Sep 17 00:00:00 2001
 From: "Martin K. Petersen" <martin.petersen@oracle.com>
 Date: Sun, 22 Mar 2020 16:57:06 -0400
-Subject: [PATCH 12/26] scsi: sd: Optimal I/O size should be a multiple of
+Subject: [PATCH 12/24] scsi: sd: Optimal I/O size should be a multiple of
  reported granularity
 
 Commit a83da8a4509d ("scsi: sd: Optimal I/O size should be a multiple of
@@ -1579,13 +1579,13 @@ index b59136c41..4154030c8 100644
  	u32		opt_xfer_blocks;
  	u32		max_ws_blocks;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 6561752542ac60b33d8297e980b7f3d6d91131c3 Mon Sep 17 00:00:00 2001
+From 18d6481ca884ba7cbcc6e8e9fcfb441380b5ec85 Mon Sep 17 00:00:00 2001
 From: Yafang Shao <laoar.shao@gmail.com>
 Date: Thu, 4 Jun 2020 03:05:47 -0400
-Subject: [PATCH 13/26] iomap: avoid deadlock if memory reclaim is triggered in
+Subject: [PATCH 13/24] iomap: avoid deadlock if memory reclaim is triggered in
  writepage path
 
 Recently there is a XFS deadlock on our server with an old kernel.
@@ -1703,13 +1703,13 @@ index 414769a6a..8b841f7b6 100644
  redirty:
  	redirty_page_for_writepage(wbc, page);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From b2802bcd4ea5816556631887f4e06c421a6a8d18 Mon Sep 17 00:00:00 2001
+From 04455d8075c618c5b9eb0fcf04ebd8b5f9e2e5a0 Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Thu, 28 Jan 2021 15:41:50 +1100
-Subject: [PATCH 14/26] xfs: log stripe roundoff is a property of the log
+Subject: [PATCH 14/24] xfs: log stripe roundoff is a property of the log
 
 We don't need to look at the xfs_mount and superblock every time we
 need to do an iclog roundoff calculation. The property is fixed for
@@ -1877,13 +1877,13 @@ index 1c6fdbf3d..037950cf1 100644
  
  #define XLOG_BUF_CANCEL_BUCKET(log, blkno) \
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 50b14956009f3b64107e608f98be5bf166ca9ea1 Mon Sep 17 00:00:00 2001
+From 157f794eeaf093532d1bba9eb84aea7517e58727 Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Thu, 28 Jan 2021 15:41:51 +1100
-Subject: [PATCH 15/26] xfs: separate CIL commit record IO
+Subject: [PATCH 15/24] xfs: separate CIL commit record IO
 
 To allow for iclog IO device cache flush behaviour to be optimised,
 we first need to separate out the commit record iclog IO from the
@@ -2005,13 +2005,13 @@ index 037950cf1..a7ac85aaf 100644
   * The LSN is valid so long as it is behind the current LSN. If it isn't, this
   * means that the next log record that includes this metadata could have a
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From c759313bb81e553ebf0aa4656dd9146fe50d9d1b Mon Sep 17 00:00:00 2001
+From 961508609689aa3eccd84fdd3572e34e886d928a Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Thu, 28 Jan 2021 15:41:52 +1100
-Subject: [PATCH 16/26] xfs: journal IO cache flush reductions
+Subject: [PATCH 16/24] xfs: journal IO cache flush reductions
 
 Currently every journal IO is issued as REQ_PREFLUSH | REQ_FUA to
 guarantee the ordering requirements the journal has w.r.t. metadata
@@ -2247,13 +2247,13 @@ index a7ac85aaf..9f1e627cc 100644
  
  	/* Callback structures need their own cacheline */
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From c9aa15a091c07d22cf49ddc1a9d97edfc7db0740 Mon Sep 17 00:00:00 2001
+From 1346f697aba01cd81fd838065db42c8925426e06 Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Thu, 28 Jan 2021 15:41:53 +1100
-Subject: [PATCH 17/26] xfs: Fix CIL throttle hang when CIL space used going
+Subject: [PATCH 17/24] xfs: Fix CIL throttle hang when CIL space used going
  backwards
 
 A hang with tasks stuck on the CIL hard throttle was reported and
@@ -2505,13 +2505,13 @@ index c5cc1b7ad..daf1f3eb2 100644
  		ASSERT(cil->xc_ctx->space_used < log->l_logsize);
  		xlog_wait(&cil->xc_push_wait, &cil->xc_push_lock);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 0f309fd05a2dae85c5957e802028e0f38ddffc64 Mon Sep 17 00:00:00 2001
+From aab050f77b6c3f61db87bcb3ae7aff6ad85efc01 Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Thu, 28 Jan 2021 15:41:54 +1100
-Subject: [PATCH 18/26] xfs: reduce buffer log item shadow allocations
+Subject: [PATCH 18/24] xfs: reduce buffer log item shadow allocations
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -2605,13 +2605,13 @@ index 17960b1ce..0628a65d9 100644
  }
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From bb5d07f37129898a967cc198ea5ebe47c8817315 Mon Sep 17 00:00:00 2001
+From e9255a92fc6aebe382ebbdc06b379b4fc5cbfa41 Mon Sep 17 00:00:00 2001
 From: Pavel Reichl <preichl@redhat.com>
 Date: Sat, 20 Feb 2021 23:15:49 +0100
-Subject: [PATCH 19/26] xfs: Skip repetitive warnings about mount options
+Subject: [PATCH 19/24] xfs: Skip repetitive warnings about mount options
 
 Skip the warnings about mount option being deprecated if we are
 remounting and deprecated option state is not changing.
@@ -2674,162 +2674,13 @@ index e5e0713be..832b6abba 100644
  		mp->m_flags |= XFS_MOUNT_NOATTR2;
  		return 0;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 36c4d19b2bacc162741ea1238367eed179b56559 Mon Sep 17 00:00:00 2001
-From: Sultan Alsawaf <sultan@kerneltoast.com>
-Date: Fri, 7 Aug 2020 10:42:55 -0700
-Subject: [PATCH 20/26] locking/mutex: Don't hog RCU read lock while
- optimistically spinning
-
-There's no reason to hold an RCU read lock the entire time while
-optimistically spinning for a mutex lock. This can needlessly lengthen
-RCU grace periods and slow down synchronize_rcu() when it doesn't brute
-force the RCU grace period via rcupdate.rcu_expedited=1.
-
-Signed-off-by: Sultan Alsawaf <sultan@kerneltoast.com>
----
- kernel/locking/mutex.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
-
-diff --git a/kernel/locking/mutex.c b/kernel/locking/mutex.c
-index 622ebdfcd..88df2ebf5 100644
---- a/kernel/locking/mutex.c
-+++ b/kernel/locking/mutex.c
-@@ -542,21 +542,31 @@ bool mutex_spin_on_owner(struct mutex *lock, struct task_struct *owner,
- {
- 	bool ret = true;
- 
--	rcu_read_lock();
--	while (__mutex_owner(lock) == owner) {
-+	for (;;) {
-+		unsigned int cpu;
-+		bool same_owner;
-+
- 		/*
--		 * Ensure we emit the owner->on_cpu, dereference _after_
--		 * checking lock->owner still matches owner. If that fails,
-+		 * Ensure lock->owner still matches owner. If that fails,
- 		 * owner might point to freed memory. If it still matches,
- 		 * the rcu_read_lock() ensures the memory stays valid.
- 		 */
--		barrier();
-+		rcu_read_lock();
-+		same_owner = __mutex_owner(lock) == owner;
-+		if (same_owner) {
-+			ret = owner->on_cpu;
-+			if (ret)
-+				cpu = task_cpu(owner);
-+		}
-+		rcu_read_unlock();
-+
-+		if (!ret || !same_owner)
-+			break;
- 
- 		/*
- 		 * Use vcpu_is_preempted to detect lock holder preemption issue.
- 		 */
--		if (!owner->on_cpu || need_resched() ||
--				vcpu_is_preempted(task_cpu(owner))) {
-+		if (need_resched() || vcpu_is_preempted(cpu)) {
- 			ret = false;
- 			break;
- 		}
-@@ -568,7 +578,6 @@ bool mutex_spin_on_owner(struct mutex *lock, struct task_struct *owner,
- 
- 		cpu_relax();
- 	}
--	rcu_read_unlock();
- 
- 	return ret;
- }
--- 
-2.31.0.97.g1424303384
-
-
-From c18f3495e58dbc0ad30449d0db3d0bdaa86b3a22 Mon Sep 17 00:00:00 2001
-From: Sultan Alsawaf <sultan@kerneltoast.com>
-Date: Mon, 15 Feb 2021 13:30:49 -0800
-Subject: [PATCH 21/26] locking/rwsem: Don't hog RCU read lock while
- optimistically spinning
-
-There's no reason to hold an RCU read lock the entire time while
-optimistically spinning for a rwsem. This can needlessly lengthen RCU
-grace periods and slow down synchronize_rcu() when it doesn't brute
-force the RCU grace period via rcupdate.rcu_expedited=1.
-
-Signed-off-by: Sultan Alsawaf <sultan@kerneltoast.com>
----
- kernel/locking/rwsem.c | 27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
-
-diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
-index abba5df50..5b77977b2 100644
---- a/kernel/locking/rwsem.c
-+++ b/kernel/locking/rwsem.c
-@@ -674,8 +674,10 @@ rwsem_spin_on_owner(struct rw_semaphore *sem)
- 	if (state != OWNER_WRITER)
- 		return state;
- 
--	rcu_read_lock();
- 	for (;;) {
-+		bool same_owner;
-+
-+		rcu_read_lock();
- 		/*
- 		 * When a waiting writer set the handoff flag, it may spin
- 		 * on the owner as well. Once that writer acquires the lock,
-@@ -683,27 +685,32 @@ rwsem_spin_on_owner(struct rw_semaphore *sem)
- 		 * handoff bit is set.
- 		 */
- 		new = rwsem_owner_flags(sem, &new_flags);
--		if ((new != owner) || (new_flags != flags)) {
--			state = rwsem_owner_state(new, new_flags);
--			break;
--		}
- 
- 		/*
--		 * Ensure we emit the owner->on_cpu, dereference _after_
--		 * checking sem->owner still matches owner, if that fails,
-+		 * Ensure sem->owner still matches owner. If that fails,
- 		 * owner might point to free()d memory, if it still matches,
- 		 * the rcu_read_lock() ensures the memory stays valid.
- 		 */
--		barrier();
-+		same_owner = new == owner && new_flags == flags;
-+		if (same_owner && !owner_on_cpu(owner))
-+			state = OWNER_NONSPINNABLE;
-+		rcu_read_unlock();
- 
--		if (need_resched() || !owner_on_cpu(owner)) {
-+		if (!same_owner) {
-+			state = rwsem_owner_state(new, new_flags);
-+			break;
-+		}
-+
-+		if (state == OWNER_NONSPINNABLE)
-+			break;
-+
-+		if (need_resched()) {
- 			state = OWNER_NONSPINNABLE;
- 			break;
- 		}
- 
- 		cpu_relax();
- 	}
--	rcu_read_unlock();
- 
- 	return state;
- }
--- 
-2.31.0.97.g1424303384
-
-
-From 19ac54079a914f6b8bbbf8fb25975b520cd5c83b Mon Sep 17 00:00:00 2001
+From 388857b52fece65c9bad7f436a9b32d78cf2a7fe Mon Sep 17 00:00:00 2001
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 Date: Sat, 13 Mar 2021 16:08:47 -0500
-Subject: [PATCH 22/26] nfsd: Ensure knfsd shuts down when the "nfsd" pseudofs
+Subject: [PATCH 20/24] nfsd: Ensure knfsd shuts down when the "nfsd" pseudofs
  is unmounted
 
 In order to ensure that knfsd threads don't linger once the nfsd
@@ -3018,13 +2869,13 @@ index 6de406322..f014b7aa0 100644
  
  int nfsd_set_nrthreads(int n, int *nthreads, struct net *net)
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 2004236dc69b540b0f888560e56d42ca5ee73609 Mon Sep 17 00:00:00 2001
+From 6a86927a11bce67f19ef82b95e99aafd5569926b Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Wed, 17 Mar 2021 15:57:04 +1100
-Subject: [PATCH 23/26] xfs: No need for inode number error injection in
+Subject: [PATCH 21/24] xfs: No need for inode number error injection in
  __xfs_dir3_data_check
 
 We call xfs_dir_ino_validate() for every dir entry in a directory
@@ -3080,13 +2931,13 @@ index 375b3edb2..e67fa086f 100644
  		if (offset + xfs_dir2_data_entsize(mp, dep->namelen) > end)
  			return __this_address;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From adb5790a253ea8d0091bdf725daec84fd4c609b6 Mon Sep 17 00:00:00 2001
+From 36ee0afcba719798b990e775b956fd3e7ded991c Mon Sep 17 00:00:00 2001
 From: Dave Chinner <dchinner@redhat.com>
 Date: Wed, 17 Mar 2021 15:57:03 +1100
-Subject: [PATCH 24/26] xfs: type verification is expensive
+Subject: [PATCH 22/24] xfs: type verification is expensive
 
 From a concurrent rm -rf workload:
 
@@ -3228,13 +3079,13 @@ index b254fbeaa..04801362e 100644
  	struct xfs_mount	*mp,
  	unsigned long long	*min,
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From b8865e5ced3c2f4d4b564070e5756f51bd4f6b96 Mon Sep 17 00:00:00 2001
+From f393ce59cd50c51263c9b3481531c86b372c5e61 Mon Sep 17 00:00:00 2001
 From: "Darrick J. Wong" <djwong@kernel.org>
 Date: Sat, 20 Mar 2021 09:40:07 -0700
-Subject: [PATCH 25/26] xfs: only reset incore inode health state flags when
+Subject: [PATCH 23/24] xfs: only reset incore inode health state flags when
  reclaiming an inode
 
 While running some fuzz tests on inode metadata, I noticed that the
@@ -3295,13 +3146,13 @@ index 1d7720a0c..34a112a76 100644
  
  	xfs_iunlock(ip, XFS_ILOCK_EXCL);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 0c72f3c0af9bbcb598dab6a1705c88ce373f2515 Mon Sep 17 00:00:00 2001
+From 69371757569bfe43752b28d63ff8f7b05fcd40f6 Mon Sep 17 00:00:00 2001
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 Date: Tue, 30 Mar 2021 09:40:10 -0400
-Subject: [PATCH 26/26] NFS: Fix up the support for
+Subject: [PATCH 24/24] NFS: Fix up the support for
  CONFIG_NFS_DISABLE_UDP_SUPPORT
 
 Rather than removing the support in nfs_init_timeout_values(), we should
@@ -3481,5 +3332,5 @@ index 971a9251c..a8bfacb90 100644
  	return nfs_invalf(fc, "NFS: mount program didn't pass remote address");
  out_mountproto_mismatch:
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

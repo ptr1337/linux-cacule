@@ -1,4 +1,4 @@
-From 5c1dcd7f0bdff93fb4b891a17251b0a14faeb1ab Mon Sep 17 00:00:00 2001
+From a2e73cd4df428683aa3d72d6c6ed6370ff426d45 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Thu, 11 Jun 2020 22:30:56 +0200
 Subject: [PATCH 24/24] Port microcode patches
@@ -171,5 +171,5 @@ index 1ef03ab31..92af2b9f1 100644
  		if (!find_matching_signature(phdr,
  					     uci->cpu_sig.sig,
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

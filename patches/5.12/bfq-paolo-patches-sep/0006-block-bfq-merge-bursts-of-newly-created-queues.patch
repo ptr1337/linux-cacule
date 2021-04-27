@@ -1,4 +1,4 @@
-From b8bb41b1dc4972fe052cbbfbae00fe603d1b226b Mon Sep 17 00:00:00 2001
+From 43e202f45c0ad84ef67311384dff5e00e3721d8d Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:27 +0000
 Subject: [PATCH 6/6] block, bfq: merge bursts of newly-created queues
@@ -53,7 +53,7 @@ Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
  3 files changed, 266 insertions(+), 10 deletions(-)
 
 diff --git a/block/bfq-cgroup.c b/block/bfq-cgroup.c
-index b791e2041..e2f14508f 100644
+index b791e20..e2f1450 100644
 --- a/block/bfq-cgroup.c
 +++ b/block/bfq-cgroup.c
 @@ -547,6 +547,8 @@ static void bfq_pd_init(struct blkg_policy_data *pd)
@@ -66,7 +66,7 @@ index b791e2041..e2f14508f 100644
  				   * the root_group's will be set to NULL
  				   * in bfq_init_queue()
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index a3f59d306..9b7678ad5 100644
+index a3f59d3..9b7678a 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
 @@ -1075,7 +1075,7 @@ bfq_bfqq_resume_state(struct bfq_queue *bfqq, struct bfq_data *bfqd,
@@ -453,7 +453,7 @@ index a3f59d306..9b7678ad5 100644
  
  			/* Update bic before losing reference to bfqq */
 diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
-index b8e793c34..99c2a3cb0 100644
+index b8e793c..99c2a3c 100644
 --- a/block/bfq-iosched.h
 +++ b/block/bfq-iosched.h
 @@ -197,6 +197,9 @@ struct bfq_entity {
@@ -507,5 +507,5 @@ index b8e793c34..99c2a3cb0 100644
  	u64 last_empty_occupied_ns;
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

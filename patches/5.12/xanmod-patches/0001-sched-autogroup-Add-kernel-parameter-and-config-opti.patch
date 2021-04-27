@@ -1,4 +1,4 @@
-From 3c237f5cd6eccfa11158d497b85e480d3ae013a4 Mon Sep 17 00:00:00 2001
+From 0e9c45d142630881f0d9d4fecf5ebaee7473d494 Mon Sep 17 00:00:00 2001
 From: Alexandre Frade <kernel@xanmod.org>
 Date: Thu, 13 Aug 2020 14:57:06 +0000
 Subject: [PATCH] sched/autogroup: Add kernel parameter and config option to
@@ -89,5 +89,5 @@ index 2067080bb..573b313ef 100644
  #ifdef CONFIG_PROC_FS
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

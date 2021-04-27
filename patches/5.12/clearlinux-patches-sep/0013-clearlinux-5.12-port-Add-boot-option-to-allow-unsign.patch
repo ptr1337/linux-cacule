@@ -1,4 +1,4 @@
-From 2ae27db928473f00c54eec39c23b6e55c2b45b46 Mon Sep 17 00:00:00 2001
+From 807c5fcfa398d57402b89a715e11cb18a237fe64 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Tue, 13 Apr 2021 16:55:35 +0200
 Subject: [PATCH 13/24] clearlinux-5.12: port: Add boot option to allow
@@ -62,5 +62,5 @@ index 30479355a..4f659af23 100644
  }
  module_init(proc_modules_init);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

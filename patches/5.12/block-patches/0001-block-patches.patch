@@ -1,4 +1,4 @@
-From 80368d18741ffea19fda3aaff54f53d3dd7ef15e Mon Sep 17 00:00:00 2001
+From e3752950496902e3d17fb5b6ced61f52f91614a8 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Thu, 2 Jul 2020 19:16:43 +0200
 Subject: [PATCH 1/7] block, Kconfig.iosched: set default value of IOSCHED_BFQ
@@ -36,10 +36,10 @@ index 2f2158e05..e58b2953a 100644
  	BFQ I/O scheduler for BLK-MQ. BFQ distributes the bandwidth of
  	of the device among all processes according to their weights,
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From e5b769965cb533354594f9f17eadff0a08d0b65a Mon Sep 17 00:00:00 2001
+From acf6d12960d701459db5707d2fe8c1ee5eb775a0 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Thu, 2 Jul 2020 19:26:24 +0200
 Subject: [PATCH 2/7] block: Fix depends for BLK_DEV_ZONED
@@ -63,10 +63,10 @@ index a2297edfd..f688ea5f0 100644
  	Block layer zoned block device support. This option enables
  	support for ZAC/ZBC/ZNS host-managed and host-aware zoned block
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 9e8b32b0e03f64e34744a9515c221649b96b54c4 Mon Sep 17 00:00:00 2001
+From 12ed334a85212b43c7180d617945475ae50e952a Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Thu, 22 Oct 2020 23:54:33 +0200
 Subject: [PATCH 3/7] block: set rq_affinity = 2 for full multithreading I/O
@@ -89,10 +89,10 @@ index 158aefae1..e4ab20964 100644
  
  void blk_queue_flag_set(unsigned int flag, struct request_queue *q);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 372b43a2bc01ed6e3b58393e452d28a704a453dd Mon Sep 17 00:00:00 2001
+From 5fa6066466c61fa84a59642f0b90134844231988 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Fri, 3 Jul 2020 12:58:15 +0200
 Subject: [PATCH 4/7] block: Add CONFIG to rename the mq-deadline scheduler
@@ -158,10 +158,10 @@ index f3631a287..bf0b7d9fc 100644
  	.elevator_owner = THIS_MODULE,
  };
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From f2a2cd5a57686f087db628abd27cbef6c62e2a87 Mon Sep 17 00:00:00 2001
+From 7d47f7527e9be4459e229251f081caaab9821f8c Mon Sep 17 00:00:00 2001
 From: Steven Barrett <steven@liquorix.net>
 Date: Wed, 27 Jan 2021 14:27:35 -0600
 Subject: [PATCH 5/7] ZEN: Fix mq-deadline scheduler renaming
@@ -199,10 +199,10 @@ index bf0b7d9fc..b0f90e849 100644
  static int __init deadline_init(void)
  {
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From d31a31747b691adbbfd3f4f15f83d8f018320df3 Mon Sep 17 00:00:00 2001
+From aa088bd0bee8e665c49e37bde0a29fbf57b050c2 Mon Sep 17 00:00:00 2001
 From: Steven Barrett <steven@liquorix.net>
 Date: Wed, 27 Jan 2021 17:39:54 -0600
 Subject: [PATCH 6/7] ZEN: Increase max elevator name size
@@ -232,10 +232,10 @@ index 1fe8e105b..e7726cf62 100644
  struct elv_fs_entry {
  	struct attribute attr;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 2644af94dfda446aa85cdd97297403be445f7789 Mon Sep 17 00:00:00 2001
+From 2d1ba16d88e7e66fa08308d75ce41c3147b416b1 Mon Sep 17 00:00:00 2001
 From: Tom Saeger <tom.saeger () oracle ! com>
 Date: Fri, 26 Mar 2021 03:04:57 +0000
 Subject: [PATCH 7/7] block: fix trivial typos in comments
@@ -603,5 +603,5 @@ index 6599bac0a..384aa4837 100644
  
  	switch (opcode) {
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

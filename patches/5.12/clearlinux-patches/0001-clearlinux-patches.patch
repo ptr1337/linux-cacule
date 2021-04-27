@@ -1,4 +1,4 @@
-From fdf29906a584ffb4bfca489024adc098e82bbab4 Mon Sep 17 00:00:00 2001
+From 2996713a6781da691fd57c14bfb406846a7c0361 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 23 Jun 2015 01:26:52 -0500
 Subject: [PATCH 01/24] i8042: decrease debug message level to info
@@ -61,10 +61,10 @@ index abae23af0..f8617c1b2 100644
  #endif
  }
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 0976dabc7588a2def8c3b62bf33845661e4509fa Mon Sep 17 00:00:00 2001
+From 2b85708c140b05aaeaa73686d3e5f3e1b4f4c8e1 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 11 Jan 2016 10:01:44 -0600
 Subject: [PATCH 02/24] Increase the ext4 default commit age
@@ -97,10 +97,10 @@ index 99d3cd051..1a38f741c 100644
  #ifdef CONFIG_JBD2_DEBUG
  /*
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 6827927b3ebdee72b116253a39c7a725def3ff6f Mon Sep 17 00:00:00 2001
+From dc63fd08065a8f5a08676259ac37c461876df8ae Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:22:09 -0600
 Subject: [PATCH 03/24] silence rapl
@@ -123,10 +123,10 @@ index fdda2a737..58ecdad26 100644
  
  		return -ENODEV;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 1fcf5fbaa1361970e1d410f757d2a355f9cc2e49 Mon Sep 17 00:00:00 2001
+From c420dbfa92ace5bfbdcd2c1d0cb4b593c5c38c2c Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 14 Mar 2016 11:10:58 -0600
 Subject: [PATCH 04/24] pci pme wakeups
@@ -151,10 +151,10 @@ index 16a17215f..9a77b4917 100644
  static void pci_dev_d3_sleep(struct pci_dev *dev)
  {
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 2ae77aa3502905bafa1acf167533da274b18c592 Mon Sep 17 00:00:00 2001
+From 43529b16ae2e72fe63c4020b832379540a570183 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 6 May 2019 12:57:09 -0500
 Subject: [PATCH 05/24] ksm-wakeups
@@ -204,10 +204,10 @@ index 9694ee2c7..50d1d6dd1 100644
  			wait_event_freezable(ksm_thread_wait,
  				ksmd_should_run() || kthread_should_stop());
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 6e0dffb3d43fee219669286d52531fb8ba3843cb Mon Sep 17 00:00:00 2001
+From 6c1053a4a2081011c5ed1f04cd9ef7cf3b6080d8 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 19 Mar 2016 21:32:19 -0400
 Subject: [PATCH 06/24] intel_idle: tweak cpuidle cstates
@@ -425,10 +425,10 @@ index 3273360f3..257daaf1a 100644
  		.enter_s2idle = intel_idle_s2idle, },
  	{
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 2bc306f0d537968002818a2b5b9d2d41da50e554 Mon Sep 17 00:00:00 2001
+From d30a989674abc3bf925e673aaa6eb1b1a4c131a2 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 16:05:23 -0600
 Subject: [PATCH 07/24] bootstats: add printk's to measure boot time in more
@@ -458,10 +458,10 @@ index 8d778e467..24a30b4ae 100644
  #ifdef CONFIG_SMP
  	/* Patch to UP if other cpus not imminent. */
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 2187498bac87bfaa7f575a7ec26edd91284a2c8e Mon Sep 17 00:00:00 2001
+From a343e1a24fb00fc0553f1562c288c562aa239feb Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Wed, 11 Feb 2015 17:28:14 -0600
 Subject: [PATCH 08/24] smpboot: reuse timer calibration
@@ -487,10 +487,10 @@ index f70dffc27..dfb9f6055 100644
  	if (sibling < nr_cpu_ids)
  		return cpu_data(sibling).loops_per_jiffy;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 13e792784d026c953f2b8ee2d298f33570022dbb Mon Sep 17 00:00:00 2001
+From 96772aa8d5be341777dcb8e6d21ac1e119994c3a Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 2 Jun 2016 23:36:32 -0500
 Subject: [PATCH 09/24] Initialize ata before graphics
@@ -538,10 +538,10 @@ index 6fba7daba..25bebfeac 100644
  obj-$(CONFIG_MTD)		+= mtd/
  obj-$(CONFIG_SPI)		+= spi/
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From df17f4aae434b712aa09afe26d02bddf82f906f3 Mon Sep 17 00:00:00 2001
+From 41dbd8536d86bd1acd7c23c8590716ac2066c8a1 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Fri, 29 Jul 2016 19:10:52 +0000
 Subject: [PATCH 10/24] give rdrand some credit
@@ -569,10 +569,10 @@ index 0fe9e200e..b3dc24885 100644
  	}
  	mix_pool_bytes(r, utsname(), sizeof(*(utsname())));
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 4fe55fbcfeb3e22ddc81b61438ca420ad9465354 Mon Sep 17 00:00:00 2001
+From 2956c4043d8a4eb54de34445d5bf82c26c48b531 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Fri, 6 Jan 2017 15:34:09 +0000
 Subject: [PATCH 11/24] ipv4/tcp: allow the memory tuning for tcp to go a
@@ -598,10 +598,10 @@ index de7cc8445..940fa1e11 100644
  	init_net.ipv4.sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
  	init_net.ipv4.sysctl_tcp_wmem[1] = 16*1024;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From e06efbb204595a40aa0856ca7ea0cae9c147407d Mon Sep 17 00:00:00 2001
+From 21375b0fef6b5ae3b3be82df933a8175e240245b Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Tue, 20 Jun 2017 20:19:08 +0000
 Subject: [PATCH 12/24] print fsync count for bootchart
@@ -613,7 +613,7 @@ Subject: [PATCH 12/24] print fsync count for bootchart
  3 files changed, 5 insertions(+)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index fc60ff208..d7b20b7ea 100644
+index e866e5821..10fe53e23 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -1087,6 +1087,9 @@ blk_qc_t submit_bio(struct bio *bio)
@@ -651,10 +651,10 @@ index 486f403a7..7129bbb28 100644
  	nr_switches = p->nvcsw + p->nivcsw;
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 2ae27db928473f00c54eec39c23b6e55c2b45b46 Mon Sep 17 00:00:00 2001
+From 807c5fcfa398d57402b89a715e11cb18a237fe64 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Tue, 13 Apr 2021 16:55:35 +0200
 Subject: [PATCH 13/24] clearlinux-5.12: port: Add boot option to allow
@@ -718,10 +718,10 @@ index 30479355a..4f659af23 100644
  }
  module_init(proc_modules_init);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From fcc61802a22cc03727ef91301b148ff0e60d32f2 Mon Sep 17 00:00:00 2001
+From 7b653f435fb1374cd41a245cbb59a4b79a4fa729 Mon Sep 17 00:00:00 2001
 From: William Douglas <william.douglas@intel.com>
 Date: Wed, 20 Jun 2018 17:23:21 +0000
 Subject: [PATCH 14/24] Enable stateless firmware loading
@@ -747,10 +747,10 @@ index 78355095e..7e2c79e2a 100644
  	"/lib/firmware/updates",
  	"/lib/firmware/" UTS_RELEASE,
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From dab06b90605155c423400bec8a5450725c88b937 Mon Sep 17 00:00:00 2001
+From 534539698416d8d887baf2a3c92f3c1980c7dd5c Mon Sep 17 00:00:00 2001
 From: Auke Kok <auke-jan.h.kok@intel.com>
 Date: Thu, 2 Aug 2018 12:03:22 -0700
 Subject: [PATCH 15/24] Migrate some systemd defaults to the kernel defaults.
@@ -793,10 +793,10 @@ index e8eb4ad03..a76bd5e60 100644
  #define BOND_DEFAULT_TX_QUEUES 16   /* Default number of tx queues per device */
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 63095363d6512e7a5c3854863205595147ca6f30 Mon Sep 17 00:00:00 2001
+From ae07c4d67627b1c521e02c8f820075d4ecb65b1e Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 8 Dec 2018 18:21:32 +0000
 Subject: [PATCH 16/24] use lfence instead of rep and nop
@@ -819,10 +819,10 @@ index 57b1a7034..e2c45674f 100644
  
  static __always_inline void cpu_relax(void)
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From a443cfada78570912a97b26040585f60516d4be2 Mon Sep 17 00:00:00 2001
+From f775884ea4ba70064b3986ca387cfa8615b95931 Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Thu, 13 Dec 2018 01:00:49 +0000
 Subject: [PATCH 17/24] do accept() in LIFO order for cache efficiency
@@ -909,10 +909,10 @@ index fd472eae4..d85f68c9f 100644
  		release_sock(sk);
  		if (reqsk_queue_empty(&icsk->icsk_accept_queue))
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From bee49258f712a4c69e84f448d7ccf37d635ac7b9 Mon Sep 17 00:00:00 2001
+From c1375575adfb1155df40ea47a3380b504747befb Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sun, 18 Feb 2018 23:35:41 +0000
 Subject: [PATCH 18/24] locking: rwsem: spin faster
@@ -945,10 +945,10 @@ index abba5df50..b9fab2d55 100644
  	rcu_read_unlock();
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 79db16342c1c36ed47ae90582b566a116bc1a716 Mon Sep 17 00:00:00 2001
+From 77bd2f8e4770978d68d041625c539703e1caf99c Mon Sep 17 00:00:00 2001
 From: Joe Konno <joe.konno@intel.com>
 Date: Tue, 25 Jun 2019 10:35:54 -0700
 Subject: [PATCH 19/24] ata: libahci: ignore staggered spin-up
@@ -988,10 +988,10 @@ index ea5bf5f4c..6adee9c99 100644
  static int ahci_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
  			unsigned hints);
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 80d79a5235b84acc8891b9830ab48ccce2171f68 Mon Sep 17 00:00:00 2001
+From ab90288761a6763bff02b6cb08d61b47a6da266b Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Sat, 10 Aug 2019 03:19:04 +0000
 Subject: [PATCH 20/24] print CPU that faults
@@ -1018,10 +1018,10 @@ index a73347e2c..f6cd80163 100644
  	print_vma_addr(KERN_CONT " in ", regs->ip);
  
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From cdf5ba3283f76d5c92b9d2faf9c95f7334d08e9a Mon Sep 17 00:00:00 2001
+From fadbac9dd11fb92f1a40abbc1641057e0c57633a Mon Sep 17 00:00:00 2001
 From: Jim Kukunas <james.t.kukunas@linux.intel.com>
 Date: Sat, 2 Nov 2019 00:59:52 +0000
 Subject: [PATCH 21/24] fix bug in ucode force reload revision check
@@ -1045,10 +1045,10 @@ index 7e8e07bdd..1ef03ab31 100644
  		goto out;
  	}
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 04952fc7dff9621a0d85921d64ef9da9d7a7d0c7 Mon Sep 17 00:00:00 2001
+From e7426317bca1fdfa7682363f88509d7891debb5b Mon Sep 17 00:00:00 2001
 From: Arjan van de Ven <arjan@linux.intel.com>
 Date: Mon, 11 Nov 2019 23:12:11 +0000
 Subject: [PATCH 22/24] nvme workaround
@@ -1071,10 +1071,10 @@ index 0896e2164..685f223ab 100644
  MODULE_PARM_DESC(default_ps_max_latency_us,
  		 "max power saving latency for new devices; use PM QOS to change per device");
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 4b17c2f9bd81fe11669eb4c10943b0a5f34c1b56 Mon Sep 17 00:00:00 2001
+From 629a7755b5a68759c0ec5f49fa75ce1169dc2347 Mon Sep 17 00:00:00 2001
 From: Alexander Koskovich <zvnexus@outlook.com>
 Date: Wed, 12 Feb 2020 22:47:12 +0000
 Subject: [PATCH 23/24] Don't report an error if PowerClamp run on other CPU
@@ -1112,10 +1112,10 @@ index b0eb5ece9..5dc056d31 100644
  		pr_err("CPU does not support MWAIT\n");
  		return -ENODEV;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
 
-From 5c1dcd7f0bdff93fb4b891a17251b0a14faeb1ab Mon Sep 17 00:00:00 2001
+From a2e73cd4df428683aa3d72d6c6ed6370ff426d45 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Thu, 11 Jun 2020 22:30:56 +0200
 Subject: [PATCH 24/24] Port microcode patches
@@ -1288,5 +1288,5 @@ index 1ef03ab31..92af2b9f1 100644
  		if (!find_matching_signature(phdr,
  					     uci->cpu_sig.sig,
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

@@ -1,4 +1,4 @@
-From 4b17c2f9bd81fe11669eb4c10943b0a5f34c1b56 Mon Sep 17 00:00:00 2001
+From 629a7755b5a68759c0ec5f49fa75ce1169dc2347 Mon Sep 17 00:00:00 2001
 From: Alexander Koskovich <zvnexus@outlook.com>
 Date: Wed, 12 Feb 2020 22:47:12 +0000
 Subject: [PATCH 23/24] Don't report an error if PowerClamp run on other CPU
@@ -36,5 +36,5 @@ index b0eb5ece9..5dc056d31 100644
  		pr_err("CPU does not support MWAIT\n");
  		return -ENODEV;
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

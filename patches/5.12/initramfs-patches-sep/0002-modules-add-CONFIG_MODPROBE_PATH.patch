@@ -1,4 +1,4 @@
-From d8a93aa51a0603a413cd24ac9c3da4e7eec9f3b8 Mon Sep 17 00:00:00 2001
+From 7d380430630e3e88ae9743ba3962d7cae9b94312 Mon Sep 17 00:00:00 2001
 From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Date: Sat, 13 Mar 2021 22:25:28 +0100
 Subject: [PATCH 2/2] modules: add CONFIG_MODPROBE_PATH
@@ -41,10 +41,10 @@ Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
  2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index 5f5c776ef..7937dc47a 100644
+index 11c6487ed..442568ffb 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -2263,6 +2263,18 @@ config MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS
+@@ -2270,6 +2270,18 @@ config MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS
  
  	  If unsure, say N.
  
@@ -77,5 +77,5 @@ index 3cd075ce2..b717134eb 100644
  static void free_modprobe_argv(struct subprocess_info *info)
  {
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 

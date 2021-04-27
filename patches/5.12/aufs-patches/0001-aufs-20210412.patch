@@ -1,4 +1,4 @@
-From 6019969508315d79ac104e95b2cd8152d1b11286 Mon Sep 17 00:00:00 2001
+From b98e3bdef434578156bcba5568b787b8b10c83c2 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Tue, 13 Apr 2021 16:15:57 +0200
 Subject: [PATCH] AUFS 20210412
@@ -230,7 +230,7 @@ Signed-off-by: Piotr Gorski <lucjan.lucjanov@gmail.com>
 
 diff --git a/Documentation/ABI/testing/debugfs-aufs b/Documentation/ABI/testing/debugfs-aufs
 new file mode 100644
-index 000000000..45b739879
+index 0000000..45b7398
 --- /dev/null
 +++ b/Documentation/ABI/testing/debugfs-aufs
 @@ -0,0 +1,55 @@
@@ -291,7 +291,7 @@ index 000000000..45b739879
 +		will be empty. About XINO files, see the aufs manual.
 diff --git a/Documentation/ABI/testing/sysfs-aufs b/Documentation/ABI/testing/sysfs-aufs
 new file mode 100644
-index 000000000..48500c056
+index 0000000..48500c0
 --- /dev/null
 +++ b/Documentation/ABI/testing/sysfs-aufs
 @@ -0,0 +1,31 @@
@@ -328,7 +328,7 @@ index 000000000..48500c056
 +		will be empty. About XINO files, see the aufs manual.
 diff --git a/Documentation/filesystems/aufs/README b/Documentation/filesystems/aufs/README
 new file mode 100644
-index 000000000..3e655d357
+index 0000000..3e655d3
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/README
 @@ -0,0 +1,401 @@
@@ -735,7 +735,7 @@ index 000000000..3e655d357
 +# End: ;
 diff --git a/Documentation/filesystems/aufs/design/01intro.txt b/Documentation/filesystems/aufs/design/01intro.txt
 new file mode 100644
-index 000000000..47e0a01a8
+index 0000000..47e0a01
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/01intro.txt
 @@ -0,0 +1,171 @@
@@ -912,7 +912,7 @@ index 000000000..47e0a01a8
 +about it. But currently I have implemented it in kernel space.
 diff --git a/Documentation/filesystems/aufs/design/02struct.txt b/Documentation/filesystems/aufs/design/02struct.txt
 new file mode 100644
-index 000000000..0092b3dcf
+index 0000000..0092b3d
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/02struct.txt
 @@ -0,0 +1,258 @@
@@ -1176,7 +1176,7 @@ index 000000000..0092b3dcf
 +For this purpose, use "aumvdown" command in aufs-util.git.
 diff --git a/Documentation/filesystems/aufs/design/03atomic_open.txt b/Documentation/filesystems/aufs/design/03atomic_open.txt
 new file mode 100644
-index 000000000..fb8cf0bc8
+index 0000000..fb8cf0b
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/03atomic_open.txt
 @@ -0,0 +1,85 @@
@@ -1267,7 +1267,7 @@ index 000000000..fb8cf0bc8
 +       be implemented in aufs, but not all I am afraid.
 diff --git a/Documentation/filesystems/aufs/design/03lookup.txt b/Documentation/filesystems/aufs/design/03lookup.txt
 new file mode 100644
-index 000000000..5c3c97f11
+index 0000000..5c3c97f
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/03lookup.txt
 @@ -0,0 +1,113 @@
@@ -1386,7 +1386,7 @@ index 000000000..5c3c97f11
 +   by over-mounting something (or another method).
 diff --git a/Documentation/filesystems/aufs/design/04branch.txt b/Documentation/filesystems/aufs/design/04branch.txt
 new file mode 100644
-index 000000000..da5200be4
+index 0000000..da5200b
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/04branch.txt
 @@ -0,0 +1,74 @@
@@ -1466,7 +1466,7 @@ index 000000000..da5200be4
 +    same named entry on the upper branch.
 diff --git a/Documentation/filesystems/aufs/design/05wbr_policy.txt b/Documentation/filesystems/aufs/design/05wbr_policy.txt
 new file mode 100644
-index 000000000..0262084bf
+index 0000000..0262084
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/05wbr_policy.txt
 @@ -0,0 +1,64 @@
@@ -1536,7 +1536,7 @@ index 000000000..0262084bf
 +  copyup policy.
 diff --git a/Documentation/filesystems/aufs/design/06dirren.dot b/Documentation/filesystems/aufs/design/06dirren.dot
 new file mode 100644
-index 000000000..2d62bb6dd
+index 0000000..2d62bb6
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/06dirren.dot
 @@ -0,0 +1,31 @@
@@ -1573,7 +1573,7 @@ index 000000000..2d62bb6dd
 +}
 diff --git a/Documentation/filesystems/aufs/design/06dirren.txt b/Documentation/filesystems/aufs/design/06dirren.txt
 new file mode 100644
-index 000000000..38ae77b2c
+index 0000000..38ae77b
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/06dirren.txt
 @@ -0,0 +1,102 @@
@@ -1681,7 +1681,7 @@ index 000000000..38ae77b2c
 +equivalen to udba=reval case.
 diff --git a/Documentation/filesystems/aufs/design/06fhsm.txt b/Documentation/filesystems/aufs/design/06fhsm.txt
 new file mode 100644
-index 000000000..df985662b
+index 0000000..df98566
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/06fhsm.txt
 @@ -0,0 +1,120 @@
@@ -1807,7 +1807,7 @@ index 000000000..df985662b
 +should restore the original file state after an error happens.
 diff --git a/Documentation/filesystems/aufs/design/06mmap.txt b/Documentation/filesystems/aufs/design/06mmap.txt
 new file mode 100644
-index 000000000..9184f6710
+index 0000000..9184f67
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/06mmap.txt
 @@ -0,0 +1,72 @@
@@ -1885,7 +1885,7 @@ index 000000000..9184f6710
 +I have to give up this "looks-smater" approach.
 diff --git a/Documentation/filesystems/aufs/design/06xattr.txt b/Documentation/filesystems/aufs/design/06xattr.txt
 new file mode 100644
-index 000000000..d0f6aedfe
+index 0000000..d0f6aed
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/06xattr.txt
 @@ -0,0 +1,96 @@
@@ -1987,7 +1987,7 @@ index 000000000..d0f6aedfe
 +now, aufs implements the branch attributes to ignore the error.
 diff --git a/Documentation/filesystems/aufs/design/07export.txt b/Documentation/filesystems/aufs/design/07export.txt
 new file mode 100644
-index 000000000..6fcb00d7d
+index 0000000..6fcb00d
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/07export.txt
 @@ -0,0 +1,58 @@
@@ -2051,7 +2051,7 @@ index 000000000..6fcb00d7d
 +  lookup_one_len(), vfs_getattr(), encode_fh() and others.
 diff --git a/Documentation/filesystems/aufs/design/08shwh.txt b/Documentation/filesystems/aufs/design/08shwh.txt
 new file mode 100644
-index 000000000..d7e583190
+index 0000000..d7e5831
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/08shwh.txt
 @@ -0,0 +1,52 @@
@@ -2109,7 +2109,7 @@ index 000000000..d7e583190
 +initramfs will use it to replace the old one at the next boot.
 diff --git a/Documentation/filesystems/aufs/design/10dynop.txt b/Documentation/filesystems/aufs/design/10dynop.txt
 new file mode 100644
-index 000000000..d55cae285
+index 0000000..d55cae2
 --- /dev/null
 +++ b/Documentation/filesystems/aufs/design/10dynop.txt
 @@ -0,0 +1,47 @@
@@ -2161,10 +2161,10 @@ index 000000000..d55cae285
 +Currently this approach is applied to address_space_operations for
 +regular files only.
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 7fdc51339..71ed251e6 100644
+index 9450e05..f7db6ed 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -2990,6 +2990,19 @@ F:	include/linux/audit.h
+@@ -2992,6 +2992,19 @@ F:	include/linux/audit.h
  F:	include/uapi/linux/audit.h
  F:	kernel/audit*
  
@@ -2185,7 +2185,7 @@ index 7fdc51339..71ed251e6 100644
  M:	Miguel Ojeda <ojeda@kernel.org>
  S:	Maintained
 diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index a370cde3d..f5a76bacf 100644
+index a370cde..f5a76ba 100644
 --- a/drivers/block/loop.c
 +++ b/drivers/block/loop.c
 @@ -646,6 +646,15 @@ static inline void loop_update_dio(struct loop_device *lo)
@@ -2344,7 +2344,7 @@ index a370cde3d..f5a76bacf 100644
  }
  
 diff --git a/drivers/block/loop.h b/drivers/block/loop.h
-index a3c04f310..161c3c5d1 100644
+index a3c04f3..161c3c5 100644
 --- a/drivers/block/loop.h
 +++ b/drivers/block/loop.h
 @@ -46,7 +46,7 @@ struct loop_device {
@@ -2357,7 +2357,7 @@ index a3c04f310..161c3c5d1 100644
  	void		*key_data; 
  
 diff --git a/fs/Kconfig b/fs/Kconfig
-index a55bda423..c4984b5bf 100644
+index a55bda4..c4984b5 100644
 --- a/fs/Kconfig
 +++ b/fs/Kconfig
 @@ -288,6 +288,7 @@ source "fs/sysv/Kconfig"
@@ -2369,7 +2369,7 @@ index a55bda423..c4984b5bf 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index 3215fe205..721827747 100644
+index 3215fe2..7218277 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
 @@ -135,3 +135,4 @@ obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
@@ -2379,7 +2379,7 @@ index 3215fe205..721827747 100644
 +obj-$(CONFIG_AUFS_FS)           += aufs/
 diff --git a/fs/aufs/Kconfig b/fs/aufs/Kconfig
 new file mode 100644
-index 000000000..9f4364257
+index 0000000..9f43642
 --- /dev/null
 +++ b/fs/aufs/Kconfig
 @@ -0,0 +1,199 @@
@@ -2584,7 +2584,7 @@ index 000000000..9f4364257
 +endif
 diff --git a/fs/aufs/Makefile b/fs/aufs/Makefile
 new file mode 100644
-index 000000000..2c819a649
+index 0000000..2c819a6
 --- /dev/null
 +++ b/fs/aufs/Makefile
 @@ -0,0 +1,46 @@
@@ -2636,7 +2636,7 @@ index 000000000..2c819a649
 +aufs-$(CONFIG_AUFS_MAGIC_SYSRQ) += sysrq.o
 diff --git a/fs/aufs/aufs.h b/fs/aufs/aufs.h
 new file mode 100644
-index 000000000..9a5734458
+index 0000000..9a57344
 --- /dev/null
 +++ b/fs/aufs/aufs.h
 @@ -0,0 +1,62 @@
@@ -2704,7 +2704,7 @@ index 000000000..9a5734458
 +#endif /* __AUFS_H__ */
 diff --git a/fs/aufs/branch.c b/fs/aufs/branch.c
 new file mode 100644
-index 000000000..26d41e1bc
+index 0000000..26d41e1
 --- /dev/null
 +++ b/fs/aufs/branch.c
 @@ -0,0 +1,1427 @@
@@ -4137,7 +4137,7 @@ index 000000000..26d41e1bc
 +}
 diff --git a/fs/aufs/branch.h b/fs/aufs/branch.h
 new file mode 100644
-index 000000000..82c24958e
+index 0000000..82c2495
 --- /dev/null
 +++ b/fs/aufs/branch.h
 @@ -0,0 +1,364 @@
@@ -4507,7 +4507,7 @@ index 000000000..82c24958e
 +#endif /* __AUFS_BRANCH_H__ */
 diff --git a/fs/aufs/conf.mk b/fs/aufs/conf.mk
 new file mode 100644
-index 000000000..12782f8e0
+index 0000000..12782f8
 --- /dev/null
 +++ b/fs/aufs/conf.mk
 @@ -0,0 +1,40 @@
@@ -4553,7 +4553,7 @@ index 000000000..12782f8e0
 +-include ${srctree}/${src}/conf_priv.mk
 diff --git a/fs/aufs/cpup.c b/fs/aufs/cpup.c
 new file mode 100644
-index 000000000..7d7aae277
+index 0000000..7d7aae2
 --- /dev/null
 +++ b/fs/aufs/cpup.c
 @@ -0,0 +1,1445 @@
@@ -6004,7 +6004,7 @@ index 000000000..7d7aae277
 +}
 diff --git a/fs/aufs/cpup.h b/fs/aufs/cpup.h
 new file mode 100644
-index 000000000..d02f8150f
+index 0000000..d02f815
 --- /dev/null
 +++ b/fs/aufs/cpup.h
 @@ -0,0 +1,100 @@
@@ -6110,7 +6110,7 @@ index 000000000..d02f8150f
 +#endif /* __AUFS_CPUP_H__ */
 diff --git a/fs/aufs/dbgaufs.c b/fs/aufs/dbgaufs.c
 new file mode 100644
-index 000000000..80266f4fc
+index 0000000..80266f4
 --- /dev/null
 +++ b/fs/aufs/dbgaufs.c
 @@ -0,0 +1,526 @@
@@ -6642,7 +6642,7 @@ index 000000000..80266f4fc
 +}
 diff --git a/fs/aufs/dbgaufs.h b/fs/aufs/dbgaufs.h
 new file mode 100644
-index 000000000..7b4ccdebb
+index 0000000..7b4ccde
 --- /dev/null
 +++ b/fs/aufs/dbgaufs.h
 @@ -0,0 +1,53 @@
@@ -6701,7 +6701,7 @@ index 000000000..7b4ccdebb
 +#endif /* __DBGAUFS_H__ */
 diff --git a/fs/aufs/dcsub.c b/fs/aufs/dcsub.c
 new file mode 100644
-index 000000000..0b9b1862b
+index 0000000..0b9b186
 --- /dev/null
 +++ b/fs/aufs/dcsub.c
 @@ -0,0 +1,225 @@
@@ -6932,7 +6932,7 @@ index 000000000..0b9b1862b
 +}
 diff --git a/fs/aufs/dcsub.h b/fs/aufs/dcsub.h
 new file mode 100644
-index 000000000..36f7fcdd7
+index 0000000..36f7fcd
 --- /dev/null
 +++ b/fs/aufs/dcsub.h
 @@ -0,0 +1,137 @@
@@ -7075,7 +7075,7 @@ index 000000000..36f7fcdd7
 +#endif /* __AUFS_DCSUB_H__ */
 diff --git a/fs/aufs/debug.c b/fs/aufs/debug.c
 new file mode 100644
-index 000000000..f0c076c61
+index 0000000..f0c076c
 --- /dev/null
 +++ b/fs/aufs/debug.c
 @@ -0,0 +1,441 @@
@@ -7522,7 +7522,7 @@ index 000000000..f0c076c61
 +}
 diff --git a/fs/aufs/debug.h b/fs/aufs/debug.h
 new file mode 100644
-index 000000000..7e4695351
+index 0000000..7e46953
 --- /dev/null
 +++ b/fs/aufs/debug.h
 @@ -0,0 +1,226 @@
@@ -7754,7 +7754,7 @@ index 000000000..7e4695351
 +#endif /* __AUFS_DEBUG_H__ */
 diff --git a/fs/aufs/dentry.c b/fs/aufs/dentry.c
 new file mode 100644
-index 000000000..50aaaa21d
+index 0000000..50aaaa2
 --- /dev/null
 +++ b/fs/aufs/dentry.c
 @@ -0,0 +1,1154 @@
@@ -8914,7 +8914,7 @@ index 000000000..50aaaa21d
 +};
 diff --git a/fs/aufs/dentry.h b/fs/aufs/dentry.h
 new file mode 100644
-index 000000000..c9f9c704d
+index 0000000..c9f9c70
 --- /dev/null
 +++ b/fs/aufs/dentry.h
 @@ -0,0 +1,268 @@
@@ -9188,7 +9188,7 @@ index 000000000..c9f9c704d
 +#endif /* __AUFS_DENTRY_H__ */
 diff --git a/fs/aufs/dinfo.c b/fs/aufs/dinfo.c
 new file mode 100644
-index 000000000..be959106d
+index 0000000..be95910
 --- /dev/null
 +++ b/fs/aufs/dinfo.c
 @@ -0,0 +1,554 @@
@@ -9748,7 +9748,7 @@ index 000000000..be959106d
 +}
 diff --git a/fs/aufs/dir.c b/fs/aufs/dir.c
 new file mode 100644
-index 000000000..0bcb39ee7
+index 0000000..0bcb39e
 --- /dev/null
 +++ b/fs/aufs/dir.c
 @@ -0,0 +1,763 @@
@@ -10517,7 +10517,7 @@ index 000000000..0bcb39ee7
 +};
 diff --git a/fs/aufs/dir.h b/fs/aufs/dir.h
 new file mode 100644
-index 000000000..e44c2a1a8
+index 0000000..e44c2a1
 --- /dev/null
 +++ b/fs/aufs/dir.h
 @@ -0,0 +1,134 @@
@@ -10657,7 +10657,7 @@ index 000000000..e44c2a1a8
 +#endif /* __AUFS_DIR_H__ */
 diff --git a/fs/aufs/dirren.c b/fs/aufs/dirren.c
 new file mode 100644
-index 000000000..ba4bf56cf
+index 0000000..ba4bf56
 --- /dev/null
 +++ b/fs/aufs/dirren.c
 @@ -0,0 +1,1316 @@
@@ -11979,7 +11979,7 @@ index 000000000..ba4bf56cf
 +}
 diff --git a/fs/aufs/dirren.h b/fs/aufs/dirren.h
 new file mode 100644
-index 000000000..1fbc8fb20
+index 0000000..1fbc8fb
 --- /dev/null
 +++ b/fs/aufs/dirren.h
 @@ -0,0 +1,140 @@
@@ -12125,7 +12125,7 @@ index 000000000..1fbc8fb20
 +#endif /* __AUFS_DIRREN_H__ */
 diff --git a/fs/aufs/dynop.c b/fs/aufs/dynop.c
 new file mode 100644
-index 000000000..4732edb34
+index 0000000..4732edb
 --- /dev/null
 +++ b/fs/aufs/dynop.c
 @@ -0,0 +1,368 @@
@@ -12499,7 +12499,7 @@ index 000000000..4732edb34
 +}
 diff --git a/fs/aufs/dynop.h b/fs/aufs/dynop.h
 new file mode 100644
-index 000000000..c0c7a5485
+index 0000000..c0c7a54
 --- /dev/null
 +++ b/fs/aufs/dynop.h
 @@ -0,0 +1,77 @@
@@ -12582,7 +12582,7 @@ index 000000000..c0c7a5485
 +#endif /* __AUFS_DYNOP_H__ */
 diff --git a/fs/aufs/export.c b/fs/aufs/export.c
 new file mode 100644
-index 000000000..f883d2bf5
+index 0000000..f883d2b
 --- /dev/null
 +++ b/fs/aufs/export.c
 @@ -0,0 +1,837 @@
@@ -13425,7 +13425,7 @@ index 000000000..f883d2bf5
 +}
 diff --git a/fs/aufs/f_op.c b/fs/aufs/f_op.c
 new file mode 100644
-index 000000000..bcc966849
+index 0000000..bcc9668
 --- /dev/null
 +++ b/fs/aufs/f_op.c
 @@ -0,0 +1,771 @@
@@ -14202,7 +14202,7 @@ index 000000000..bcc966849
 +};
 diff --git a/fs/aufs/fhsm.c b/fs/aufs/fhsm.c
 new file mode 100644
-index 000000000..9cef93b42
+index 0000000..9cef93b
 --- /dev/null
 +++ b/fs/aufs/fhsm.c
 @@ -0,0 +1,427 @@
@@ -14635,7 +14635,7 @@ index 000000000..9cef93b42
 +}
 diff --git a/fs/aufs/file.c b/fs/aufs/file.c
 new file mode 100644
-index 000000000..b0075b57d
+index 0000000..b0075b5
 --- /dev/null
 +++ b/fs/aufs/file.c
 @@ -0,0 +1,863 @@
@@ -15504,7 +15504,7 @@ index 000000000..b0075b57d
 +};
 diff --git a/fs/aufs/file.h b/fs/aufs/file.h
 new file mode 100644
-index 000000000..d124d9c82
+index 0000000..d124d9c
 --- /dev/null
 +++ b/fs/aufs/file.h
 @@ -0,0 +1,342 @@
@@ -15852,7 +15852,7 @@ index 000000000..d124d9c82
 +#endif /* __AUFS_FILE_H__ */
 diff --git a/fs/aufs/finfo.c b/fs/aufs/finfo.c
 new file mode 100644
-index 000000000..25077670a
+index 0000000..2507767
 --- /dev/null
 +++ b/fs/aufs/finfo.c
 @@ -0,0 +1,149 @@
@@ -16007,7 +16007,7 @@ index 000000000..25077670a
 +}
 diff --git a/fs/aufs/fstype.h b/fs/aufs/fstype.h
 new file mode 100644
-index 000000000..af4bc6c0d
+index 0000000..af4bc6c
 --- /dev/null
 +++ b/fs/aufs/fstype.h
 @@ -0,0 +1,401 @@
@@ -16414,7 +16414,7 @@ index 000000000..af4bc6c0d
 +#endif /* __AUFS_FSTYPE_H__ */
 diff --git a/fs/aufs/hbl.h b/fs/aufs/hbl.h
 new file mode 100644
-index 000000000..4d5016bcc
+index 0000000..4d5016b
 --- /dev/null
 +++ b/fs/aufs/hbl.h
 @@ -0,0 +1,65 @@
@@ -16485,7 +16485,7 @@ index 000000000..4d5016bcc
 +#endif /* __AUFS_HBL_H__ */
 diff --git a/fs/aufs/hfsnotify.c b/fs/aufs/hfsnotify.c
 new file mode 100644
-index 000000000..d0abe8ac7
+index 0000000..d0abe8a
 --- /dev/null
 +++ b/fs/aufs/hfsnotify.c
 @@ -0,0 +1,288 @@
@@ -16779,7 +16779,7 @@ index 000000000..d0abe8ac7
 +};
 diff --git a/fs/aufs/hfsplus.c b/fs/aufs/hfsplus.c
 new file mode 100644
-index 000000000..d250f019b
+index 0000000..d250f01
 --- /dev/null
 +++ b/fs/aufs/hfsplus.c
 @@ -0,0 +1,60 @@
@@ -16845,7 +16845,7 @@ index 000000000..d250f019b
 +}
 diff --git a/fs/aufs/hnotify.c b/fs/aufs/hnotify.c
 new file mode 100644
-index 000000000..ff3f8b96d
+index 0000000..ff3f8b9
 --- /dev/null
 +++ b/fs/aufs/hnotify.c
 @@ -0,0 +1,715 @@
@@ -17566,7 +17566,7 @@ index 000000000..ff3f8b96d
 +}
 diff --git a/fs/aufs/i_op.c b/fs/aufs/i_op.c
 new file mode 100644
-index 000000000..2d09f8015
+index 0000000..2d09f80
 --- /dev/null
 +++ b/fs/aufs/i_op.c
 @@ -0,0 +1,1502 @@
@@ -19074,7 +19074,7 @@ index 000000000..2d09f8015
 +};
 diff --git a/fs/aufs/i_op_add.c b/fs/aufs/i_op_add.c
 new file mode 100644
-index 000000000..80f2cfeea
+index 0000000..80f2cfe
 --- /dev/null
 +++ b/fs/aufs/i_op_add.c
 @@ -0,0 +1,936 @@
@@ -20016,7 +20016,7 @@ index 000000000..80f2cfeea
 +}
 diff --git a/fs/aufs/i_op_del.c b/fs/aufs/i_op_del.c
 new file mode 100644
-index 000000000..9beba2ba8
+index 0000000..9beba2b
 --- /dev/null
 +++ b/fs/aufs/i_op_del.c
 @@ -0,0 +1,513 @@
@@ -20535,7 +20535,7 @@ index 000000000..9beba2ba8
 +}
 diff --git a/fs/aufs/i_op_ren.c b/fs/aufs/i_op_ren.c
 new file mode 100644
-index 000000000..435fa5081
+index 0000000..435fa50
 --- /dev/null
 +++ b/fs/aufs/i_op_ren.c
 @@ -0,0 +1,1250 @@
@@ -21791,7 +21791,7 @@ index 000000000..435fa5081
 +}
 diff --git a/fs/aufs/iinfo.c b/fs/aufs/iinfo.c
 new file mode 100644
-index 000000000..016db3945
+index 0000000..016db39
 --- /dev/null
 +++ b/fs/aufs/iinfo.c
 @@ -0,0 +1,286 @@
@@ -22083,7 +22083,7 @@ index 000000000..016db3945
 +}
 diff --git a/fs/aufs/inode.c b/fs/aufs/inode.c
 new file mode 100644
-index 000000000..4de1b7507
+index 0000000..4de1b75
 --- /dev/null
 +++ b/fs/aufs/inode.c
 @@ -0,0 +1,529 @@
@@ -22618,7 +22618,7 @@ index 000000000..4de1b7507
 +}
 diff --git a/fs/aufs/inode.h b/fs/aufs/inode.h
 new file mode 100644
-index 000000000..bc618c2ed
+index 0000000..bc618c2
 --- /dev/null
 +++ b/fs/aufs/inode.h
 @@ -0,0 +1,698 @@
@@ -23322,7 +23322,7 @@ index 000000000..bc618c2ed
 +#endif /* __AUFS_INODE_H__ */
 diff --git a/fs/aufs/ioctl.c b/fs/aufs/ioctl.c
 new file mode 100644
-index 000000000..ae4f73386
+index 0000000..ae4f733
 --- /dev/null
 +++ b/fs/aufs/ioctl.c
 @@ -0,0 +1,220 @@
@@ -23548,7 +23548,7 @@ index 000000000..ae4f73386
 +#endif
 diff --git a/fs/aufs/lcnt.h b/fs/aufs/lcnt.h
 new file mode 100644
-index 000000000..8afcabe55
+index 0000000..8afcabe
 --- /dev/null
 +++ b/fs/aufs/lcnt.h
 @@ -0,0 +1,186 @@
@@ -23740,7 +23740,7 @@ index 000000000..8afcabe55
 +#endif /* __AUFS_LCNT_H__ */
 diff --git a/fs/aufs/loop.c b/fs/aufs/loop.c
 new file mode 100644
-index 000000000..222c1dce3
+index 0000000..222c1dc
 --- /dev/null
 +++ b/fs/aufs/loop.c
 @@ -0,0 +1,164 @@
@@ -23910,7 +23910,7 @@ index 000000000..222c1dce3
 +}
 diff --git a/fs/aufs/loop.h b/fs/aufs/loop.h
 new file mode 100644
-index 000000000..74cd76cf5
+index 0000000..74cd76c
 --- /dev/null
 +++ b/fs/aufs/loop.h
 @@ -0,0 +1,59 @@
@@ -23975,7 +23975,7 @@ index 000000000..74cd76cf5
 +#endif /* __AUFS_LOOP_H__ */
 diff --git a/fs/aufs/magic.mk b/fs/aufs/magic.mk
 new file mode 100644
-index 000000000..7bc9eef3f
+index 0000000..7bc9eef
 --- /dev/null
 +++ b/fs/aufs/magic.mk
 @@ -0,0 +1,31 @@
@@ -24012,7 +24012,7 @@ index 000000000..7bc9eef3f
 +endif
 diff --git a/fs/aufs/module.c b/fs/aufs/module.c
 new file mode 100644
-index 000000000..7245197a6
+index 0000000..7245197
 --- /dev/null
 +++ b/fs/aufs/module.c
 @@ -0,0 +1,273 @@
@@ -24291,7 +24291,7 @@ index 000000000..7245197a6
 +module_exit(aufs_exit);
 diff --git a/fs/aufs/module.h b/fs/aufs/module.h
 new file mode 100644
-index 000000000..d6a76788d
+index 0000000..d6a7678
 --- /dev/null
 +++ b/fs/aufs/module.h
 @@ -0,0 +1,166 @@
@@ -24463,7 +24463,7 @@ index 000000000..d6a76788d
 +#endif /* __AUFS_MODULE_H__ */
 diff --git a/fs/aufs/mvdown.c b/fs/aufs/mvdown.c
 new file mode 100644
-index 000000000..c39a39e52
+index 0000000..c39a39e
 --- /dev/null
 +++ b/fs/aufs/mvdown.c
 @@ -0,0 +1,706 @@
@@ -25175,7 +25175,7 @@ index 000000000..c39a39e52
 +}
 diff --git a/fs/aufs/opts.c b/fs/aufs/opts.c
 new file mode 100644
-index 000000000..846463451
+index 0000000..8464634
 --- /dev/null
 +++ b/fs/aufs/opts.c
 @@ -0,0 +1,1880 @@
@@ -27061,7 +27061,7 @@ index 000000000..846463451
 +}
 diff --git a/fs/aufs/opts.h b/fs/aufs/opts.h
 new file mode 100644
-index 000000000..79f3ea56f
+index 0000000..79f3ea5
 --- /dev/null
 +++ b/fs/aufs/opts.h
 @@ -0,0 +1,225 @@
@@ -27292,7 +27292,7 @@ index 000000000..79f3ea56f
 +#endif /* __AUFS_OPTS_H__ */
 diff --git a/fs/aufs/plink.c b/fs/aufs/plink.c
 new file mode 100644
-index 000000000..850829b21
+index 0000000..850829b
 --- /dev/null
 +++ b/fs/aufs/plink.c
 @@ -0,0 +1,516 @@
@@ -27814,7 +27814,7 @@ index 000000000..850829b21
 +}
 diff --git a/fs/aufs/poll.c b/fs/aufs/poll.c
 new file mode 100644
-index 000000000..6975d3ab2
+index 0000000..6975d3a
 --- /dev/null
 +++ b/fs/aufs/poll.c
 @@ -0,0 +1,51 @@
@@ -27871,7 +27871,7 @@ index 000000000..6975d3ab2
 +}
 diff --git a/fs/aufs/posix_acl.c b/fs/aufs/posix_acl.c
 new file mode 100644
-index 000000000..078933565
+index 0000000..0789335
 --- /dev/null
 +++ b/fs/aufs/posix_acl.c
 @@ -0,0 +1,105 @@
@@ -27982,7 +27982,7 @@ index 000000000..078933565
 +}
 diff --git a/fs/aufs/procfs.c b/fs/aufs/procfs.c
 new file mode 100644
-index 000000000..50ee0a9c1
+index 0000000..50ee0a9
 --- /dev/null
 +++ b/fs/aufs/procfs.c
 @@ -0,0 +1,170 @@
@@ -28158,7 +28158,7 @@ index 000000000..50ee0a9c1
 +}
 diff --git a/fs/aufs/rdu.c b/fs/aufs/rdu.c
 new file mode 100644
-index 000000000..afd77564f
+index 0000000..afd7756
 --- /dev/null
 +++ b/fs/aufs/rdu.c
 @@ -0,0 +1,384 @@
@@ -28548,7 +28548,7 @@ index 000000000..afd77564f
 +#endif
 diff --git a/fs/aufs/rwsem.h b/fs/aufs/rwsem.h
 new file mode 100644
-index 000000000..6df9f2770
+index 0000000..6df9f27
 --- /dev/null
 +++ b/fs/aufs/rwsem.h
 @@ -0,0 +1,85 @@
@@ -28639,7 +28639,7 @@ index 000000000..6df9f2770
 +#endif /* __AUFS_RWSEM_H__ */
 diff --git a/fs/aufs/sbinfo.c b/fs/aufs/sbinfo.c
 new file mode 100644
-index 000000000..3835be61d
+index 0000000..3835be6
 --- /dev/null
 +++ b/fs/aufs/sbinfo.c
 @@ -0,0 +1,314 @@
@@ -28959,7 +28959,7 @@ index 000000000..3835be61d
 +}
 diff --git a/fs/aufs/super.c b/fs/aufs/super.c
 new file mode 100644
-index 000000000..ce7dfe8a7
+index 0000000..ce7dfe8
 --- /dev/null
 +++ b/fs/aufs/super.c
 @@ -0,0 +1,1050 @@
@@ -30015,7 +30015,7 @@ index 000000000..ce7dfe8a7
 +};
 diff --git a/fs/aufs/super.h b/fs/aufs/super.h
 new file mode 100644
-index 000000000..463833136
+index 0000000..4638331
 --- /dev/null
 +++ b/fs/aufs/super.h
 @@ -0,0 +1,587 @@
@@ -30608,7 +30608,7 @@ index 000000000..463833136
 +#endif /* __AUFS_SUPER_H__ */
 diff --git a/fs/aufs/sysaufs.c b/fs/aufs/sysaufs.c
 new file mode 100644
-index 000000000..f61547123
+index 0000000..f615471
 --- /dev/null
 +++ b/fs/aufs/sysaufs.c
 @@ -0,0 +1,93 @@
@@ -30707,7 +30707,7 @@ index 000000000..f61547123
 +}
 diff --git a/fs/aufs/sysaufs.h b/fs/aufs/sysaufs.h
 new file mode 100644
-index 000000000..55c5c9868
+index 0000000..55c5c98
 --- /dev/null
 +++ b/fs/aufs/sysaufs.h
 @@ -0,0 +1,102 @@
@@ -30815,7 +30815,7 @@ index 000000000..55c5c9868
 +#endif /* __SYSAUFS_H__ */
 diff --git a/fs/aufs/sysfs.c b/fs/aufs/sysfs.c
 new file mode 100644
-index 000000000..46638d88e
+index 0000000..46638d8
 --- /dev/null
 +++ b/fs/aufs/sysfs.c
 @@ -0,0 +1,374 @@
@@ -31195,7 +31195,7 @@ index 000000000..46638d88e
 +}
 diff --git a/fs/aufs/sysrq.c b/fs/aufs/sysrq.c
 new file mode 100644
-index 000000000..fc8aa4a28
+index 0000000..fc8aa4a
 --- /dev/null
 +++ b/fs/aufs/sysrq.c
 @@ -0,0 +1,149 @@
@@ -31350,7 +31350,7 @@ index 000000000..fc8aa4a28
 +}
 diff --git a/fs/aufs/vdir.c b/fs/aufs/vdir.c
 new file mode 100644
-index 000000000..5ba006b80
+index 0000000..5ba006b
 --- /dev/null
 +++ b/fs/aufs/vdir.c
 @@ -0,0 +1,896 @@
@@ -32252,7 +32252,7 @@ index 000000000..5ba006b80
 +}
 diff --git a/fs/aufs/vfsub.c b/fs/aufs/vfsub.c
 new file mode 100644
-index 000000000..de875cd4e
+index 0000000..de875cd
 --- /dev/null
 +++ b/fs/aufs/vfsub.c
 @@ -0,0 +1,885 @@
@@ -33143,7 +33143,7 @@ index 000000000..de875cd4e
 +}
 diff --git a/fs/aufs/vfsub.h b/fs/aufs/vfsub.h
 new file mode 100644
-index 000000000..705f033ba
+index 0000000..705f033
 --- /dev/null
 +++ b/fs/aufs/vfsub.h
 @@ -0,0 +1,354 @@
@@ -33503,7 +33503,7 @@ index 000000000..705f033ba
 +#endif /* __AUFS_VFSUB_H__ */
 diff --git a/fs/aufs/wbr_policy.c b/fs/aufs/wbr_policy.c
 new file mode 100644
-index 000000000..a7cc1109f
+index 0000000..a7cc110
 --- /dev/null
 +++ b/fs/aufs/wbr_policy.c
 @@ -0,0 +1,830 @@
@@ -34339,7 +34339,7 @@ index 000000000..a7cc1109f
 +};
 diff --git a/fs/aufs/whout.c b/fs/aufs/whout.c
 new file mode 100644
-index 000000000..efe0c1650
+index 0000000..efe0c16
 --- /dev/null
 +++ b/fs/aufs/whout.c
 @@ -0,0 +1,1062 @@
@@ -35407,7 +35407,7 @@ index 000000000..efe0c1650
 +}
 diff --git a/fs/aufs/whout.h b/fs/aufs/whout.h
 new file mode 100644
-index 000000000..65459ba0e
+index 0000000..65459ba
 --- /dev/null
 +++ b/fs/aufs/whout.h
 @@ -0,0 +1,86 @@
@@ -35499,7 +35499,7 @@ index 000000000..65459ba0e
 +#endif /* __AUFS_WHOUT_H__ */
 diff --git a/fs/aufs/wkq.c b/fs/aufs/wkq.c
 new file mode 100644
-index 000000000..4d66bb2dc
+index 0000000..4d66bb2
 --- /dev/null
 +++ b/fs/aufs/wkq.c
 @@ -0,0 +1,372 @@
@@ -35877,7 +35877,7 @@ index 000000000..4d66bb2dc
 +}
 diff --git a/fs/aufs/wkq.h b/fs/aufs/wkq.h
 new file mode 100644
-index 000000000..5be76b69d
+index 0000000..5be76b6
 --- /dev/null
 +++ b/fs/aufs/wkq.h
 @@ -0,0 +1,89 @@
@@ -35972,7 +35972,7 @@ index 000000000..5be76b69d
 +#endif /* __AUFS_WKQ_H__ */
 diff --git a/fs/aufs/xattr.c b/fs/aufs/xattr.c
 new file mode 100644
-index 000000000..103c4275e
+index 0000000..103c427
 --- /dev/null
 +++ b/fs/aufs/xattr.c
 @@ -0,0 +1,356 @@
@@ -36334,7 +36334,7 @@ index 000000000..103c4275e
 +}
 diff --git a/fs/aufs/xino.c b/fs/aufs/xino.c
 new file mode 100644
-index 000000000..ae7bd07b0
+index 0000000..ae7bd07
 --- /dev/null
 +++ b/fs/aufs/xino.c
 @@ -0,0 +1,1925 @@
@@ -38264,7 +38264,7 @@ index 000000000..ae7bd07b0
 +	return err;
 +}
 diff --git a/fs/dcache.c b/fs/dcache.c
-index 7d24ff7eb..00e97c9ae 100644
+index 7d24ff7..00e97c9 100644
 --- a/fs/dcache.c
 +++ b/fs/dcache.c
 @@ -1318,7 +1318,7 @@ enum d_walk_ret {
@@ -38293,7 +38293,7 @@ index 7d24ff7eb..00e97c9ae 100644
  /**
   * d_ancestor - search for an ancestor
 diff --git a/fs/exec.c b/fs/exec.c
-index 18594f11c..ac38c0424 100644
+index 18594f1..ac38c04 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
 @@ -114,6 +114,7 @@ bool path_noexec(const struct path *path)
@@ -38305,7 +38305,7 @@ index 18594f11c..ac38c0424 100644
  #ifdef CONFIG_USELIB
  /*
 diff --git a/fs/fcntl.c b/fs/fcntl.c
-index dfc72f15b..053299618 100644
+index dfc72f1..0532996 100644
 --- a/fs/fcntl.c
 +++ b/fs/fcntl.c
 @@ -33,7 +33,7 @@
@@ -38335,7 +38335,7 @@ index dfc72f15b..053299618 100644
  static void f_modown(struct file *filp, struct pid *pid, enum pid_type type,
                       int force)
 diff --git a/fs/file_table.c b/fs/file_table.c
-index 45437f8e1..786af5290 100644
+index 45437f8..786af52 100644
 --- a/fs/file_table.c
 +++ b/fs/file_table.c
 @@ -161,6 +161,7 @@ struct file *alloc_empty_file(int flags, const struct cred *cred)
@@ -38355,7 +38355,7 @@ index 45437f8e1..786af5290 100644
  void __init files_init(void)
  {
 diff --git a/fs/inode.c b/fs/inode.c
-index a047ab306..0672530ac 100644
+index a047ab3..0672530 100644
 --- a/fs/inode.c
 +++ b/fs/inode.c
 @@ -1772,12 +1772,13 @@ EXPORT_SYMBOL(generic_update_time);
@@ -38374,7 +38374,7 @@ index a047ab306..0672530ac 100644
  /**
   *	atime_needs_update	-	update the access time
 diff --git a/fs/namespace.c b/fs/namespace.c
-index 56bb5a5fd..74957d5ed 100644
+index 56bb5a5..74957d5 100644
 --- a/fs/namespace.c
 +++ b/fs/namespace.c
 @@ -438,6 +438,7 @@ void __mnt_drop_write(struct vfsmount *mnt)
@@ -38408,7 +38408,7 @@ index 56bb5a5fd..74957d5ed 100644
  static void lock_mnt_tree(struct mount *mnt)
  {
 diff --git a/fs/notify/group.c b/fs/notify/group.c
-index ffd723ffe..ec6172836 100644
+index ffd723f..ec61728 100644
 --- a/fs/notify/group.c
 +++ b/fs/notify/group.c
 @@ -100,6 +100,7 @@ void fsnotify_get_group(struct fsnotify_group *group)
@@ -38420,7 +38420,7 @@ index ffd723ffe..ec6172836 100644
  /*
   * Drop a reference to a group.  Free it if it's through.
 diff --git a/fs/open.c b/fs/open.c
-index e53af13b5..f37da065e 100644
+index e53af13..f37da06 100644
 --- a/fs/open.c
 +++ b/fs/open.c
 @@ -65,6 +65,7 @@ int do_truncate(struct user_namespace *mnt_userns, struct dentry *dentry,
@@ -38432,7 +38432,7 @@ index e53af13b5..f37da065e 100644
  long vfs_truncate(const struct path *path, loff_t length)
  {
 diff --git a/fs/proc/base.c b/fs/proc/base.c
-index 3851bfcdb..d632ddd5f 100644
+index 3851bfc..d632ddd 100644
 --- a/fs/proc/base.c
 +++ b/fs/proc/base.c
 @@ -2183,7 +2183,7 @@ static int map_files_get_link(struct dentry *dentry, struct path *path)
@@ -38445,7 +38445,7 @@ index 3851bfcdb..d632ddd5f 100644
  		rc = 0;
  	}
 diff --git a/fs/proc/nommu.c b/fs/proc/nommu.c
-index 13452b32e..38acccfef 100644
+index 13452b3..38acccf 100644
 --- a/fs/proc/nommu.c
 +++ b/fs/proc/nommu.c
 @@ -40,7 +40,10 @@ static int nommu_region_show(struct seq_file *m, struct vm_region *region)
@@ -38461,7 +38461,7 @@ index 13452b32e..38acccfef 100644
  		ino = inode->i_ino;
  	}
 diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index e862cab69..5c4504194 100644
+index e862cab..5c45041 100644
 --- a/fs/proc/task_mmu.c
 +++ b/fs/proc/task_mmu.c
 @@ -280,7 +280,10 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
@@ -38486,7 +38486,7 @@ index e862cab69..5c4504194 100644
  	struct mempolicy *pol;
  	char buffer[64];
 diff --git a/fs/proc/task_nommu.c b/fs/proc/task_nommu.c
-index a6d21fc00..02c2de311 100644
+index a6d21fc..02c2de3 100644
 --- a/fs/proc/task_nommu.c
 +++ b/fs/proc/task_nommu.c
 @@ -155,7 +155,10 @@ static int nommu_vma_show(struct seq_file *m, struct vm_area_struct *vma)
@@ -38502,7 +38502,7 @@ index a6d21fc00..02c2de311 100644
  		ino = inode->i_ino;
  		pgoff = (loff_t)vma->vm_pgoff << PAGE_SHIFT;
 diff --git a/fs/read_write.c b/fs/read_write.c
-index 9db7adf16..8dc93a57a 100644
+index 9db7adf..8dc93a5 100644
 --- a/fs/read_write.c
 +++ b/fs/read_write.c
 @@ -503,6 +503,7 @@ ssize_t vfs_read(struct file *file, char __user *buf, size_t count, loff_t *pos)
@@ -38522,7 +38522,7 @@ index 9db7adf16..8dc93a57a 100644
  /* file_ppos returns &file->f_pos or NULL if file is stream */
  static inline loff_t *file_ppos(struct file *file)
 diff --git a/fs/splice.c b/fs/splice.c
-index 5dbce4dcc..7c1be373e 100644
+index 5dbce4d..7c1be37 100644
 --- a/fs/splice.c
 +++ b/fs/splice.c
 @@ -759,20 +759,21 @@ static int warn_unsupported(struct file *file, const char *op)
@@ -38561,7 +38561,7 @@ index 5dbce4dcc..7c1be373e 100644
  /**
   * splice_direct_to_actor - splices data directly between two non-pipes
 diff --git a/fs/sync.c b/fs/sync.c
-index 1373a610d..fa5c7fba7 100644
+index 1373a61..fa5c7fb 100644
 --- a/fs/sync.c
 +++ b/fs/sync.c
 @@ -28,7 +28,7 @@
@@ -38582,7 +38582,7 @@ index 1373a610d..fa5c7fba7 100644
  /*
   * Write out and wait upon all dirty data associated with this
 diff --git a/fs/xattr.c b/fs/xattr.c
-index b3444e06c..7b0f851b6 100644
+index b3444e0..7b0f851 100644
 --- a/fs/xattr.c
 +++ b/fs/xattr.c
 @@ -383,6 +383,7 @@ vfs_getxattr_alloc(struct user_namespace *mnt_userns, struct dentry *dentry,
@@ -38594,7 +38594,7 @@ index b3444e06c..7b0f851b6 100644
  ssize_t
  __vfs_getxattr(struct dentry *dentry, struct inode *inode, const char *name,
 diff --git a/include/linux/fs.h b/include/linux/fs.h
-index ec8f3ddf4..2aec4bc9f 100644
+index ec8f3dd..2aec4bc 100644
 --- a/include/linux/fs.h
 +++ b/include/linux/fs.h
 @@ -1332,6 +1332,7 @@ extern void fasync_free(struct fasync_struct *);
@@ -38641,7 +38641,7 @@ index ec8f3ddf4..2aec4bc9f 100644
  extern const struct file_operations def_blk_fops;
  extern const struct file_operations def_chr_fops;
 diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index 7b7ebf2e2..20c46305e 100644
+index 7b7ebf2..20c4630 100644
 --- a/include/linux/lockdep.h
 +++ b/include/linux/lockdep.h
 @@ -248,6 +248,8 @@ static inline int lockdep_match_key(struct lockdep_map *lock,
@@ -38654,7 +38654,7 @@ index 7b7ebf2e2..20c46305e 100644
   * Acquire a lock.
   *
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 8ba434287..6d23d40ad 100644
+index 8ba4342..6d23d40 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1759,6 +1759,28 @@ static inline void unmap_shared_mapping_range(struct address_space *mapping,
@@ -38687,7 +38687,7 @@ index 8ba434287..6d23d40ad 100644
  		void *buf, int len, unsigned int gup_flags);
  extern int access_remote_vm(struct mm_struct *mm, unsigned long addr,
 diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 6613b26a8..e94df45b5 100644
+index 6613b26..e94df45 100644
 --- a/include/linux/mm_types.h
 +++ b/include/linux/mm_types.h
 @@ -279,6 +279,7 @@ struct vm_region {
@@ -38707,7 +38707,7 @@ index 6613b26a8..e94df45b5 100644
  
  #ifdef CONFIG_SWAP
 diff --git a/include/linux/mnt_namespace.h b/include/linux/mnt_namespace.h
-index 8f882f588..6b9808f09 100644
+index 8f882f5..6b9808f 100644
 --- a/include/linux/mnt_namespace.h
 +++ b/include/linux/mnt_namespace.h
 @@ -7,12 +7,15 @@ struct mnt_namespace;
@@ -38727,7 +38727,7 @@ index 8f882f588..6b9808f09 100644
  extern const struct file_operations proc_mountinfo_operations;
  extern const struct file_operations proc_mountstats_operations;
 diff --git a/include/linux/splice.h b/include/linux/splice.h
-index a55179fd6..8e21c53cf 100644
+index a55179f..8e21c53 100644
 --- a/include/linux/splice.h
 +++ b/include/linux/splice.h
 @@ -93,4 +93,10 @@ extern void splice_shrink_spd(struct splice_pipe_desc *);
@@ -38743,7 +38743,7 @@ index a55179fd6..8e21c53cf 100644
  #endif
 diff --git a/include/uapi/linux/aufs_type.h b/include/uapi/linux/aufs_type.h
 new file mode 100644
-index 000000000..fd27906f2
+index 0000000..fd27906
 --- /dev/null
 +++ b/include/uapi/linux/aufs_type.h
 @@ -0,0 +1,452 @@
@@ -39200,10 +39200,10 @@ index 000000000..fd27906f2
 +
 +#endif /* __AUFS_TYPE_H__ */
 diff --git a/kernel/fork.c b/kernel/fork.c
-index b26cee21f..9fb5c04d9 100644
+index 426cd0c..ea0ae49 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -559,7 +559,7 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+@@ -555,7 +555,7 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
  			struct inode *inode = file_inode(file);
  			struct address_space *mapping = file->f_mapping;
  
@@ -39213,7 +39213,7 @@ index b26cee21f..9fb5c04d9 100644
  				put_write_access(inode);
  			i_mmap_lock_write(mapping);
 diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index f160f1c97..185531f89 100644
+index f160f1c..185531f 100644
 --- a/kernel/locking/lockdep.c
 +++ b/kernel/locking/lockdep.c
 @@ -188,7 +188,7 @@ static
@@ -39235,16 +39235,16 @@ index f160f1c97..185531f89 100644
  #ifdef CONFIG_LOCK_STAT
  static DEFINE_PER_CPU(struct lock_class_stats[MAX_LOCKDEP_KEYS], cpu_lock_stats);
 diff --git a/kernel/task_work.c b/kernel/task_work.c
-index 5c8dea45d..d63811d82 100644
+index 9cde961..ac8c79d 100644
 --- a/kernel/task_work.c
 +++ b/kernel/task_work.c
-@@ -144,3 +144,4 @@ void task_work_run(void)
+@@ -143,3 +143,4 @@ void task_work_run(void)
  		} while (work);
  	}
  }
 +EXPORT_SYMBOL_GPL(task_work_run);
 diff --git a/mm/Makefile b/mm/Makefile
-index 72227b24a..5d03943b0 100644
+index 72227b2..5d03943 100644
 --- a/mm/Makefile
 +++ b/mm/Makefile
 @@ -52,7 +52,7 @@ obj-y			:= filemap.o mempool.o oom_kill.o fadvise.o \
@@ -39257,10 +39257,10 @@ index 72227b24a..5d03943b0 100644
  # Give 'page_alloc' its own module-parameter namespace
  page-alloc-y := page_alloc.o
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 43700480d..be29fc5b9 100644
+index 6ce832d..8b7a71b 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
-@@ -3155,7 +3155,7 @@ vm_fault_t filemap_page_mkwrite(struct vm_fault *vmf)
+@@ -3162,7 +3162,7 @@ vm_fault_t filemap_page_mkwrite(struct vm_fault *vmf)
  	vm_fault_t ret = VM_FAULT_LOCKED;
  
  	sb_start_pagefault(mapping->host->i_sb);
@@ -39270,7 +39270,7 @@ index 43700480d..be29fc5b9 100644
  	if (page->mapping != mapping) {
  		unlock_page(page);
 diff --git a/mm/mmap.c b/mm/mmap.c
-index 3f287599a..eb36f1b18 100644
+index 3f28759..eb36f1b 100644
 --- a/mm/mmap.c
 +++ b/mm/mmap.c
 @@ -179,7 +179,7 @@ static struct vm_area_struct *remove_vma(struct vm_area_struct *vma)
@@ -39366,7 +39366,7 @@ index 3f287599a..eb36f1b18 100644
  			new_vma->vm_ops->open(new_vma);
  		vma_link(mm, new_vma, prev, rb_link, rb_parent);
 diff --git a/mm/nommu.c b/mm/nommu.c
-index 5c9ab799c..dd7890570 100644
+index 5c9ab79..dd78905 100644
 --- a/mm/nommu.c
 +++ b/mm/nommu.c
 @@ -533,7 +533,7 @@ static void __put_nommu_region(struct vm_region *region)
@@ -39411,7 +39411,7 @@ index 5c9ab799c..dd7890570 100644
  
 diff --git a/mm/prfile.c b/mm/prfile.c
 new file mode 100644
-index 000000000..00d51187c
+index 0000000..00d5118
 --- /dev/null
 +++ b/mm/prfile.c
 @@ -0,0 +1,86 @@
@@ -39502,10 +39502,10 @@ index 000000000..00d51187c
 +}
 +#endif /* !CONFIG_MMU */
 diff --git a/security/security.c b/security/security.c
-index 40cce276e..8c0d317dc 100644
+index 5ac96b1..46d334d 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -1106,6 +1106,7 @@ int security_path_rmdir(const struct path *dir, struct dentry *dentry)
+@@ -1102,6 +1102,7 @@ int security_path_rmdir(const struct path *dir, struct dentry *dentry)
  		return 0;
  	return call_int_hook(path_rmdir, 0, dir, dentry);
  }
@@ -39513,7 +39513,7 @@ index 40cce276e..8c0d317dc 100644
  
  int security_path_unlink(const struct path *dir, struct dentry *dentry)
  {
-@@ -1122,6 +1123,7 @@ int security_path_symlink(const struct path *dir, struct dentry *dentry,
+@@ -1118,6 +1119,7 @@ int security_path_symlink(const struct path *dir, struct dentry *dentry,
  		return 0;
  	return call_int_hook(path_symlink, 0, dir, dentry, old_name);
  }
@@ -39521,7 +39521,7 @@ index 40cce276e..8c0d317dc 100644
  
  int security_path_link(struct dentry *old_dentry, const struct path *new_dir,
  		       struct dentry *new_dentry)
-@@ -1130,6 +1132,7 @@ int security_path_link(struct dentry *old_dentry, const struct path *new_dir,
+@@ -1126,6 +1128,7 @@ int security_path_link(struct dentry *old_dentry, const struct path *new_dir,
  		return 0;
  	return call_int_hook(path_link, 0, old_dentry, new_dir, new_dentry);
  }
@@ -39529,7 +39529,7 @@ index 40cce276e..8c0d317dc 100644
  
  int security_path_rename(const struct path *old_dir, struct dentry *old_dentry,
  			 const struct path *new_dir, struct dentry *new_dentry,
-@@ -1157,6 +1160,7 @@ int security_path_truncate(const struct path *path)
+@@ -1153,6 +1156,7 @@ int security_path_truncate(const struct path *path)
  		return 0;
  	return call_int_hook(path_truncate, 0, path);
  }
@@ -39537,7 +39537,7 @@ index 40cce276e..8c0d317dc 100644
  
  int security_path_chmod(const struct path *path, umode_t mode)
  {
-@@ -1164,6 +1168,7 @@ int security_path_chmod(const struct path *path, umode_t mode)
+@@ -1160,6 +1164,7 @@ int security_path_chmod(const struct path *path, umode_t mode)
  		return 0;
  	return call_int_hook(path_chmod, 0, path, mode);
  }
@@ -39545,7 +39545,7 @@ index 40cce276e..8c0d317dc 100644
  
  int security_path_chown(const struct path *path, kuid_t uid, kgid_t gid)
  {
-@@ -1171,6 +1176,7 @@ int security_path_chown(const struct path *path, kuid_t uid, kgid_t gid)
+@@ -1167,6 +1172,7 @@ int security_path_chown(const struct path *path, kuid_t uid, kgid_t gid)
  		return 0;
  	return call_int_hook(path_chown, 0, path, uid, gid);
  }
@@ -39553,7 +39553,7 @@ index 40cce276e..8c0d317dc 100644
  
  int security_path_chroot(const struct path *path)
  {
-@@ -1271,6 +1277,7 @@ int security_inode_permission(struct inode *inode, int mask)
+@@ -1267,6 +1273,7 @@ int security_inode_permission(struct inode *inode, int mask)
  		return 0;
  	return call_int_hook(inode_permission, 0, inode, mask);
  }
@@ -39561,7 +39561,7 @@ index 40cce276e..8c0d317dc 100644
  
  int security_inode_setattr(struct dentry *dentry, struct iattr *attr)
  {
-@@ -1468,6 +1475,7 @@ int security_file_permission(struct file *file, int mask)
+@@ -1464,6 +1471,7 @@ int security_file_permission(struct file *file, int mask)
  
  	return fsnotify_perm(file, mask);
  }
@@ -39570,5 +39570,5 @@ index 40cce276e..8c0d317dc 100644
  int security_file_alloc(struct file *file)
  {
 -- 
-2.31.0.97.g1424303384
+2.31.1.305.gd1b10fc6d8
 
