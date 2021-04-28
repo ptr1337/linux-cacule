@@ -61,12 +61,9 @@ _use_current=
 pkgbase=linux-cacule
 # pkgname=('linux-cacule' linux-cacule-headers)
 _major=5.11
-_minor=16
-#_minorc=$((_minor+1))
-#_rcver=rc7
+_minor=17
 pkgver=${_major}.${_minor}
 _stable=${_major}.${_minor}
-#_stablerc=${_major}-${_rcver}
 _srcname=linux-${_stable}
 pkgrel=1
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
@@ -76,12 +73,13 @@ license=('GPL2')
 options=('!strip')
 makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz')
-_patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/main/5.11"
+_patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/$_major"
 source=("https://www.kernel.org/pub/linux/kernel/v5.x/linux-$pkgver.tar.xz"
         "config"
         "${_patchsource}/cacule-patches/cacule-5.11.patch"
         "${_patchsource}/cacule-patches/0002-cacule-Change-default-preemption-latency-to-2ms-for-.patch"
-        "${_patchsource}/cpu-patches/0001-cpu-5.11-merge-graysky-s-patchset.patch"
+	"${_patchsource}/cacule-patches/select_task_interactive_aware.patch"
+        "${_patchsource}/cpu-patches-v5/0001-cpu-patches.patch"
         "${_patchsource}/misc/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
         "${_patchsource}/futex-patches/0001-futex2-resync-from-gitlab.collabora.com.patch"
         "${_patchsource}/wine-patches/0007-v5.11-winesync.patch"
