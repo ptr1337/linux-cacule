@@ -73,6 +73,7 @@ You can tune the scheduler with following commands:
             net.ipv4.tcp_mtu_probing = 1
             net.ipv4.tcp_syncookies = 1
             net.core.default_qdisc = cake
+            net.ipv4.tcp_congestion_control = bbr2
 
 You can check with following command if bbr2 is enabled:
 
