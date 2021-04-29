@@ -45,6 +45,7 @@ Some infos for building  arm devices:
 ### Tips & Tricks:
 
 You can tune the scheduler with following commands:
+
              ## Cacule-Settings ## 
             kernel.sched_interactivity_factor=32768 
             kernel.sched_max_lifetime_ms=30000
