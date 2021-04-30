@@ -48,9 +48,9 @@ You can tune the scheduler with following commands:
 
              ## Cacule-Settings ## 
             kernel.sched_interactivity_factor=32768 
-            kernel.sched_max_lifetime_ms=30000
+            kernel.sched_max_lifetime_ms=22000
             kernel.sched_harsh_mode_enabled=0
-            kernel.sched_interactivity_threshold=20480
+           # kernel.sched_interactivity_threshold=20480
 
            ### Network-Settings ##
            
