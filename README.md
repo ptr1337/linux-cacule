@@ -2,8 +2,8 @@
 
 ## General Informations
 
-    - the cacule-rdb scheduler is still a expermential thing, so dont expect to much from it. 
-    - Use linux-cacule before using the expermential version
+    - Linux-cacule is the stable kernel
+    - The linux-cacule-rdb is still a expermiental patch.
     - Follow the readme, the sysctl options can improve much your expierence!!!
 
 ### amd64 /  x86_64
@@ -19,13 +19,13 @@
 
  ---
  ### RT-KERNELS
- 
+
     ä linux-xanmod-cacule-rt 5.11.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt/
     # linux-xanmod-cacule-rt 5.10.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt-stable/
 
 
 - When building the kernel, you can edit the PKGBUILD to your prefences regarding the user specific wishes
-- Also at building the kernel, you will be asked for some things like your cpu architecture, disabling debug settings for better performance, ... 
+- Also at building the kernel, you will be asked for some things like your cpu architecture, disabling debug settings for better performance, ...
 
 ### aarch64/armv7h
 
@@ -35,7 +35,7 @@
         - linux-raspberrypi4-cacule             https://aur.archlinux.org/packages/linux-raspberrypi4-cacule/
 
 
-Some infos for building  arm devices:
+#### Some infos for building  arm devices:
     -  it is automaticly collecting your architecture, so you can use the pkgbuild for armv7h/aarch64 without changes
     -  All kernels are tested and working
 
@@ -47,13 +47,12 @@ Some infos for building  arm devices:
 You can tune the scheduler with following commands:
 
              ## Cacule-Settings ## 
-            kernel.sched_interactivity_factor=32768 
+            kernel.sched_interactivity_factor=32768
             kernel.sched_max_lifetime_ms=22000
             kernel.sched_harsh_mode_enabled=0
-           # kernel.sched_interactivity_threshold=20480
 
            ### Network-Settings ##
-           
+
             net.core.netdev_max_backlog = 16384
             net.core.somaxconn = 8192
             net.core.rmem_default = 1048576
@@ -90,13 +89,10 @@ You can check with following command if bbr2 is enabled:
 
 Im providing a fileserver where i upload my builded kernels, if you want to use them just  watch their:
 
-https://repo.ptr1337.dev 
+https://repo.ptr1337.dev
 
 ##  more explained Informations for the cacule scheduler
 
 Here you find the repo from the creator of the scheduler:
 
 https://github.com/hamadmarri/cacule-cpu-scheduler
-
-
-

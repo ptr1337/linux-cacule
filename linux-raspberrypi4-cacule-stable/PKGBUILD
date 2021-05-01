@@ -7,11 +7,11 @@
 buildarch=12
 
 pkgbase=linux-raspberrypi4-cacule-stable
-_commit=4c6a570ea7d7586ff17a0166a222de88d0ea7050
+_commit=e99921bb4319ce35ce2e9841a51c4fbb6fb9cf2c
 _srcname=linux-${_commit}
 _kernelname=${pkgbase#linux}
 _desc="Raspberry Pi 4 with the cacule scheduler"
-pkgver=5.11.15
+pkgver=5.11.17
 pkgrel=1
 pkgdesc="Raspberry Pi 4 Kernel with the cacule schedeuler, aarch64 and armv7"
 arch=('armv7h' 'aarch64')

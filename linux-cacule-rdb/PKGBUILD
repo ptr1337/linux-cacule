@@ -259,7 +259,7 @@ prepare() {
       echo "Enable CacULE CPU scheduler..."
       scripts/config --enable CONFIG_CACULE_SCHED
       scripts/config --enable CONFIG_CACULE_RDB
-      scripts/config --disable CONFIG_FAIR_GROUP_SCHED
+      scripts/config --enable CONFIG_FAIR_GROUP_SCHED
       scripts/config --enable CONFIG_SCHED_AUTOGROUP
       #scripts/config --set-val CONFIG_NR_CPUS "12"
       scripts/config --disable CONFIG_SCHED_DEBUG
