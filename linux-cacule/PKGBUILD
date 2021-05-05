@@ -23,9 +23,9 @@ _per_gov=y
 _deadline_disable=y
 ### Disable Kyber I/O scheduler
 _kyber_disable=y
-### Running with a 1000 HZ, 750HZ or 500HZ tick rate
-_2k_HZ_ticks=
-_1k_HZ_ticks=y
+### Running with a 2000 HZ, 1000HZ or 500HZ tick rate
+_2k_HZ_ticks=y
+_1k_HZ_ticks=
 _500_HZ_ticks=
 ### Tweak kernel options prior to a build via nconfig
 _makenconfig=
@@ -97,7 +97,7 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v5.x/linux-${_stablerc}.tar.xz
         "${_patchsource}/initramfs-patches/0001-initramfs-patches.patch")
 
 sha512sums=('9bb9831459557a87ecb822ee5862b27ec1cb0de7df1a0131f534bd57a152b6ea75b710fa319cf533a8f89b8cbaa6b4844bd260c4bd825e83e1d62e7734510240'
-            'b039cced18f220f0138972802c55d7d0f669cc3711d8bb8b6fb4b6d1eaef4a1a13ffd0a846719d60aa3b2dd1bccba7e1d2207aa4aefbcc085189854f67587e39'
+            '023adf5a1c540f74aeebb47fb9f80988bdce15e8dd4e3d1a82ec1dc7c74a0b495d671fff87f91da3bb77ae46c7c7e803408b417b8c1e486e3ecdad11adb442e2'
             '88f9f1e6ea206068fd029566e4610c16b7c3007f10363c7db37cd922fe75646437d2e4814317bc292d06eff7e9ebd29d8cd1ee82c8abf45ddd1843c1ff55f5c7'
             '79807de3136a32f9e96f37d7781bfa4db225855573ab44092d1c22c5f9e282b1bc034b8de03c610ecba38b75708144b7a52c92e78dd460493239869cb2ae33fa'
             '15933126feeb56ccc6ace70db9fa7afb64d148900e41a780e42e03ce09faf7bab12413f526675b918aeff55e91dc038ad58884bb7add4a45962aca79d576cb93'
@@ -180,9 +180,9 @@ prepare() {
         scripts/config --set-val CONFIG_HZ 1000
 	   fi
 
-  ### Optionally set tickrate to 750HZ
+  ### Optionally set tickrate to 2000HZ
     if [ -n "$_2k_HZ_ticks" ]; then
-      echo "Setting tick rate to 1k..."
+      echo "Setting tick rate to 2k..."
       scripts/config --disable CONFIG_HZ_300
       scripts/config --enable CONFIG_HZ_2000
       scripts/config --set-val CONFIG_HZ 2000
@@ -190,7 +190,7 @@ prepare() {
 
   ### Optionally set tickrate to 500HZ
     if [ -n "$_500_HZ_ticks" ]; then
-      echo "Setting tick rate to 1k..."
+      echo "Setting tick rate to 500HZ..."
       scripts/config --disable CONFIG_HZ_300
       scripts/config --enable CONFIG_HZ_500
       scripts/config --set-val CONFIG_HZ 500
@@ -226,7 +226,7 @@ prepare() {
   		scripts/config --disable CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
   		scripts/config --enable CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
   		echo "Disabling uneeded governors..."
-  		scripts/config --disable CONFIG_CPU_FREQ_GOV_ONDEMAND
+  		scripts/config --enable CONFIG_CPU_FREQ_GOV_ONDEMAND
   		scripts/config --disable CONFIG_CPU_FREQ_GOV_CONSERVATIVE
   		scripts/config --disable CONFIG_CPU_FREQ_GOV_USERSPACE
   		scripts/config --disable CONFIG_CPU_FREQ_GOV_SCHEDUTIL
@@ -283,7 +283,8 @@ prepare() {
       ##TEST##
       scripts/config --enable CONFIG_NO_HZ_FULL
       scripts/config --enable CONFIG_NO_HZ
-      scripts/config --enable CONFIG_CONTEXT_TRACKING_FORCE
+      scripts/config --enable CONFIG_CONTEXT_TRACKING
+      scripts/config --disable CONFIG_CONTEXT_TRACKING_FORCE
       echo "Enabling KBUILD_CFLAGS -O3..."
       scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
       scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
