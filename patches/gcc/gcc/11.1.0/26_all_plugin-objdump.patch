@@ -1,0 +1,34 @@
+https://gcc.gnu.org/PR95648
+--- a/config/gcc-plugin.m4
++++ b/config/gcc-plugin.m4
+@@ -45,7 +45,7 @@ AC_DEFUN([GCC_ENABLE_PLUGINS],
+      ;;
+      *)
+        if test x$build = x$host; then
+-	 export_sym_check="objdump${exeext} -T"
++	 export_sym_check="$ac_cv_prog_OBJDUMP -T"
+        elif test x$host = x$target; then
+ 	 export_sym_check="$gcc_cv_objdump -T"
+        else
+--- a/gcc/configure
++++ b/gcc/configure
+@@ -30386,7 +30386,7 @@ fi
+      ;;
+      *)
+        if test x$build = x$host; then
+-	 export_sym_check="objdump${exeext} -T"
++	 export_sym_check="$ac_cv_prog_OBJDUMP -T"
+        elif test x$host = x$target; then
+ 	 export_sym_check="$gcc_cv_objdump -T"
+        else
+--- a/libcc1/configure
++++ b/libcc1/configure
+@@ -14819,7 +14819,7 @@ fi
+      ;;
+      *)
+        if test x$build = x$host; then
+-	 export_sym_check="objdump${exeext} -T"
++	 export_sym_check="$ac_cv_prog_OBJDUMP -T"
+        elif test x$host = x$target; then
+ 	 export_sym_check="$gcc_cv_objdump -T"
+        else

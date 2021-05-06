@@ -1,0 +1,20 @@
+Trick libintl not to use '_INTL_REDIRECT_ASM' mode as it's
+incompatible with LTO builds.
+
+glibc does not normally use libintl implementations and uses
+it's own primitives. But musl ond others do fall back to libintl.
+
+Reported-by: Andrew Savchenko
+Bug: https://bugs.gentoo.org/723370
+Bug: https://gcc.gnu.org/PR95194
+--- a/intl/libgnuintl.h
++++ b/intl/libgnuintl.h
+@@ -93,7 +93,7 @@ extern "C" {
+    If he doesn't, we choose the method.  A third possible method is
+    _INTL_REDIRECT_ASM, supported only by GCC.  */
+ #if !(defined _INTL_REDIRECT_INLINE || defined _INTL_REDIRECT_MACROS)
+-# if __GNUC__ >= 2 && !defined __APPLE_CC__ && (defined __STDC__ || defined __cplusplus)
++# if __GNUC__ >= 2 && !defined __APPLE_CC__ && (defined __STDC__ || defined __cplusplus) && USE_ASM_ALIASES_THAT_BREAK_LTO
+ #  define _INTL_REDIRECT_ASM
+ # else
+ #  ifdef __cplusplus

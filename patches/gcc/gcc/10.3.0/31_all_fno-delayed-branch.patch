@@ -1,0 +1,40 @@
+From 6d0d3ae914bf19706550a539ef304c5875535ffc Mon Sep 17 00:00:00 2001
+From: Sergei Trofimovich <siarheit@google.com>
+Date: Fri, 3 Jul 2020 22:50:33 +0100
+Subject: [PATCH] Disable -fdelayed-branch by default.
+
+From https://gcc.gnu.org/PR96015 / https://bugs.gentoo.org/729570.
+delayed branches are known to generate invalid code around
+__builtin_unreachable(); and mis-compiles python.
+
+Use blunt hammer and disable delayed slots until we have better fix.
+
+Reported-by: Jeroen Roovers
+Bug: https://gcc.gnu.org/PR96015
+Bug: https://bugs.gentoo.org/729570.
+Signed-off-by: Sergei Trofimovich <siarheit@google.com>
+---
+ gcc/opts.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+--- a/gcc/opts.c
++++ b/gcc/opts.c
+@@ -458,7 +458,14 @@ static const struct default_options default_options_table[] =
+     /* -O1 (and not -Og) optimizations.  */
+     { OPT_LEVELS_1_PLUS_NOT_DEBUG, OPT_fbranch_count_reg, NULL, 1 },
+ #if DELAY_SLOTS
+-    { OPT_LEVELS_1_PLUS_NOT_DEBUG, OPT_fdelayed_branch, NULL, 1 },
++    /*
++     * From https://gcc.gnu.org/PR96015 / https://bugs.gentoo.org/729570.
++     * delayed branches are known to generate invalid code around
++     * __builtin_unreachable(); and mis-compiles python.
++     *
++     * Use blunt hammer and disable delayed slots until we have better fix.
++     */
++    /* { OPT_LEVELS_1_PLUS_NOT_DEBUG, OPT_fdelayed_branch, NULL, 1 }, */
+ #endif
+     { OPT_LEVELS_1_PLUS_NOT_DEBUG, OPT_fdse, NULL, 1 },
+     { OPT_LEVELS_1_PLUS_NOT_DEBUG, OPT_fif_conversion, NULL, 1 },
+-- 
+2.27.0
+

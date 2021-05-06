@@ -1,0 +1,44 @@
+From 73a841928cc1b86f43108d2383a6242e7e61a785 Mon Sep 17 00:00:00 2001
+From: Sergei Trofimovich <slyfox@gentoo.org>
+Date: Tue, 31 Mar 2020 23:58:05 +0100
+Subject: [PATCH] gcc/expmed.h: increase cache size from 10^3 to 10^6
+
+Without this patch is takes dev-libs/xxhash 1-2 hours
+to compile. With this patch - TODO measurements.
+
+It workarounds deficiency of synth_mult() which evics
+cache entries as it calculates optimal multiplication
+algorithm. xxhash is especially hevyweight as it's a
+64-bit multiplication of large prime constants.
+
+Bug: https://gcc.gnu.org/PR87256
+Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+---
+ gcc/expmed.h | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+--- a/gcc/expmed.h
++++ b/gcc/expmed.h
+@@ -127,11 +127,14 @@ struct alg_hash_entry {
+ };
+ 
+ /* The number of cache/hash entries.  */
+-#if HOST_BITS_PER_WIDE_INT == 64
+-#define NUM_ALG_HASH_ENTRIES 1031
+-#else
+-#define NUM_ALG_HASH_ENTRIES 307
+-#endif
++/*
++ * Workaround hppa2.0 synth_mult deficiency
++ * and allocate ~1 million slots:
++ *     https://gcc.gnu.org/PR87256
++ * That should increase RAM usage up to ~24MB
++ * per process.
++ */
++#define NUM_ALG_HASH_ENTRIES 1000003
+ 
+ #define NUM_MODE_INT \
+   (MAX_MODE_INT - MIN_MODE_INT + 1)
+-- 
+2.26.0
+
