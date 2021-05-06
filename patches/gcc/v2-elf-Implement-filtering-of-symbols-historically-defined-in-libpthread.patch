@@ -1,0 +1,1107 @@
+From patchwork Wed May  5 13:44:28 2021
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Florian Weimer <fweimer@redhat.com>
+X-Patchwork-Id: 43259
+Return-Path: <libc-alpha-bounces@sourceware.org>
+X-Original-To: patchwork@sourceware.org
+Delivered-To: patchwork@sourceware.org
+Received: from server2.sourceware.org (localhost [IPv6:::1])
+	by sourceware.org (Postfix) with ESMTP id 94F883851C13;
+	Wed,  5 May 2021 13:44:26 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 sourceware.org 94F883851C13
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sourceware.org;
+	s=default; t=1620222266;
+	bh=VT25yacQmBvq2vSZ75QBdFyg4N1ho/t9qicie0ndttY=;
+	h=To:Subject:Date:List-Id:List-Unsubscribe:List-Archive:List-Post:
+	 List-Help:List-Subscribe:From:Reply-To:Cc:From;
+	b=OvI40iKglrh4JU1m9SD3rG85rPh+BKg7egvV2F8XlUcgi8LWNvmHIXfe1AEM/sRdP
+	 jtGVdZ9CI5CTXQECf/YcZWcQCuvoCbBSnsLSWfYv4HfzngCE6vyhBXTBCG0Ohrt1ag
+	 A2y8O0Rn0zW97pOCEmyfEzS35vkm1QR9jMOAeEHk=
+X-Original-To: libc-alpha@sourceware.org
+Delivered-To: libc-alpha@sourceware.org
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by sourceware.org (Postfix) with ESMTP id 1B1DB3857426
+ for <libc-alpha@sourceware.org>; Wed,  5 May 2021 13:44:21 +0000 (GMT)
+DMARC-Filter: OpenDMARC Filter v1.3.2 sourceware.org 1B1DB3857426
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-411-2_DU3tboNRWl87dN6lkWKg-1; Wed, 05 May 2021 09:44:15 -0400
+X-MC-Unique: 2_DU3tboNRWl87dN6lkWKg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+ [10.5.11.12])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6491318397A4;
+ Wed,  5 May 2021 13:44:14 +0000 (UTC)
+Received: from oldenburg.str.redhat.com (ovpn-112-137.ams2.redhat.com
+ [10.36.112.137])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id A895D60C17;
+ Wed,  5 May 2021 13:44:12 +0000 (UTC)
+To: libc-alpha@sourceware.org
+Subject: [PATCH v2] elf: Implement filtering of symbols historically defined
+ in libpthread
+Date: Wed, 05 May 2021 15:44:28 +0200
+Message-ID: <87eeelfg77.fsf@oldenburg.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+X-Spam-Status: No, score=-12.0 required=5.0 tests=BAYES_00, DKIMWL_WL_HIGH,
+ DKIM_SIGNED, DKIM_VALID, DKIM_VALID_AU, DKIM_VALID_EF, GIT_PATCH_0,
+ KAM_SHORT,
+ RCVD_IN_DNSWL_LOW, RCVD_IN_MSPIKE_H4, RCVD_IN_MSPIKE_WL, SPF_HELO_NONE,
+ SPF_PASS, TXREP, URIBL_BLACK autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on
+ server2.sourceware.org
+X-BeenThere: libc-alpha@sourceware.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: Libc-alpha mailing list <libc-alpha.sourceware.org>
+List-Unsubscribe: <https://sourceware.org/mailman/options/libc-alpha>,
+ <mailto:libc-alpha-request@sourceware.org?subject=unsubscribe>
+List-Archive: <https://sourceware.org/pipermail/libc-alpha/>
+List-Post: <mailto:libc-alpha@sourceware.org>
+List-Help: <mailto:libc-alpha-request@sourceware.org?subject=help>
+List-Subscribe: <https://sourceware.org/mailman/listinfo/libc-alpha>,
+ <mailto:libc-alpha-request@sourceware.org?subject=subscribe>
+X-Patchwork-Original-From: Florian Weimer via Libc-alpha
+ <libc-alpha@sourceware.org>
+From: Florian Weimer <fweimer@redhat.com>
+Reply-To: Florian Weimer <fweimer@redhat.com>
+Cc: Andreas Schwab <schwab@linux-m68k.org>
+Errors-To: libc-alpha-bounces@sourceware.org
+Sender: "Libc-alpha" <libc-alpha-bounces@sourceware.org>
+
+Definitions of these symbols in libc expose bugs in existing binaries
+linked against earlier glibc versions.  Therefore, hide these symbols
+for old binaries.
+
+The symbol list in sysdeps/nptl/dl-pthread-weak.c contains some
+symbols which have not been moved yet, but that is harmless because
+the function is only invoked if the symbol is found in libc.so.
+
+The tests are implemented in assembler, to avoid introducing symbol
+dependencies introduced by the compiler or the startup code.
+
+Tested on i686-linux-gnu, powerpc64le-linux-gnu, x86_64-linux-gnu.  Also
+manually verified that bison runs again on powerpc64le-linux-gnu (it was
+crashing before).  Built with build-many-glibcs.py.
+---
+v2: A x86-64 test case is included.  thrd_exit is used by gnulib as the
+    lookup key symbol, so it needs to be hidden as well.  The
+    libpthread.so.0 load detection was not in the right place; it's now
+    in elf/dl-load.c, where it also runs when loading the dependencies
+    of the main program.
+
+ elf/Makefile                                |  46 ++++++++-
+ elf/dl-load.c                               |   8 ++
+ elf/dl-lookup.c                             |  13 ++-
+ elf/dl-pthread-weak.c                       |  20 ++++
+ elf/dl-version.c                            |   2 +
+ elf/stubmod-lib.S                           |   1 +
+ elf/tst-dl-pthread-weak-refmod.c            |  22 ++++
+ elf/tst-dl-pthread-weak-unversionedmod.S    |  32 ++++++
+ elf/tst-dl-pthread-weak-versionedmod.S      |  24 +++++
+ elf/tst-dl-pthread-weak-versionedmod.map    |  21 ++++
+ sysdeps/generic/dl-pthread-weak.h           |  67 ++++++++++++
+ sysdeps/nptl/dl-pthread-weak.c              | 155 ++++++++++++++++++++++++++++
+ sysdeps/nptl/dl-pthread-weak.h              | 107 +++++++++++++++++++
+ sysdeps/x86_64/nptl/Makefile                |  27 +++++
+ sysdeps/x86_64/nptl/tst-dl-pthread-weak-1.S |  47 +++++++++
+ sysdeps/x86_64/nptl/tst-dl-pthread-weak-2.S |  49 +++++++++
+ sysdeps/x86_64/nptl/tst-dl-pthread-weak-3.S |  55 ++++++++++
+ sysdeps/x86_64/nptl/tst-dl-pthread-weak-4.S |  49 +++++++++
+ sysdeps/x86_64/nptl/tst-dl-pthread-weak-5.S |  45 ++++++++
+ 19 files changed, 784 insertions(+), 6 deletions(-)
+
+diff --git a/elf/Makefile b/elf/Makefile
+index f09988f7d2..6ed98b5784 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -34,7 +34,7 @@ dl-routines	= $(addprefix dl-,load lookup object reloc deps \
+ 				  version profile tls origin scope \
+ 				  execstack open close trampoline \
+ 				  exception sort-maps lookup-direct \
+-				  call-libc-early-init write \
++				  call-libc-early-init write pthread-weak \
+ 				  thread_gscope_wait tls_init_tp)
+ ifeq (yes,$(use-ldconfig))
+ dl-routines += dl-cache
+@@ -346,6 +346,10 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
+ 		libmarkermod3-1 libmarkermod3-2 libmarkermod3-3 \
+ 		libmarkermod4-1 libmarkermod4-2 libmarkermod4-3 libmarkermod4-4 \
+ 		tst-tls20mod-bad tst-dlmopen-dlerror-mod \
++		tst-dl-pthread-weak-refmod \
++		tst-dl-pthread-weak-unversionedmod \
++		tst-dl-pthread-weak-versionedmod \
++		stubmod-libc stubmod-libpthread \
+ 
+ # Most modules build with _ISOMAC defined, but those filtered out
+ # depend on internal headers.
+@@ -387,8 +391,15 @@ endif
+ modules-execstack-yes = tst-execstack-mod
+ extra-test-objs += $(addsuffix .os,$(strip $(modules-names)))
+ 
+-# filtmod1.so, tst-big-note-lib.so have special rules.
+-modules-names-nobuild := filtmod1 tst-big-note-lib
++# These modules have special rules.
++modules-names-nobuild := \
++  filtmod1 \
++  stubmod-libc \
++  stubmod-libpthread \
++  tst-big-note-lib \
++  tst-dl-pthread-weak-refmod \
++  tst-dl-pthread-weak-unversionedmod \
++  tst-dl-pthread-weak-versionedmod \
+ 
+ tests += $(tests-static)
+ 
+@@ -1936,3 +1947,32 @@ tst-tls20mod-bad.so-no-z-defs = yes
+ $(objpfx)tst-tls20: $(libdl) $(shared-thread-library)
+ $(objpfx)tst-tls20.out: $(objpfx)tst-tls20mod-bad.so \
+ 			$(tst-tls-many-dynamic-modules:%=$(objpfx)%.so)
++
++# Setting up rules for weak libpthread symbol tests.  First produce
++# empty objects with just the sonames.
++$(objpfx)stubmod-lib%.so: $(objpfx)stubmod-lib.os
++	$(LINK.o) -shared -o $@ -B$(csu-objpfx) $(LDFLAGS.so) \
++	  -Wl,-soname=lib$*.so$(lib$*.so-version) -nostdlib $<
++# Linking with this test module provides a way to create a GLIBC_2.34
++# symbol version reference, via the new_symbol_at_2_34 symbol.
++$(objpfx)tst-dl-pthread-weak-versionedmod.so: \
++  $(objpfx)tst-dl-pthread-weak-versionedmod.os \
++  tst-dl-pthread-weak-versionedmod.map
++	$(LINK.o) -shared -o $@ -B$(csu-objpfx) $(LDFLAGS.so) \
++	  $< -Wl,--version-script=tst-dl-pthread-weak-versionedmod.map
++# This module provides unversioned definitions of some libpthread symbols.
++# Change the soname to avoid symbol interposition at run time.
++$(objpfx)tst-dl-pthread-weak-unversionedmod.so: \
++  $(objpfx)tst-dl-pthread-weak-unversionedmod.os
++	$(LINK.o) -shared -o $@ -B$(csu-objpfx) $(LDFLAGS.so) $< \
++	-Wl,-soname=libc.so$(libc.so-version)
++# This module exports the address of a weak libpthread symbol.
++$(objpfx)tst-dl-pthread-weak-refmod.so: \
++  $(objpfx)tst-dl-pthread-weak-refmod.os
++	$(LINK.o) -shared -o $@ -B$(csu-objpfx) $(LDFLAGS.so) $<
++# The weak symbol tests link to the intended stub libraries explicitly.
++$(objpfx)tst-dl-pthread-weak%: $(objpfx)tst-dl-pthread-weak%.o
++	$(CC) -nostdlib -nostartfiles $(no-pie-ldflag) -o $@ $^
++.PRECIOUS: $(objpfx)tst-dl-pthread-weak%
++$(objpfx)tst-dl-pthread-weak%.out: $(objpfx)tst-dl-pthread-weak%
++	$(test-wrapper) $(rtld-prefix) $< >$@; $(evaluate-test)
+diff --git a/elf/dl-load.c b/elf/dl-load.c
+index 2832ab3540..12004c5fee 100644
+--- a/elf/dl-load.c
++++ b/elf/dl-load.c
+@@ -31,6 +31,7 @@
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <gnu/lib-names.h>
++#include <dl-pthread-weak.h>
+ 
+ /* Type for the buffer we put the ELF header and hopefully the program
+    header.  This buffer does not really have to be too large.  In most
+@@ -1484,6 +1485,13 @@ cannot enable executable stack as shared object requires");
+ 		  + l->l_info[DT_SONAME]->d_un.d_val), LIBC_SO) == 0)
+     GL(dl_ns)[nsid].libc_map = l;
+ 
++  /* Provide an opportunity to register loading of libpthread.so.
++     This is not rolled back in case of dlopen failure.  This is not a
++     problem because knowing the presence of libpthread.so only makes
++     a difference for binding the main program, where failures are
++     fatal anyway.  */
++  dl_pthread_record_dlopen (l);
++
+   /* _dl_close can only eventually undo the module ID assignment (via
+      remove_slotinfo) if this function returns a pointer to a link
+      map.  Therefore, delay this step until all possibilities for
+diff --git a/elf/dl-lookup.c b/elf/dl-lookup.c
+index eea217eb28..2a2b46f85c 100644
+--- a/elf/dl-lookup.c
++++ b/elf/dl-lookup.c
+@@ -29,6 +29,7 @@
+ #include <tls.h>
+ #include <atomic.h>
+ #include <elf_machine_sym_no_match.h>
++#include <dl-pthread-weak.h>
+ 
+ #include <assert.h>
+ 
+@@ -64,6 +65,7 @@ check_match (const char *const undef_name,
+ 	     const Elf_Symndx symidx,
+ 	     const char *const strtab,
+ 	     const struct link_map *const map,
++	     const struct link_map *undef_map,
+ 	     const ElfW(Sym) **const versioned_sym,
+ 	     int *const num_versions)
+ {
+@@ -142,6 +144,11 @@ check_match (const char *const undef_name,
+ 	 public interface should be returned.  */
+       if (verstab != NULL)
+ 	{
++	  /* Check if this is a legacy pthread weak symbol reference.
++	     If yes, then do not bind to this symbol.  */
++	  if (dl_pthread_hide_symbol (undef_map, undef_name, ref, map))
++	    return NULL;
++
+ 	  if ((verstab[symidx] & 0x7fff)
+ 	      >= ((flags & DL_LOOKUP_RETURN_NEWEST) ? 2 : 3))
+ 	    {
+@@ -429,8 +436,8 @@ do_lookup_x (const char *undef_name, uint_fast32_t new_hash,
+ 			symidx = ELF_MACHINE_HASH_SYMIDX (map, hasharr);
+ 			sym = check_match (undef_name, ref, version, flags,
+ 					   type_class, &symtab[symidx], symidx,
+-					   strtab, map, &versioned_sym,
+-					   &num_versions);
++					   strtab, map, undef_map,
++					   &versioned_sym, &num_versions);
+ 			if (sym != NULL)
+ 			  goto found_it;
+ 		      }
+@@ -454,7 +461,7 @@ do_lookup_x (const char *undef_name, uint_fast32_t new_hash,
+ 	    {
+ 	      sym = check_match (undef_name, ref, version, flags,
+ 				 type_class, &symtab[symidx], symidx,
+-				 strtab, map, &versioned_sym,
++				 strtab, map, undef_map, &versioned_sym,
+ 				 &num_versions);
+ 	      if (sym != NULL)
+ 		goto found_it;
+diff --git a/elf/dl-pthread-weak.c b/elf/dl-pthread-weak.c
+new file mode 100644
+index 0000000000..aff80d4177
+--- /dev/null
++++ b/elf/dl-pthread-weak.c
+@@ -0,0 +1,20 @@
++/* Weak references to symbols formerly in libpthread.  Generic version.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++/* The generic version is a header-only implementation.  */
++#include <dl-pthread-weak.h>
+diff --git a/elf/dl-version.c b/elf/dl-version.c
+index 914955c2a8..d4c3b24a76 100644
+--- a/elf/dl-version.c
++++ b/elf/dl-version.c
+@@ -24,6 +24,7 @@
+ #include <string.h>
+ #include <ldsodefs.h>
+ #include <_itoa.h>
++#include <dl-pthread-weak.h>
+ 
+ #include <assert.h>
+ 
+@@ -220,6 +221,7 @@ _dl_check_map_versions (struct link_map *map, int verbose, int trace_mode)
+ 					  strtab + aux->vna_name,
+ 					  needed->l_real, verbose,
+ 					  aux->vna_flags & VER_FLG_WEAK);
++		  dl_pthread_record_version (map, aux);
+ 
+ 		  /* Compare the version index.  */
+ 		  if ((unsigned int) (aux->vna_other & 0x7fff) > ndx_high)
+diff --git a/elf/stubmod-lib.S b/elf/stubmod-lib.S
+new file mode 100644
+index 0000000000..b69b06546a
+--- /dev/null
++++ b/elf/stubmod-lib.S
+@@ -0,0 +1 @@
++/* Empty input file for stub libraries containing only sonames.  */
+diff --git a/elf/tst-dl-pthread-weak-refmod.c b/elf/tst-dl-pthread-weak-refmod.c
+new file mode 100644
+index 0000000000..ff2c3f66dc
+--- /dev/null
++++ b/elf/tst-dl-pthread-weak-refmod.c
+@@ -0,0 +1,22 @@
++/* Special test module providing the address of pthread_mutexattr_gettype.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <pthread.h>
++
++#pragma weak pthread_mutexattr_gettype
++void *ref_pthread_mutexattr_gettype = pthread_mutexattr_gettype;
+diff --git a/elf/tst-dl-pthread-weak-unversionedmod.S b/elf/tst-dl-pthread-weak-unversionedmod.S
+new file mode 100644
+index 0000000000..ba1becdefc
+--- /dev/null
++++ b/elf/tst-dl-pthread-weak-unversionedmod.S
+@@ -0,0 +1,32 @@
++/* Special test module providing unversioned definitions at link time.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++        .text
++        .globl pthread_mutex_lock
++pthread_mutex_lock:
++        .type pthread_mutex_lock, %function
++        .size pthread_mutex_lock, 16
++        .globl __pthread_mutex_lock
++__pthread_mutex_lock:
++        .type __pthread_mutex_lock, %function
++        .size __pthread_mutex_lock, 16
++        .globl thrd_exit
++thrd_exit:
++        .type thrd_exit, %function
++        .size thrd_exit, 16
++        .zero 16
+diff --git a/elf/tst-dl-pthread-weak-versionedmod.S b/elf/tst-dl-pthread-weak-versionedmod.S
+new file mode 100644
+index 0000000000..e62aee27c8
+--- /dev/null
++++ b/elf/tst-dl-pthread-weak-versionedmod.S
+@@ -0,0 +1,24 @@
++/* Special test module not link against libc, but with a GLIBC_2.34 version.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++        .data
++        .globl new_symbol_at_2_34
++new_symbol_at_2_34:
++        .byte 0
++        .size new_symbol_at_2_34, 1
++        .type new_symbol_at_2_34, %object
+diff --git a/elf/tst-dl-pthread-weak-versionedmod.map b/elf/tst-dl-pthread-weak-versionedmod.map
+new file mode 100644
+index 0000000000..650db5a576
+--- /dev/null
++++ b/elf/tst-dl-pthread-weak-versionedmod.map
+@@ -0,0 +1,21 @@
++/* Special test module not link against libc, but with a GLIBC_2.34 version.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++GLIBC_2.34 {
++  global: new_symbol_at_2_34;
++};
+\ No newline at end of file
+diff --git a/sysdeps/generic/dl-pthread-weak.h b/sysdeps/generic/dl-pthread-weak.h
+new file mode 100644
+index 0000000000..109cb4264b
+--- /dev/null
++++ b/sysdeps/generic/dl-pthread-weak.h
+@@ -0,0 +1,67 @@
++/* Weak references to symbols formerly in libpthread.  Generic version.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++/* A lot of applications contain code like this:
++
++   if (pthread_mutexattr_gettype != NULL)
++     pthread_once (&once_control, initializer_function);
++
++   pthread_mutexattr_gettype and pthread_once are declared as weak in
++   the application.  Traditionally, link editors apply various forms
++   of relaxations to a call to a weak function symbol if the symbol is
++   undefined at static link time.  This eliminates the symbol
++   reference, but the relevant code path cannot be executed anymore.
++   Such code paths become active after symbols like
++   pthread_mutexattr_gettype are moved into libc, so it is necessary
++   to mask the existence of the symbol for old binaries.  */
++
++#ifndef _DL_PTHREAD_WEAK_H
++#define _DL_PTHREAD_WEAK_H
++
++#include <ldsodefs.h>
++#include <link.h>
++#include <stdbool.h>
++
++/* Returns true if check_match in elf/dl-lookup.c should not resolve
++   the symbol.  Called only if an unversioned symbol is about to be
++   bound to a versioned symbol.  */
++static inline bool
++dl_pthread_hide_symbol (const struct link_map *undef_map,
++                        const char *undef_name,
++                        const ElfW(Sym) *undef_sym,
++                        const struct link_map *defining_map)
++{
++  return false;
++}
++
++/* Called during dlopen in the base namespace.  This can be used to
++   detect a reference to libpthread.  */
++static inline void
++dl_pthread_record_dlopen (const struct link_map *map)
++{
++}
++
++/* Called for each needed version during symbol version information
++   processing as part of dlopen.  */
++static inline void
++dl_pthread_record_version (const struct link_map *map,
++                           const ElfW(Vernaux) *aux)
++{
++}
++
++#endif /* _DL_PTHREAD_WEAK_H */
+diff --git a/sysdeps/nptl/dl-pthread-weak.c b/sysdeps/nptl/dl-pthread-weak.c
+new file mode 100644
+index 0000000000..15d81e72c3
+--- /dev/null
++++ b/sysdeps/nptl/dl-pthread-weak.c
+@@ -0,0 +1,155 @@
++/* Weak references to symbols formerly in libpthread.  NPTL version.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <array_length.h>
++#include <dl-pthread-weak.h>
++
++#if DL_PTHREAD_WEAK_NEEDED
++bool _dl_pthread_weak_symbols;
++
++/* There are several ways to implement the check to identify the
++   relevant symbols.  For example, we could use the otherwise unused
++   weak symbol status within libc.so.  The set representation is
++   reasonably small and fast.  This function is called only for weak
++   unversioned symbol references already found in libc.so, which is an
++   unusual case and therefore not on the fast path for symbol
++   lookup.  */
++
++
++/* Lexicographically ordered list of symbols originally at the
++   GLIBC_2.0 and GLIBC_2.1 versions.  Later symbols (including C11
++   symbols) will give false negatives on earlier glibc versions and
++   are thus unsuitable for libpthread detection.  Even GLIBC_2.1 is
++   problematic in this regard, but actual binaries use
++   pthread_mutexattr_gettype as the detector symbol.  */
++enum { maximum_length = 21 };
++static const char symbols[][maximum_length] =
++  {
++    "_cleanup_pop",
++    "_cleanup_pop_restore",
++    "_cleanup_push",
++    "_cleanup_push_defer",
++    "_getspecific",
++    "_key_create",
++    "_mutex_destroy",
++    "_mutex_init",
++    "_mutex_lock",
++    "_mutex_trylock",
++    "_mutex_unlock",
++    "_mutexattr_destroy",
++    "_mutexattr_init",
++    "_mutexattr_settype",
++    "_once",
++    "_setspecific",
++    "atfork",
++    "attr_getguardsize",
++    "attr_getstackaddr",
++    "attr_getstacksize",
++    "attr_setguardsize",
++    "attr_setstackaddr",
++    "attr_setstacksize",
++    "cancel",
++    "create",
++    "detach",
++    "getconcurrency",
++    "getspecific",
++    "join",
++    "key_create",
++    "key_delete",
++    "kill",
++    "kill_other_threads_np",
++    "mutex_trylock",
++    "mutexattr_destroy",
++    "mutexattr_getkind_np",
++    "mutexattr_gettype",
++    "mutexattr_init",
++    "mutexattr_setkind_np",
++    "mutexattr_settype",
++    "once",
++    "rwlock_destroy",
++    "rwlock_init",
++    "rwlock_rdlock",
++    "rwlock_tryrdlock",
++    "rwlock_trywrlock",
++    "rwlock_unlock",
++    "rwlock_wrlock",
++    "rwlockattr_destroy",
++    "rwlockattr_getkind_np",
++    "rwlockattr_getpshared",
++    "rwlockattr_init",
++    "rwlockattr_setkind_np",
++    "rwlockattr_setpshared",
++    "sem_destroy",
++    "sem_getvalue",
++    "sem_init",
++    "sem_post",
++    "sem_trywait",
++    "sem_wait",
++    "setconcurrency",
++    "setspecific",
++    "sigmask",
++    "testcancel",
++  };
++
++static inline int
++compare (const void *a, const void *b)
++{
++  return strncmp (a, b, maximum_length);
++}
++
++bool
++_dl_pthread_hidden_symbol (const char *undef_name)
++{
++  /* Turn the __pthread and _pthread prefixes into a _ prefix.  This
++     allows us to use a single lookup table.  (The difference between
++     __pthread_mutex_lock and pthread_mutex_lock is significant, for
++     example.)  */
++  const char *key = NULL;
++  if (strncmp (undef_name, "__pthread_", strlen ("__pthread_")) == 0)
++    key = undef_name + strlen ("__pthread");
++  else if (strncmp (undef_name, "_pthread_", strlen ("_pthread_")) == 0)
++    key = undef_name + strlen ("_pthread");
++  else if (strncmp (undef_name, "pthread_", strlen ("pthread_")) == 0)
++    key = undef_name + strlen ("pthread_");
++  else if (strncmp (undef_name, "sem_", strlen ("sem_")) == 0)
++    /* Do not remove the sem_ prefix.  This would result in false
++       matches for symbols such as pthread_sem_post, but no such
++       symbols exist.  */
++    key = undef_name;
++  else if (strcmp (undef_name, "thrd_exit") == 0)
++    return true;
++
++  if (key == NULL || strlen (key) > maximum_length)
++    /* The prefix of undef_name is not recognized, or the string is
++       not in the table because it is too long.  */
++    return false;
++
++  if (bsearch (key, symbols, array_length (symbols), maximum_length,
++               compare) != NULL)
++    {
++      if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_BINDINGS))
++        _dl_debug_printf ("\
++not binding legacy weak reference in main program to %s\n",
++                          undef_name);
++      return true;
++    }
++
++  return false;
++}
++
++#endif /* DL_PTHREAD_WEAK_NEEDED */
+diff --git a/sysdeps/nptl/dl-pthread-weak.h b/sysdeps/nptl/dl-pthread-weak.h
+new file mode 100644
+index 0000000000..f252abcafe
+--- /dev/null
++++ b/sysdeps/nptl/dl-pthread-weak.h
+@@ -0,0 +1,107 @@
++/* Weak references to symbols formerly in libpthread.  NPTL version.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <shlib-compat.h>
++#if OTHER_SHLIB_COMPAT (libpthread, GLIBC_2_0, GLIBC_2_34)
++
++/* For context, refer to <sysdeps/generic/dl-pthread-weak.h>.  */
++
++# include <gnu/lib-names.h>
++# include <ldsodefs.h>
++# include <link.h>
++# include <stdbool.h>
++# include <string.h>
++
++/* The implementation file needs to be compiled.  */
++#define DL_PTHREAD_WEAK_NEEDED 1
++
++/* If false, weak symbols to old libpthread-only functions are hidden
++   from symbol resolution in the main program.  Set to true if
++   libpthread is loaded by the main program (via
++   dl_pthread_record_dlopen), or if the main program references
++   GLIBC_2.34 (via dl_pthread_record_version).  */
++extern bool _dl_pthread_weak_symbols attribute_hidden;
++
++/* Returns true if UNDEF_NAME refers to a libpthread symbol that is
++   hidden (in case of certain weak symbol references from the main
++   program).  */
++bool _dl_pthread_hidden_symbol (const char *undef_name) attribute_hidden;
++
++static inline bool
++dl_pthread_hide_symbol (const struct link_map *undef_map,
++                        const char *undef_name,
++                        const ElfW(Sym) *undef_sym,
++                        const struct link_map *defining_map)
++{
++  /* Check if symbol hiding has been disabled.  */
++  if (_dl_pthread_weak_symbols)
++    return false;
++
++  /* Symbol hiding only applies to weak symbol references.  */
++  if (undef_sym == NULL || ELFW(ST_BIND) (undef_sym->st_info) != STB_WEAK)
++    return false;
++
++  /* Only symbols in the main map are potentially hidden.  Shared
++     objects are compiled as PIC and are not affected by link editor
++     optimizations.  This implies a check that we are in the base
++     namespace.  */
++  const struct link_map *main_map = GL (dl_ns)[LM_ID_BASE]._ns_loaded;
++  if (undef_map != main_map)
++    return false;
++
++  /* Symbol hiding only applies to symbols in libc.so.  */
++  if (defining_map != GL (dl_ns)[LM_ID_BASE].libc_map)
++    return false;
++
++  /* Delegate to the out-of-line name checking function.  */
++  return _dl_pthread_hidden_symbol (undef_name);
++}
++
++static inline void
++dl_pthread_record_dlopen (const struct link_map *map)
++{
++  /* This assumes that our libpthread has soname (and still exists as
++     a separate shared object).  */
++  const char *strtab = (const char *) D_PTR (map, l_info[DT_STRTAB]);
++  if (map->l_info[DT_SONAME] != NULL
++      && strcmp (strtab + map->l_info[DT_SONAME]->d_un.d_val,
++                 LIBPTHREAD_SO) == 0)
++    _dl_pthread_weak_symbols = true;
++}
++
++static inline void
++dl_pthread_record_version (const struct link_map *map,
++                           const ElfW(Vernaux) *aux)
++{
++  /* Only GLIBC_2.34 references from the main map disable weak symbol
++     hiding.  */
++  const struct link_map *main_map = GL (dl_ns)[LM_ID_BASE]._ns_loaded;
++  if (map != main_map)
++    return;
++
++  const char *strtab = (const char *) D_PTR (map, l_info[DT_STRTAB]);
++  if (strcmp (strtab + aux->vna_name, "GLIBC_2.34") == 0)
++    _dl_pthread_weak_symbols = true;
++}
++
++#else
++/* For static build and glibc after 2.34, it is possible to use the
++   no-op default version.  */
++# include <sysdeps/generic/dl-pthread-weak.h>
++# define DL_PTHREAD_WEAK_NEEDED 0
++#endif
+diff --git a/sysdeps/x86_64/nptl/Makefile b/sysdeps/x86_64/nptl/Makefile
+index d4c424f6c2..c1036c7860 100644
+--- a/sysdeps/x86_64/nptl/Makefile
++++ b/sysdeps/x86_64/nptl/Makefile
+@@ -18,3 +18,30 @@
+ ifeq ($(subdir),csu)
+ gen-as-const-headers += tcb-offsets.sym
+ endif
++
++ifeq ($(subdir),elf)
++tests: \
++  $(objpfx)tst-dl-pthread-weak-1 \
++  $(objpfx)tst-dl-pthread-weak-2 \
++  $(objpfx)tst-dl-pthread-weak-3 \
++  $(objpfx)tst-dl-pthread-weak-4 \
++  $(objpfx)tst-dl-pthread-weak-5 \
++
++$(objpfx)tst-dl-pthread-weak-1: $(objpfx)stubmod-libc.so
++$(objpfx)tst-dl-pthread-weak-2: $(objpfx)stubmod-libpthread.so
++$(objpfx)tst-dl-pthread-weak-3: \
++  $(objpfx)stubmod-libc.so $(objpfx)tst-dl-pthread-weak-versionedmod.so
++$(objpfx)tst-dl-pthread-weak-4: $(objpfx)tst-dl-pthread-weak-unversionedmod.so
++$(objpfx)tst-dl-pthread-weak-5: \
++  $(objpfx)stubmod-libc.so $(objpfx)tst-dl-pthread-weak-refmod.so
++
++ifneq ($(run-built-tests),no)
++tests-special += \
++  $(objpfx)tst-dl-pthread-weak-1.out \
++  $(objpfx)tst-dl-pthread-weak-2.out \
++  $(objpfx)tst-dl-pthread-weak-3.out \
++  $(objpfx)tst-dl-pthread-weak-4.out \
++  $(objpfx)tst-dl-pthread-weak-5.out \
++
++endif # $(run-built-tests)
++endif # $(subdir) == elf
+diff --git a/sysdeps/x86_64/nptl/tst-dl-pthread-weak-1.S b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-1.S
+new file mode 100644
+index 0000000000..e614c51bc7
+--- /dev/null
++++ b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-1.S
+@@ -0,0 +1,47 @@
++/* Test weak libpthread references.  Old binary not linked against libpthread.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sys/syscall.h>
++#include <sysdep.h>
++
++        .weak pthread_mutex_lock
++        .weak __pthread_mutex_lock
++        .weak thrd_exit
++
++        .text
++        .globl _start
++_start:
++        /* pthread_mutex_lock has always been available in libc.so.6.  */
++        LP_OP (cmp) $0, pthread_mutex_lock@GOTPCREL(%rip)
++        jz fail
++
++        /* __pthread_mutex_lock was only in libpthread.so.0.  */
++        LP_OP (cmp) $0, __pthread_mutex_lock@GOTPCREL(%rip)
++        jnz fail
++
++        /* This symbol was added later to libpthread.so.0.  */
++        LP_OP (cmp) $0, thrd_exit@GOTPCREL(%rip)
++        jnz fail
++
++        xor %edi, %edi
++        mov $__NR_exit, %eax
++        syscall
++fail:
++        mov $1, %edi
++        mov $__NR_exit, %eax
++        syscall
+diff --git a/sysdeps/x86_64/nptl/tst-dl-pthread-weak-2.S b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-2.S
+new file mode 100644
+index 0000000000..546eaf54f3
+--- /dev/null
++++ b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-2.S
+@@ -0,0 +1,49 @@
++/* Test weak libpthread references.  Old binary linked against libpthread.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sys/syscall.h>
++#include <sysdep.h>
++
++        .weak pthread_mutex_lock
++        .weak __pthread_mutex_lock
++        .weak thrd_exit
++
++        .text
++        .globl _start
++_start:
++        /* pthread_mutex_lock has always been available in libc.so.6.  */
++        LP_OP (cmp) $0, pthread_mutex_lock@GOTPCREL(%rip)
++        jz fail
++
++        /* __pthread_mutex_lock was only in libpthread.so.0, but this
++           binary is linked against libpthread.so.0, so the symbol
++           must be available.  */
++        LP_OP (cmp) $0, __pthread_mutex_lock@GOTPCREL(%rip)
++        jz fail
++
++        /* This symbol was added later to libpthread.so.0.  */
++        LP_OP (cmp) $0, thrd_exit@GOTPCREL(%rip)
++        jz fail
++
++        xor %edi, %edi
++        mov $__NR_exit, %eax
++        syscall
++fail:
++        mov $1, %edi
++        mov $__NR_exit, %eax
++        syscall
+diff --git a/sysdeps/x86_64/nptl/tst-dl-pthread-weak-3.S b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-3.S
+new file mode 100644
+index 0000000000..c6fb1e7e48
+--- /dev/null
++++ b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-3.S
+@@ -0,0 +1,55 @@
++/* Test weak libpthread references.  New binary linked with weak references.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sys/syscall.h>
++#include <sysdep.h>
++
++/* These unversioned weak references are somewhat broken because linking
++   against glibc 2.34 or later will result in the symbol versions being
++   filled in.  */
++        .weak pthread_mutex_lock
++        .weak __pthread_mutex_lock
++        .weak thrd_exit
++
++        .text
++        .globl _start
++_start:
++        /* pthread_mutex_lock has always been available in libc.so.6.  */
++        LP_OP (cmp) $0, pthread_mutex_lock@GOTPCREL(%rip)
++        jz fail
++
++        /* __pthread_mutex_lock was only in libpthread.so.0, but this
++           binary references GLIBC_2.34, so all symbols are visible..  */
++        LP_OP (cmp) $0, __pthread_mutex_lock@GOTPCREL(%rip)
++        jz fail
++
++        /* This symbol was added later to libpthread.so.0.  */
++        LP_OP (cmp) $0, thrd_exit@GOTPCREL(%rip)
++        jz fail
++
++        xor %edi, %edi
++        mov $__NR_exit, %eax
++        syscall
++fail:
++        mov $1, %edi
++        mov $__NR_exit, %eax
++        syscall
++
++        /* Produce a reference to the GLIBC_2.34 symbol version.  */
++        .global new_symbol_at_2_34
++        .quad new_symbol_at_2_34
+diff --git a/sysdeps/x86_64/nptl/tst-dl-pthread-weak-4.S b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-4.S
+new file mode 100644
+index 0000000000..8042d98f96
+--- /dev/null
++++ b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-4.S
+@@ -0,0 +1,49 @@
++/* Test weak libpthread references.  Old binary with strong references.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++/* Strong references should always be bound, even in old binaries.  */
++
++#include <sys/syscall.h>
++#include <sysdep.h>
++
++        .globl pthread_mutex_lock
++        .globl __pthread_mutex_lock
++        .globl thrd_exit
++
++        .text
++        .globl _start
++_start:
++        /* pthread_mutex_lock has always been available in libc.so.6.  */
++        LP_OP (cmp) $0, pthread_mutex_lock@GOTPCREL(%rip)
++        jz fail
++
++        /* __pthread_mutex_lock was only in libpthread.so.0.  */
++        LP_OP (cmp) $0, __pthread_mutex_lock@GOTPCREL(%rip)
++        jz fail
++
++        /* This symbol was added later to libpthread.so.0.  */
++        LP_OP (cmp) $0, thrd_exit@GOTPCREL(%rip)
++        jz fail
++
++        xor %edi, %edi
++        mov $__NR_exit, %eax
++        syscall
++fail:
++        mov $1, %edi
++        mov $__NR_exit, %eax
++        syscall
+diff --git a/sysdeps/x86_64/nptl/tst-dl-pthread-weak-5.S b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-5.S
+new file mode 100644
+index 0000000000..28c6389c5a
+--- /dev/null
++++ b/sysdeps/x86_64/nptl/tst-dl-pthread-weak-5.S
+@@ -0,0 +1,45 @@
++/* Test weak libpthread references.  Old binary with shared object.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <sys/syscall.h>
++#include <sysdep.h>
++
++        .weak pthread_mutexattr_gettype
++
++        .text
++        .globl _start
++_start:
++        /* In the main program, the symbol should be undefined.  */
++        LP_OP (cmp) $0, pthread_mutexattr_gettype@GOTPCREL(%rip)
++        jnz fail
++
++        /* But in the shared object, it should be defined.  This is
++           because link editors tend to keep all undefined weak
++           references in PIC code, so the libpthread historic weak
++           symbol workaround is not needed for shared objects.  */
++        mov ref_pthread_mutexattr_gettype(%rip), %RAX_LP
++        test %RAX_LP, %RAX_LP
++        jz fail
++
++        xor %edi, %edi
++        mov $__NR_exit, %eax
++        syscall
++fail:
++        mov $1, %edi
++        mov $__NR_exit, %eax
++        syscall
