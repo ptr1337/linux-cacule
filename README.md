@@ -91,6 +91,7 @@ Here you find the repo from the creator of the scheduler:
 https://github.com/hamadmarri/cacule-cpu-scheduler
 
 # Credits
+
 Hamad Marri for his cacule scheduler https://github.com/hamadmarri
 SirLucjan (Piotr Gorski) for his patches https://github.com/sirlucjan/kernel-patches
 Arch
