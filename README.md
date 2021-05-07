@@ -93,7 +93,11 @@ https://github.com/hamadmarri/cacule-cpu-scheduler
 # Credits
 
 Hamad Marri for his cacule scheduler https://github.com/hamadmarri
+
 SirLucjan (Piotr Gorski) for his patches https://github.com/sirlucjan/kernel-patches
+
 Arch
+
 GarudaLinux
+
 and all other Kernel Developers
