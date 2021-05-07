@@ -49,6 +49,8 @@ You can tune the scheduler with following commands:
              ## Cacule-Settings ## 
             kernel.sched_interactivity_factor=32768
             kernel.sched_max_lifetime_ms=22000
+            kernel.sched_nr_fork_threshold=3
+            kernel.sched_fake_interactive_win_time_ms=1000
             kernel.sched_harsh_mode_enabled=0
 
            ### Network-Settings ##
@@ -75,15 +77,6 @@ You can tune the scheduler with following commands:
             net.core.default_qdisc = cake
             net.ipv4.tcp_congestion_control = bbr2
 
-You can check with following command if bbr2 is enabled:
-
-        sudo sysctl net.ipv4.tcp_available_congestion_control
-
-        If its not enabled try to run this command:
-
-        sudo modprobe tcp_bbr2
-
-        Then it should be enabled
 
 ## prebuilt Kernels
 
@@ -96,3 +89,10 @@ https://repo.ptr1337.dev
 Here you find the repo from the creator of the scheduler:
 
 https://github.com/hamadmarri/cacule-cpu-scheduler
+
+# Credits
+Hamad Marri for his cacule scheduler https://github.com/hamadmarri
+SirLucjan (Piotr Gorski) for his patches https://github.com/sirlucjan/kernel-patches
+Arch
+GarudaLinux
+and all other Kernel Developers
