@@ -286,7 +286,7 @@ prepare() {
       scripts/config --disable CONFIG_EXPERT
       ##TEST##
       scripts/config --enable CONFIG_NO_HZ_FULL
-      scripts/config --disable CONFIG_NO_HZ
+      scripts/config --enable CONFIG_NO_HZ
       scripts/config --disable CONFIG_NO_HZ_IDLE
       scripts/config --disable CONFIG_HZ_PERIODIC
       scripts/config --enable CONFIG_CONTEXT_TRACKING
