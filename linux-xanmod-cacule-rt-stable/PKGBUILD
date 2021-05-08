@@ -23,7 +23,6 @@ _deadline_disable=y
 ### Disable Kyber I/O scheduler
 _kyber_disable=y
 ### Running with a 1000 HZ, 750HZ or 500HZ tick rate
-_2k_HZ_ticks=
 _1k_HZ_ticks=y
 _500_HZ_ticks=
 ### Tweak kernel options prior to a build via nconfig
@@ -64,7 +63,7 @@ pkgver=${_major}.${_minor}
 _stable=${_major}.${_minor}
 #_stablerc=${_major}-${_rcver}
 _srcname=linux-${_major}
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux XanMod CacULE RT stable Version'
 versiontag=5.10.30-rt38-xanmod1
 arch=('x86_64')
@@ -143,11 +142,11 @@ prepare() {
 	fi
 
   ### Optionally set tickrate to 750HZ
-  if [ -n "$_2k_HZ_ticks" ]; then
+  if [ -n "$_750_HZ_ticks" ]; then
     echo "Setting tick rate to 1k..."
                 scripts/config --disable CONFIG_HZ_300
-                scripts/config --enable CONFIG_HZ_2000
-                scripts/config --set-val CONFIG_HZ 2000
+                scripts/config --enable CONFIG_HZ_750
+                scripts/config --set-val CONFIG_HZ 750
   fi
 
   ### Optionally set tickrate to 500HZ

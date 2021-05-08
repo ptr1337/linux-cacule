@@ -1,7 +1,7 @@
 pkgbase = linux-xanmod-cacule-rt-stable
 	pkgdesc = Linux XanMod CacULE RT stable Version
 	pkgver = 5.10.30
-	pkgrel = 1
+	pkgrel = 2
 	url = https://github.com/hamadmarri/cacule-cpu-scheduler
 	arch = x86_64
 	license = GPL2
