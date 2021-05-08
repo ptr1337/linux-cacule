@@ -46,7 +46,7 @@
 
 You can tune the scheduler with following commands:
 
-             ## Cacule-Settings ## 
+             ## Cacule-Settings ##
             kernel.sched_interactivity_factor=32768
             kernel.sched_max_lifetime_ms=22000
             kernel.sched_nr_fork_threshold=3
@@ -89,6 +89,14 @@ https://repo.ptr1337.dev
 Here you find the repo from the creator of the scheduler:
 
 https://github.com/hamadmarri/cacule-cpu-scheduler
+
+## CacULE revision 2
+
+- Added 2000HZ as an option
+- Added Responsive wakup/new task to be placed in a CPU with least Interactive score (to balance out interactive tasks among cpus)
+- Added Interactivity levels mechanism
+- Increased the precision of lifetime normalize from x8 to x1024
+- Decoupled se.vruntime from cn.vruntime
 
 # Credits
 
