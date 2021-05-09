@@ -1,0 +1,30 @@
+From aa83720109666aaafca450d3c78d7f3b4f2892e2 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 19:09:07 -0700
+Subject: [PATCH 02/39] dvb-usb: Make prototypes match
+
+gcc 11 complains when arrays in prototypes do not match the function.
+Fix this here.
+
+Cc: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ drivers/media/usb/dvb-usb/dvb-usb.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/usb/dvb-usb/dvb-usb.h b/drivers/media/usb/dvb-usb/dvb-usb.h
+index 741be0e69447..2b8ad2bde8a4 100644
+--- a/drivers/media/usb/dvb-usb/dvb-usb.h
++++ b/drivers/media/usb/dvb-usb/dvb-usb.h
+@@ -487,7 +487,7 @@ extern int __must_check
+ dvb_usb_generic_write(struct dvb_usb_device *, u8 *, u16);
+ 
+ /* commonly used remote control parsing */
+-extern int dvb_usb_nec_rc_key_to_event(struct dvb_usb_device *, u8[], u32 *, int *);
++extern int dvb_usb_nec_rc_key_to_event(struct dvb_usb_device *, u8[5], u32 *, int *);
+ 
+ /* commonly used firmware download types and function */
+ struct hexline {
+-- 
+2.30.2
+

@@ -1,0 +1,35 @@
+From 8041286cecc4f736c1b32fb476e72628b7d090fb Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sat, 3 Apr 2021 09:30:36 -0700
+Subject: [PATCH 32/39] x86/preempt/lto: Make preempt_schedule_thunk* __visble
+
+These functions are called from assembler, thus need to be visible
+for gcc LTO.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ arch/x86/include/asm/preempt.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/preempt.h b/arch/x86/include/asm/preempt.h
+index f8cb8af4de5c..903ad9011186 100644
+--- a/arch/x86/include/asm/preempt.h
++++ b/arch/x86/include/asm/preempt.h
+@@ -106,12 +106,12 @@ static __always_inline bool should_resched(int preempt_offset)
+ #ifdef CONFIG_PREEMPTION
+ 
+ extern asmlinkage void preempt_schedule(void);
+-extern asmlinkage void preempt_schedule_thunk(void);
++extern __visible asmlinkage void preempt_schedule_thunk(void);
+ 
+ #define __preempt_schedule_func preempt_schedule_thunk
+ 
+ extern asmlinkage void preempt_schedule_notrace(void);
+-extern asmlinkage void preempt_schedule_notrace_thunk(void);
++extern __visible asmlinkage void preempt_schedule_notrace_thunk(void);
+ 
+ #define __preempt_schedule_notrace_func preempt_schedule_notrace_thunk
+ 
+-- 
+2.30.2
+

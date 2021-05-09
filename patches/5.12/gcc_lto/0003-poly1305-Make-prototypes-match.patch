@@ -1,0 +1,31 @@
+From 87b653ba968de63396d12b102a3f8750f7acd628 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 19:10:06 -0700
+Subject: [PATCH 03/39] poly1305: Make prototypes match
+
+gcc 11 complains when arrays in prototypes do not match the function.
+Fix this here.
+
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ include/crypto/internal/poly1305.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/crypto/internal/poly1305.h b/include/crypto/internal/poly1305.h
+index 064e52ca5248..90ee36411e36 100644
+--- a/include/crypto/internal/poly1305.h
++++ b/include/crypto/internal/poly1305.h
+@@ -18,7 +18,7 @@
+  * only the ε-almost-∆-universal hash function (not the full MAC) is computed.
+  */
+ 
+-void poly1305_core_setkey(struct poly1305_core_key *key, const u8 *raw_key);
++void poly1305_core_setkey(struct poly1305_core_key *key, const u8 raw_key[16]);
+ static inline void poly1305_core_init(struct poly1305_state *state)
+ {
+ 	*state = (struct poly1305_state){};
+-- 
+2.30.2
+

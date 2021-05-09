@@ -1,7 +1,7 @@
-From e9de5e3a22bdbb9c0fe6da165b7355cbc2340df7 Mon Sep 17 00:00:00 2001
+From 154cb241fbad0693358ff4e2c3c85e93274eb8ae Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:26 +0000
-Subject: [PATCH 05/22] block, bfq: keep shared queues out of the waker
+Subject: [PATCH 04/21] block, bfq: keep shared queues out of the waker
  mechanism
 
 Shared queues are likely to receive I/O at a high rate. This may

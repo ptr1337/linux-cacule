@@ -1,7 +1,7 @@
-From 8f49f5a6a984b9ec02e96a7a0f7d1f987e1b5cf8 Mon Sep 17 00:00:00 2001
+From 162cfdec20c436b07bcb7e4df9a9f08be42ce7d0 Mon Sep 17 00:00:00 2001
 From: Khazhismel Kumykov <khazhy@google.com>
 Date: Thu, 18 Mar 2021 23:00:15 -0700
-Subject: [PATCH 07/22] bfq: silence lockdep for bfqd/ioc lock inversion
+Subject: [PATCH 06/21] bfq: silence lockdep for bfqd/ioc lock inversion
 
 lockdep warns of circular locking due to inversion between
 bfq_insert_requests and bfq_exit_icq. If we end freeing a request when

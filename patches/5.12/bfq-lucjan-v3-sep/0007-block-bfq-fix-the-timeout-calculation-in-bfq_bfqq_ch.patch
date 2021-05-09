@@ -1,7 +1,7 @@
-From 51776ad6dd4e56d5b15b905a07e8c65d878b63e5 Mon Sep 17 00:00:00 2001
+From 7cccf66613c50589a09f8bf23ca2f60dd0859521 Mon Sep 17 00:00:00 2001
 From: Rokudo Yan <wu-yan () tcl ! com>
 Date: Wed, 24 Mar 2021 02:33:41 +0000
-Subject: [PATCH 08/22] block,bfq: fix the timeout calculation in
+Subject: [PATCH 07/21] block,bfq: fix the timeout calculation in
  bfq_bfqq_charge_time
 
 in bfq_bfqq_charge_time, timeout_ms is calculated with global

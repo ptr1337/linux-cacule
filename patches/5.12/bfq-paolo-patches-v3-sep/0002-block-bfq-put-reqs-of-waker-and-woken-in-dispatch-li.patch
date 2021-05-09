@@ -1,8 +1,7 @@
-From d19024d86ee2dd6bcbca372bc024eef8573fe8a9 Mon Sep 17 00:00:00 2001
+From 874c5119fa4cc52bf3ce76b2521607d07e851144 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:23 +0000
-Subject: [PATCH 02/22] block, bfq: put reqs of waker and woken in dispatch
- list
+Subject: [PATCH 2/6] block, bfq: put reqs of waker and woken in dispatch list
 
 Consider a new I/O request that arrives for a bfq_queue bfqq. If, when
 this happens, the only active bfq_queues are bfqq and either its waker
@@ -20,10 +19,10 @@ Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
  1 file changed, 43 insertions(+), 1 deletion(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index eb2497750..df840f378 100644
+index 206d2bb76..a0f290286 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
-@@ -5649,7 +5649,49 @@ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
+@@ -5655,7 +5655,49 @@ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
  
  	spin_lock_irq(&bfqd->lock);
  	bfqq = bfq_init_rq(rq);

@@ -1,0 +1,33 @@
+From ed0e2fd944cecd4772a755ab68c5e3f9a36f06cc Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Mon, 17 Dec 2018 22:58:45 -0800
+Subject: [PATCH 17/39] lto, bpf: Mark interpreter jump table as noreorder
+
+gcc LTO has a problem that can cause static variables containing &&
+labels to be put into a different LTO partition and then fail the build.
+This can happen with the jump table in the BPF interprer.
+
+Mark the interpreter function and the jump table as noreorder, this
+guarantees they both end up in the first partition.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ kernel/bpf/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 75244ecb2389..1b89e0ecea07 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1373,7 +1373,7 @@ u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
+  *
+  * Decode and execute eBPF instructions.
+  */
+-static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
++static u64 __noreorder ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
+ {
+ #define BPF_INSN_2_LBL(x, y)    [BPF_##x | BPF_##y] = &&x##_##y
+ #define BPF_INSN_3_LBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = &&x##_##y##_##z
+-- 
+2.30.2
+

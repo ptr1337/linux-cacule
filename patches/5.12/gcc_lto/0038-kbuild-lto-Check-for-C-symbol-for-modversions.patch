@@ -1,0 +1,31 @@
+From b9438301444c80df2a98d0a7ab30fe8a519bc54a Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sun, 25 Apr 2021 16:35:36 -0700
+Subject: [PATCH 38/39] kbuild/lto: Check for C symbol for modversions
+
+The gcc LTO nm doesn't output assembler symbols, which
+makes the symversions check fail because ksymtab is defined
+in assembler. Check for a C symbol that is generated too
+instead.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ scripts/Makefile.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 3029f3c81c17..59de68083b48 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -169,7 +169,7 @@ ifdef CONFIG_LTO
+ # Generate .o.symversions files for each .o with exported symbols, and link these
+ # to the kernel and/or modules at the end.
+ cmd_modversions_c =								\
+-	if $(NM) $@ 2>/dev/null | grep -q __ksymtab; then			\
++	if $(NM) $@ 2>/dev/null | grep -q __kstrtab; then			\
+ 		$(call cmd_gensymtypes_c,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))	\
+ 		    > $@.symversions;						\
+ 	fi;
+-- 
+2.30.2
+
