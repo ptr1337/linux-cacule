@@ -2280,56 +2280,6 @@ index 9908ec4a9bfe..462c8f6b8709 100644
 --
 2.30.2
 
-From 88f3cdfff6164644e06c6ce452ec5d9a1148fdb5 Mon Sep 17 00:00:00 2001
-From: Andi Kleen <ak@linux.intel.com>
-Date: Sun, 4 Apr 2021 21:17:41 -0700
-Subject: [PATCH 36/39] x86/lto: Mark 32bit mem{cpy,move,set} __used
-
-gcc doesn't always recognize that memcpy/set/move called
-through __builtins are referenced because the reference happens too
-late in the RTL expansion phase. This can lead LTO to drop
-them, leading to undefined symbols. Mark them as __used to avoid
-that.
-
-This is only needed on 32bit, on 64bit they're assembler anyways.
-
-Signed-off-by: Andi Kleen <ak@linux.intel.com>
----
- arch/x86/lib/memcpy_32.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/lib/memcpy_32.c b/arch/x86/lib/memcpy_32.c
-index e565d1c9019e..3435cd7543ba 100644
---- a/arch/x86/lib/memcpy_32.c
-+++ b/arch/x86/lib/memcpy_32.c
-@@ -5,7 +5,7 @@
- #undef memcpy
- #undef memset
-
--__visible void *memcpy(void *to, const void *from, size_t n)
-+__used __visible void *memcpy(void *to, const void *from, size_t n)
- {
- #if defined(CONFIG_X86_USE_3DNOW) && !defined(CONFIG_FORTIFY_SOURCE)
- 	return __memcpy3d(to, from, n);
-@@ -15,13 +15,13 @@ __visible void *memcpy(void *to, const void *from, size_t n)
- }
- EXPORT_SYMBOL(memcpy);
-
--__visible void *memset(void *s, int c, size_t count)
-+__used __visible void *memset(void *s, int c, size_t count)
- {
- 	return __memset(s, c, count);
- }
- EXPORT_SYMBOL(memset);
-
--__visible void *memmove(void *dest, const void *src, size_t n)
-+__used __visible void *memmove(void *dest, const void *src, size_t n)
- {
- 	int d0,d1,d2,d3,d4,d5;
- 	char *ret = dest;
---
-2.30.2
-
 From 7edb2a24b345036fdc66218e76af2777b37e27fc Mon Sep 17 00:00:00 2001
 From: Andi Kleen <ak@linux.intel.com>
 Date: Sat, 27 Jun 2020 20:44:29 -0700
