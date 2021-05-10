@@ -1,0 +1,102 @@
+From 1ae2c5cdceb32e48e3e32384f503d70c44d5c6be Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sat, 3 Apr 2021 09:38:37 -0700
+Subject: [PATCH 34/39] lto: Work around gcc crash in FRE pass
+
+Two media functions in the kernel trigger crash in the FRE pass in gcc
+with LTO.  Work around this by disabling the FRE pass for those functions.
+I disabled it only with LTO and for older compilers.
+
+The problem is already fixed in gcc 11, and the fix was backported
+to gcc 10.3.
+
+Cc: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ arch/Kconfig                          |  1 +
+ drivers/media/pci/cobalt/cobalt-i2c.c |  2 +-
+ drivers/media/pci/cx18/cx18-i2c.c     |  2 +-
+ include/linux/compiler_types.h        | 10 ++++++++++
+ init/Kconfig                          |  6 ++++++
+ 5 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 4cab0655622c..23702ce4a6a9 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -713,6 +713,7 @@ config LTO_GCC
+ 	depends on LD_VERSION >= 22700
+ 	depends on !BAD_AR
+ 	select LTO
++	select CC_NEEDS_FRE_WA if GCC_VERSION < 100300
+ 	help
+ 	  Enable whole program (link time) optimizations (LTO) for the the
+ 	  whole kernel and each module.  This usually increases compile time,
+diff --git a/drivers/media/pci/cobalt/cobalt-i2c.c b/drivers/media/pci/cobalt/cobalt-i2c.c
+index 10c9ee33f73e..ab8b7e31ed53 100644
+--- a/drivers/media/pci/cobalt/cobalt-i2c.c
++++ b/drivers/media/pci/cobalt/cobalt-i2c.c
+@@ -302,7 +302,7 @@ static const struct i2c_algorithm cobalt_algo = {
+ };
+ 
+ /* init + register i2c algo-bit adapter */
+-int cobalt_i2c_init(struct cobalt *cobalt)
++__no_fre int cobalt_i2c_init(struct cobalt *cobalt)
+ {
+ 	int i, err;
+ 	int status;
+diff --git a/drivers/media/pci/cx18/cx18-i2c.c b/drivers/media/pci/cx18/cx18-i2c.c
+index a83435245251..ae775ab0bda8 100644
+--- a/drivers/media/pci/cx18/cx18-i2c.c
++++ b/drivers/media/pci/cx18/cx18-i2c.c
+@@ -214,7 +214,7 @@ static const struct i2c_algo_bit_data cx18_i2c_algo_template = {
+ };
+ 
+ /* init + register i2c adapter */
+-int init_cx18_i2c(struct cx18 *cx)
++__no_fre int init_cx18_i2c(struct cx18 *cx)
+ {
+ 	int i, err;
+ 	CX18_DEBUG_I2C("i2c init\n");
+diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+index e5dd5a4ae946..bac3c526fca3 100644
+--- a/include/linux/compiler_types.h
++++ b/include/linux/compiler_types.h
+@@ -252,6 +252,16 @@ struct ftrace_likely_data {
+ #define asm_inline asm
+ #endif
+ 
++/*
++ * Work around compiler crash in some gcc versions by disabling
++ * FRE pass for a function.
++ */
++#ifdef CONFIG_CC_NEEDS_FRE_WA
++#define __no_fre __attribute__((optimize("-fno-tree-fre")))
++#else
++#define __no_fre
++#endif
++
+ /* Are two types/vars the same type (ignoring qualifiers)? */
+ #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
+ 
+diff --git a/init/Kconfig b/init/Kconfig
+index b8054b654d61..facd4186e1ce 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1350,6 +1350,12 @@ config HAVE_LD_DEAD_CODE_DATA_ELIMINATION
+ 	  sections (e.g., '.text.init'). Typically '.' in section names
+ 	  is used to distinguish them from label names / C identifiers.
+ 
++config CC_NEEDS_FRE_WA
++	bool
++	help
++	  Disable FRE compiler pass in some functions to work around
++	  gcc segfault.
++
+ config LD_DEAD_CODE_DATA_ELIMINATION
+ 	bool "Dead code and data elimination (EXPERIMENTAL)"
+ 	depends on HAVE_LD_DEAD_CODE_DATA_ELIMINATION
+-- 
+2.30.2
+

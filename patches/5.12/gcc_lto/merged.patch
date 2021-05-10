@@ -1,0 +1,2419 @@
+From 6002e0714d2f6b0b8b1436ed5124a85efe895820 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 19:05:26 -0700
+Subject: [PATCH 01/39] x86/msr: Make prototypes match header files
+
+gcc 11 complains when arrays in prototypes do not match the function.
+Fix two occurrences here.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ arch/x86/lib/msr-smp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/lib/msr-smp.c b/arch/x86/lib/msr-smp.c
+index 75a0915b0d01..40bbe56bde32 100644
+--- a/arch/x86/lib/msr-smp.c
++++ b/arch/x86/lib/msr-smp.c
+@@ -252,7 +252,7 @@ static void __wrmsr_safe_regs_on_cpu(void *info)
+ 	rv->err = wrmsr_safe_regs(rv->regs);
+ }
+
+-int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 *regs)
++int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 regs[8])
+ {
+ 	int err;
+ 	struct msr_regs_info rv;
+@@ -265,7 +265,7 @@ int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 *regs)
+ }
+ EXPORT_SYMBOL(rdmsr_safe_regs_on_cpu);
+
+-int wrmsr_safe_regs_on_cpu(unsigned int cpu, u32 *regs)
++int wrmsr_safe_regs_on_cpu(unsigned int cpu, u32 regs[8])
+ {
+ 	int err;
+ 	struct msr_regs_info rv;
+--
+2.30.2
+
+From aa83720109666aaafca450d3c78d7f3b4f2892e2 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 19:09:07 -0700
+Subject: [PATCH 02/39] dvb-usb: Make prototypes match
+
+gcc 11 complains when arrays in prototypes do not match the function.
+Fix this here.
+
+Cc: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ drivers/media/usb/dvb-usb/dvb-usb.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/usb/dvb-usb/dvb-usb.h b/drivers/media/usb/dvb-usb/dvb-usb.h
+index 741be0e69447..2b8ad2bde8a4 100644
+--- a/drivers/media/usb/dvb-usb/dvb-usb.h
++++ b/drivers/media/usb/dvb-usb/dvb-usb.h
+@@ -487,7 +487,7 @@ extern int __must_check
+ dvb_usb_generic_write(struct dvb_usb_device *, u8 *, u16);
+
+ /* commonly used remote control parsing */
+-extern int dvb_usb_nec_rc_key_to_event(struct dvb_usb_device *, u8[], u32 *, int *);
++extern int dvb_usb_nec_rc_key_to_event(struct dvb_usb_device *, u8[5], u32 *, int *);
+
+ /* commonly used firmware download types and function */
+ struct hexline {
+--
+2.30.2
+
+From 87b653ba968de63396d12b102a3f8750f7acd628 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 19:10:06 -0700
+Subject: [PATCH 03/39] poly1305: Make prototypes match
+
+gcc 11 complains when arrays in prototypes do not match the function.
+Fix this here.
+
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ include/crypto/internal/poly1305.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/crypto/internal/poly1305.h b/include/crypto/internal/poly1305.h
+index 064e52ca5248..90ee36411e36 100644
+--- a/include/crypto/internal/poly1305.h
++++ b/include/crypto/internal/poly1305.h
+@@ -18,7 +18,7 @@
+  * only the ε-almost-∆-universal hash function (not the full MAC) is computed.
+  */
+
+-void poly1305_core_setkey(struct poly1305_core_key *key, const u8 *raw_key);
++void poly1305_core_setkey(struct poly1305_core_key *key, const u8 raw_key[16]);
+ static inline void poly1305_core_init(struct poly1305_state *state)
+ {
+ 	*state = (struct poly1305_state){};
+--
+2.30.2
+
+From a5f71562a5f60a8da040e38f895b00cc175b1272 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 10:24:00 -0700
+Subject: [PATCH 04/39] x86/resctrl: Fix init const confusion
+
+const variable must be initconst, not initdata.
+
+Cc: Fenghua Yu <fenghua.yu@intel.com>
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ arch/x86/kernel/cpu/resctrl/monitor.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
+index 7ac31210e452..4327792a22f2 100644
+--- a/arch/x86/kernel/cpu/resctrl/monitor.c
++++ b/arch/x86/kernel/cpu/resctrl/monitor.c
+@@ -84,7 +84,7 @@ unsigned int resctrl_cqm_threshold;
+ static const struct mbm_correction_factor_table {
+ 	u32 rmidthreshold;
+ 	u64 cf;
+-} mbm_cf_table[] __initdata = {
++} mbm_cf_table[] __initconst = {
+ 	{7,	CF(1.000000)},
+ 	{15,	CF(1.000000)},
+ 	{15,	CF(0.969650)},
+--
+2.30.2
+
+From 57b7a7e8130f47fb09de3ae0be374689c1486148 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 10:28:16 -0700
+Subject: [PATCH 05/39] tracepoint: Make static call functions visible
+
+Since static call functions are referenced from inline assembler
+they must be __visible and global with gcc LTO. Fix this for
+tracepoints.
+
+Cc: rosted@goodmis.org
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ include/linux/tracepoint.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/tracepoint.h b/include/linux/tracepoint.h
+index 9cfb099da58f..00ca51b383c1 100644
+--- a/include/linux/tracepoint.h
++++ b/include/linux/tracepoint.h
+@@ -229,7 +229,7 @@ static inline struct tracepoint *tracepoint_ptr_deref(tracepoint_ptr_t *p)
+  * poking RCU a bit.
+  */
+ #define __DECLARE_TRACE(name, proto, args, cond, data_proto)		\
+-	extern int __traceiter_##name(data_proto);			\
++	extern int __visible __traceiter_##name(data_proto);		\
+ 	DECLARE_STATIC_CALL(tp_func_##name, __traceiter_##name);	\
+ 	extern struct tracepoint __tracepoint_##name;			\
+ 	static inline void trace_##name(proto)				\
+@@ -296,7 +296,7 @@ static inline struct tracepoint *tracepoint_ptr_deref(tracepoint_ptr_t *p)
+ 		.unregfunc = _unreg,					\
+ 		.funcs = NULL };					\
+ 	__TRACEPOINT_ENTRY(_name);					\
+-	int __traceiter_##_name(void *__data, proto)			\
++	__visible int __traceiter_##_name(void *__data, proto)		\
+ 	{								\
+ 		struct tracepoint_func *it_func_ptr;			\
+ 		void *it_func;						\
+--
+2.30.2
+
+From 9c2ae13c2fd1e9d351178f9f21f7f030fd779e33 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 10:28:16 -0700
+Subject: [PATCH 06/39] static_call: Make static call functions visible
+
+Since static call functions are referenced from inline assembler
+they must be __visible and global with gcc LTO. Fix this for the static
+call self tests.
+
+Cc: peterz@infradead.org
+Cc: rostedt@goodmis.org
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ kernel/static_call.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/static_call.c b/kernel/static_call.c
+index 2c5950b0b90e..6d332c0c9134 100644
+--- a/kernel/static_call.c
++++ b/kernel/static_call.c
+@@ -503,7 +503,9 @@ long __static_call_return0(void)
+
+ #ifdef CONFIG_STATIC_CALL_SELFTEST
+
+-static int func_a(int x)
++int __visible sc_func_a(int x); /* Avoid warning */
++
++int __visible sc_func_a(int x)
+ {
+ 	return x+1;
+ }
+@@ -513,7 +515,7 @@ static int func_b(int x)
+ 	return x+2;
+ }
+
+-DEFINE_STATIC_CALL(sc_selftest, func_a);
++DEFINE_STATIC_CALL(sc_selftest, sc_func_a);
+
+ static struct static_call_data {
+       int (*func)(int);
+@@ -522,7 +524,7 @@ static struct static_call_data {
+ } static_call_data [] __initdata = {
+       { NULL,   2, 3 },
+       { func_b, 2, 4 },
+-      { func_a, 2, 3 }
++      { sc_func_a, 2, 3 }
+ };
+
+ static int __init test_static_call_init(void)
+--
+2.30.2
+
+From 35b7d54e97558298a7af9c84873bdcba766155dc Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sat, 3 Apr 2021 09:35:54 -0700
+Subject: [PATCH 07/39] static_call: Make static keys visible
+
+static key structures are referenced from assembler, thus
+need to be visible with gcc LTO.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ include/linux/static_call.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/include/linux/static_call.h b/include/linux/static_call.h
+index 85ecc789f4ff..ae04b1123a93 100644
+--- a/include/linux/static_call.h
++++ b/include/linux/static_call.h
+@@ -152,7 +152,7 @@ extern long __static_call_return0(void);
+
+ #define __DEFINE_STATIC_CALL(name, _func, _func_init)			\
+ 	DECLARE_STATIC_CALL(name, _func);				\
+-	struct static_call_key STATIC_CALL_KEY(name) = {		\
++	__visible struct static_call_key STATIC_CALL_KEY(name) = {	\
+ 		.func = _func_init,					\
+ 		.type = 1,						\
+ 	};								\
+@@ -160,7 +160,7 @@ extern long __static_call_return0(void);
+
+ #define DEFINE_STATIC_CALL_NULL(name, _func)				\
+ 	DECLARE_STATIC_CALL(name, _func);				\
+-	struct static_call_key STATIC_CALL_KEY(name) = {		\
++	__visible struct static_call_key STATIC_CALL_KEY(name) = {	\
+ 		.func = NULL,						\
+ 		.type = 1,						\
+ 	};								\
+@@ -193,14 +193,14 @@ struct static_call_key {
+
+ #define __DEFINE_STATIC_CALL(name, _func, _func_init)			\
+ 	DECLARE_STATIC_CALL(name, _func);				\
+-	struct static_call_key STATIC_CALL_KEY(name) = {		\
++	__visible struct static_call_key STATIC_CALL_KEY(name) = {	\
+ 		.func = _func_init,					\
+ 	};								\
+ 	ARCH_DEFINE_STATIC_CALL_TRAMP(name, _func_init)
+
+ #define DEFINE_STATIC_CALL_NULL(name, _func)				\
+ 	DECLARE_STATIC_CALL(name, _func);				\
+-	struct static_call_key STATIC_CALL_KEY(name) = {		\
++	__visible struct static_call_key STATIC_CALL_KEY(name) = {	\
+ 		.func = NULL,						\
+ 	};								\
+ 	ARCH_DEFINE_STATIC_CALL_NULL_TRAMP(name)
+@@ -254,13 +254,13 @@ static inline long __static_call_return0(void)
+
+ #define __DEFINE_STATIC_CALL(name, _func, _func_init)			\
+ 	DECLARE_STATIC_CALL(name, _func);				\
+-	struct static_call_key STATIC_CALL_KEY(name) = {		\
++	__visible struct static_call_key STATIC_CALL_KEY(name) = {	\
+ 		.func = _func_init,					\
+ 	}
+
+ #define DEFINE_STATIC_CALL_NULL(name, _func)				\
+ 	DECLARE_STATIC_CALL(name, _func);				\
+-	struct static_call_key STATIC_CALL_KEY(name) = {		\
++	__visible struct static_call_key STATIC_CALL_KEY(name) = {	\
+ 		.func = NULL,						\
+ 	}
+
+--
+2.30.2
+
+From 6a5f5fec50162f56555874f46334672e47a3c62b Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sat, 3 Apr 2021 22:23:56 -0700
+Subject: [PATCH 08/39] static_call: Use single copy of static_call_return0
+
+With the inline version of static calls it is trying to use
+all static call functions inline. But this doesn't work for
+__static_call_return0, because its address is always taken,
+which forces the compiler to generate a out of line copy.
+
+If it only exists as a static inline this means there are
+many copies generated. Instead use the out of line in static_call.c
+for this.
+
+This fixes another bug. When _INLINE is set static_inline.c was
+not compiled at all, which disabled the self test even when
+it was enabled in the configuration.
+
+This fixes a build problem with gcc LTO. __static_call_return0
+is referenced from assembler, which requires making it global
+because the assembler can end in a different file than the other
+C code.  But that's not possible for a static inline function.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ include/linux/static_call.h | 9 ++-------
+ kernel/Makefile             | 2 +-
+ kernel/static_call.c        | 4 ++++
+ 3 files changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/include/linux/static_call.h b/include/linux/static_call.h
+index ae04b1123a93..e75aef659224 100644
+--- a/include/linux/static_call.h
++++ b/include/linux/static_call.h
+@@ -100,6 +100,8 @@
+ #ifdef CONFIG_HAVE_STATIC_CALL
+ #include <asm/static_call.h>
+
++extern long __static_call_return0(void);
++
+ /*
+  * Either @site or @tramp can be NULL.
+  */
+@@ -148,8 +150,6 @@ extern void __static_call_update(struct static_call_key *key, void *tramp, void
+ extern int static_call_mod_init(struct module *mod);
+ extern int static_call_text_reserved(void *start, void *end);
+
+-extern long __static_call_return0(void);
+-
+ #define __DEFINE_STATIC_CALL(name, _func, _func_init)			\
+ 	DECLARE_STATIC_CALL(name, _func);				\
+ 	__visible struct static_call_key STATIC_CALL_KEY(name) = {	\
+@@ -221,11 +221,6 @@ static inline int static_call_text_reserved(void *start, void *end)
+ 	return 0;
+ }
+
+-static inline long __static_call_return0(void)
+-{
+-	return 0;
+-}
+-
+ #define EXPORT_STATIC_CALL(name)					\
+ 	EXPORT_SYMBOL(STATIC_CALL_KEY(name));				\
+ 	EXPORT_SYMBOL(STATIC_CALL_TRAMP(name))
+diff --git a/kernel/Makefile b/kernel/Makefile
+index b6407f92c9af..aaa1dae69352 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -111,7 +111,7 @@ obj-$(CONFIG_CPU_PM) += cpu_pm.o
+ obj-$(CONFIG_BPF) += bpf/
+ obj-$(CONFIG_KCSAN) += kcsan/
+ obj-$(CONFIG_SHADOW_CALL_STACK) += scs.o
+-obj-$(CONFIG_HAVE_STATIC_CALL_INLINE) += static_call.o
++obj-$(CONFIG_HAVE_STATIC_CALL) += static_call.o
+
+ obj-$(CONFIG_PERF_EVENTS) += events/
+
+diff --git a/kernel/static_call.c b/kernel/static_call.c
+index 6d332c0c9134..7ec8608d94ab 100644
+--- a/kernel/static_call.c
++++ b/kernel/static_call.c
+@@ -10,6 +10,8 @@
+ #include <linux/processor.h>
+ #include <asm/sections.h>
+
++#ifdef CONFIG_HAVE_STATIC_CALL_INLINE
++
+ extern struct static_call_site __start_static_call_sites[],
+ 			       __stop_static_call_sites[];
+ extern struct static_call_tramp_key __start_static_call_tramp_key[],
+@@ -496,6 +498,8 @@ int __init static_call_init(void)
+ }
+ early_initcall(static_call_init);
+
++#endif /* HAVE_STATIC_CALL_INLINE */
++
+ long __static_call_return0(void)
+ {
+ 	return 0;
+--
+2.30.2
+
+From c55df0ef108a0e63fd264872be69af788f9769c9 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sat, 3 Apr 2021 11:10:06 -0700
+Subject: [PATCH 09/39] static_call: Make static_call_return0 visible for LTO
+
+Referenced from assembler, thus needs to be __visible.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ kernel/static_call.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/static_call.c b/kernel/static_call.c
+index 7ec8608d94ab..f22836e22993 100644
+--- a/kernel/static_call.c
++++ b/kernel/static_call.c
+@@ -500,7 +500,7 @@ early_initcall(static_call_init);
+
+ #endif /* HAVE_STATIC_CALL_INLINE */
+
+-long __static_call_return0(void)
++__visible long __static_call_return0(void)
+ {
+ 	return 0;
+ }
+--
+2.30.2
+
+From 29604d34bef79ce6ddd512b9f665a400f0257263 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Fri, 10 Aug 2012 03:11:20 +0200
+Subject: [PATCH 10/39] Mark spinlocks noinline when inline spinlocks are
+ disabled
+
+Otherwise LTO will inline them anyways and cause a large
+kernel text increase.
+
+Since the explicit intention here is to not inline them marking
+them noinline is good documentation even for the non LTO case.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ kernel/locking/spinlock.c | 56 +++++++++++++++++++--------------------
+ 1 file changed, 28 insertions(+), 28 deletions(-)
+
+diff --git a/kernel/locking/spinlock.c b/kernel/locking/spinlock.c
+index 0ff08380f531..f2b65270e6e4 100644
+--- a/kernel/locking/spinlock.c
++++ b/kernel/locking/spinlock.c
+@@ -130,7 +130,7 @@ BUILD_LOCK_OPS(write, rwlock);
+ #endif
+
+ #ifndef CONFIG_INLINE_SPIN_TRYLOCK
+-int __lockfunc _raw_spin_trylock(raw_spinlock_t *lock)
++noinline int __lockfunc _raw_spin_trylock(raw_spinlock_t *lock)
+ {
+ 	return __raw_spin_trylock(lock);
+ }
+@@ -138,7 +138,7 @@ EXPORT_SYMBOL(_raw_spin_trylock);
+ #endif
+
+ #ifndef CONFIG_INLINE_SPIN_TRYLOCK_BH
+-int __lockfunc _raw_spin_trylock_bh(raw_spinlock_t *lock)
++noinline int __lockfunc _raw_spin_trylock_bh(raw_spinlock_t *lock)
+ {
+ 	return __raw_spin_trylock_bh(lock);
+ }
+@@ -146,7 +146,7 @@ EXPORT_SYMBOL(_raw_spin_trylock_bh);
+ #endif
+
+ #ifndef CONFIG_INLINE_SPIN_LOCK
+-void __lockfunc _raw_spin_lock(raw_spinlock_t *lock)
++noinline void __lockfunc _raw_spin_lock(raw_spinlock_t *lock)
+ {
+ 	__raw_spin_lock(lock);
+ }
+@@ -154,7 +154,7 @@ EXPORT_SYMBOL(_raw_spin_lock);
+ #endif
+
+ #ifndef CONFIG_INLINE_SPIN_LOCK_IRQSAVE
+-unsigned long __lockfunc _raw_spin_lock_irqsave(raw_spinlock_t *lock)
++noinline unsigned long __lockfunc _raw_spin_lock_irqsave(raw_spinlock_t *lock)
+ {
+ 	return __raw_spin_lock_irqsave(lock);
+ }
+@@ -162,7 +162,7 @@ EXPORT_SYMBOL(_raw_spin_lock_irqsave);
+ #endif
+
+ #ifndef CONFIG_INLINE_SPIN_LOCK_IRQ
+-void __lockfunc _raw_spin_lock_irq(raw_spinlock_t *lock)
++noinline void __lockfunc _raw_spin_lock_irq(raw_spinlock_t *lock)
+ {
+ 	__raw_spin_lock_irq(lock);
+ }
+@@ -170,7 +170,7 @@ EXPORT_SYMBOL(_raw_spin_lock_irq);
+ #endif
+
+ #ifndef CONFIG_INLINE_SPIN_LOCK_BH
+-void __lockfunc _raw_spin_lock_bh(raw_spinlock_t *lock)
++noinline void __lockfunc _raw_spin_lock_bh(raw_spinlock_t *lock)
+ {
+ 	__raw_spin_lock_bh(lock);
+ }
+@@ -178,7 +178,7 @@ EXPORT_SYMBOL(_raw_spin_lock_bh);
+ #endif
+
+ #ifdef CONFIG_UNINLINE_SPIN_UNLOCK
+-void __lockfunc _raw_spin_unlock(raw_spinlock_t *lock)
++noinline void __lockfunc _raw_spin_unlock(raw_spinlock_t *lock)
+ {
+ 	__raw_spin_unlock(lock);
+ }
+@@ -186,7 +186,7 @@ EXPORT_SYMBOL(_raw_spin_unlock);
+ #endif
+
+ #ifndef CONFIG_INLINE_SPIN_UNLOCK_IRQRESTORE
+-void __lockfunc _raw_spin_unlock_irqrestore(raw_spinlock_t *lock, unsigned long flags)
++noinline void __lockfunc _raw_spin_unlock_irqrestore(raw_spinlock_t *lock, unsigned long flags)
+ {
+ 	__raw_spin_unlock_irqrestore(lock, flags);
+ }
+@@ -194,7 +194,7 @@ EXPORT_SYMBOL(_raw_spin_unlock_irqrestore);
+ #endif
+
+ #ifndef CONFIG_INLINE_SPIN_UNLOCK_IRQ
+-void __lockfunc _raw_spin_unlock_irq(raw_spinlock_t *lock)
++noinline void __lockfunc _raw_spin_unlock_irq(raw_spinlock_t *lock)
+ {
+ 	__raw_spin_unlock_irq(lock);
+ }
+@@ -202,7 +202,7 @@ EXPORT_SYMBOL(_raw_spin_unlock_irq);
+ #endif
+
+ #ifndef CONFIG_INLINE_SPIN_UNLOCK_BH
+-void __lockfunc _raw_spin_unlock_bh(raw_spinlock_t *lock)
++noinline void __lockfunc _raw_spin_unlock_bh(raw_spinlock_t *lock)
+ {
+ 	__raw_spin_unlock_bh(lock);
+ }
+@@ -210,7 +210,7 @@ EXPORT_SYMBOL(_raw_spin_unlock_bh);
+ #endif
+
+ #ifndef CONFIG_INLINE_READ_TRYLOCK
+-int __lockfunc _raw_read_trylock(rwlock_t *lock)
++noinline int __lockfunc _raw_read_trylock(rwlock_t *lock)
+ {
+ 	return __raw_read_trylock(lock);
+ }
+@@ -218,7 +218,7 @@ EXPORT_SYMBOL(_raw_read_trylock);
+ #endif
+
+ #ifndef CONFIG_INLINE_READ_LOCK
+-void __lockfunc _raw_read_lock(rwlock_t *lock)
++noinline void __lockfunc _raw_read_lock(rwlock_t *lock)
+ {
+ 	__raw_read_lock(lock);
+ }
+@@ -226,7 +226,7 @@ EXPORT_SYMBOL(_raw_read_lock);
+ #endif
+
+ #ifndef CONFIG_INLINE_READ_LOCK_IRQSAVE
+-unsigned long __lockfunc _raw_read_lock_irqsave(rwlock_t *lock)
++noinline unsigned long __lockfunc _raw_read_lock_irqsave(rwlock_t *lock)
+ {
+ 	return __raw_read_lock_irqsave(lock);
+ }
+@@ -234,7 +234,7 @@ EXPORT_SYMBOL(_raw_read_lock_irqsave);
+ #endif
+
+ #ifndef CONFIG_INLINE_READ_LOCK_IRQ
+-void __lockfunc _raw_read_lock_irq(rwlock_t *lock)
++noinline void __lockfunc _raw_read_lock_irq(rwlock_t *lock)
+ {
+ 	__raw_read_lock_irq(lock);
+ }
+@@ -242,7 +242,7 @@ EXPORT_SYMBOL(_raw_read_lock_irq);
+ #endif
+
+ #ifndef CONFIG_INLINE_READ_LOCK_BH
+-void __lockfunc _raw_read_lock_bh(rwlock_t *lock)
++noinline void __lockfunc _raw_read_lock_bh(rwlock_t *lock)
+ {
+ 	__raw_read_lock_bh(lock);
+ }
+@@ -250,7 +250,7 @@ EXPORT_SYMBOL(_raw_read_lock_bh);
+ #endif
+
+ #ifndef CONFIG_INLINE_READ_UNLOCK
+-void __lockfunc _raw_read_unlock(rwlock_t *lock)
++noinline void __lockfunc _raw_read_unlock(rwlock_t *lock)
+ {
+ 	__raw_read_unlock(lock);
+ }
+@@ -258,7 +258,7 @@ EXPORT_SYMBOL(_raw_read_unlock);
+ #endif
+
+ #ifndef CONFIG_INLINE_READ_UNLOCK_IRQRESTORE
+-void __lockfunc _raw_read_unlock_irqrestore(rwlock_t *lock, unsigned long flags)
++noinline void __lockfunc _raw_read_unlock_irqrestore(rwlock_t *lock, unsigned long flags)
+ {
+ 	__raw_read_unlock_irqrestore(lock, flags);
+ }
+@@ -266,7 +266,7 @@ EXPORT_SYMBOL(_raw_read_unlock_irqrestore);
+ #endif
+
+ #ifndef CONFIG_INLINE_READ_UNLOCK_IRQ
+-void __lockfunc _raw_read_unlock_irq(rwlock_t *lock)
++noinline void __lockfunc _raw_read_unlock_irq(rwlock_t *lock)
+ {
+ 	__raw_read_unlock_irq(lock);
+ }
+@@ -274,7 +274,7 @@ EXPORT_SYMBOL(_raw_read_unlock_irq);
+ #endif
+
+ #ifndef CONFIG_INLINE_READ_UNLOCK_BH
+-void __lockfunc _raw_read_unlock_bh(rwlock_t *lock)
++noinline void __lockfunc _raw_read_unlock_bh(rwlock_t *lock)
+ {
+ 	__raw_read_unlock_bh(lock);
+ }
+@@ -282,7 +282,7 @@ EXPORT_SYMBOL(_raw_read_unlock_bh);
+ #endif
+
+ #ifndef CONFIG_INLINE_WRITE_TRYLOCK
+-int __lockfunc _raw_write_trylock(rwlock_t *lock)
++noinline int __lockfunc _raw_write_trylock(rwlock_t *lock)
+ {
+ 	return __raw_write_trylock(lock);
+ }
+@@ -290,7 +290,7 @@ EXPORT_SYMBOL(_raw_write_trylock);
+ #endif
+
+ #ifndef CONFIG_INLINE_WRITE_LOCK
+-void __lockfunc _raw_write_lock(rwlock_t *lock)
++noinline void __lockfunc _raw_write_lock(rwlock_t *lock)
+ {
+ 	__raw_write_lock(lock);
+ }
+@@ -298,7 +298,7 @@ EXPORT_SYMBOL(_raw_write_lock);
+ #endif
+
+ #ifndef CONFIG_INLINE_WRITE_LOCK_IRQSAVE
+-unsigned long __lockfunc _raw_write_lock_irqsave(rwlock_t *lock)
++noinline unsigned long __lockfunc _raw_write_lock_irqsave(rwlock_t *lock)
+ {
+ 	return __raw_write_lock_irqsave(lock);
+ }
+@@ -306,7 +306,7 @@ EXPORT_SYMBOL(_raw_write_lock_irqsave);
+ #endif
+
+ #ifndef CONFIG_INLINE_WRITE_LOCK_IRQ
+-void __lockfunc _raw_write_lock_irq(rwlock_t *lock)
++noinline void __lockfunc _raw_write_lock_irq(rwlock_t *lock)
+ {
+ 	__raw_write_lock_irq(lock);
+ }
+@@ -314,7 +314,7 @@ EXPORT_SYMBOL(_raw_write_lock_irq);
+ #endif
+
+ #ifndef CONFIG_INLINE_WRITE_LOCK_BH
+-void __lockfunc _raw_write_lock_bh(rwlock_t *lock)
++noinline void __lockfunc _raw_write_lock_bh(rwlock_t *lock)
+ {
+ 	__raw_write_lock_bh(lock);
+ }
+@@ -322,7 +322,7 @@ EXPORT_SYMBOL(_raw_write_lock_bh);
+ #endif
+
+ #ifndef CONFIG_INLINE_WRITE_UNLOCK
+-void __lockfunc _raw_write_unlock(rwlock_t *lock)
++noinline void __lockfunc _raw_write_unlock(rwlock_t *lock)
+ {
+ 	__raw_write_unlock(lock);
+ }
+@@ -330,7 +330,7 @@ EXPORT_SYMBOL(_raw_write_unlock);
+ #endif
+
+ #ifndef CONFIG_INLINE_WRITE_UNLOCK_IRQRESTORE
+-void __lockfunc _raw_write_unlock_irqrestore(rwlock_t *lock, unsigned long flags)
++noinline void __lockfunc _raw_write_unlock_irqrestore(rwlock_t *lock, unsigned long flags)
+ {
+ 	__raw_write_unlock_irqrestore(lock, flags);
+ }
+@@ -338,7 +338,7 @@ EXPORT_SYMBOL(_raw_write_unlock_irqrestore);
+ #endif
+
+ #ifndef CONFIG_INLINE_WRITE_UNLOCK_IRQ
+-void __lockfunc _raw_write_unlock_irq(rwlock_t *lock)
++noinline void __lockfunc _raw_write_unlock_irq(rwlock_t *lock)
+ {
+ 	__raw_write_unlock_irq(lock);
+ }
+@@ -346,7 +346,7 @@ EXPORT_SYMBOL(_raw_write_unlock_irq);
+ #endif
+
+ #ifndef CONFIG_INLINE_WRITE_UNLOCK_BH
+-void __lockfunc _raw_write_unlock_bh(rwlock_t *lock)
++noinline void __lockfunc _raw_write_unlock_bh(rwlock_t *lock)
+ {
+ 	__raw_write_unlock_bh(lock);
+ }
+--
+2.30.2
+
+From 068d1477fabbeaef9c7dd06b32791b01baf640df Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Thu, 23 Nov 2017 16:06:26 -0800
+Subject: [PATCH 11/39] Fix read buffer overflow in delta-ipc
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The single caller passes a string to delta_ipc_open, which copies with a
+fixed size larger than the string. So it copies some random data after
+the original string the ro segment.
+
+If the string was at the end of a page it may fault.
+
+Just copy the string with a normal strcpy after clearing the field.
+
+Found by a LTO build (which errors out)
+because the compiler inlines the functions and can resolve
+the string sizes and triggers the compile time checks in memcpy.
+
+In function ‘memcpy’,
+    inlined from ‘delta_ipc_open.constprop’ at linux/drivers/media/platform/sti/delta/delta-ipc.c:178:0,
+    inlined from ‘delta_mjpeg_ipc_open’ at linux/drivers/media/platform/sti/delta/delta-mjpeg-dec.c:227:0,
+    inlined from ‘delta_mjpeg_decode’ at linux/drivers/media/platform/sti/delta/delta-mjpeg-dec.c:403:0:
+/home/andi/lsrc/linux/include/linux/string.h:337:0: error: call to ‘__read_overflow2’ declared with attribute error: detected read beyond size of object passed as 2nd parameter
+    __read_overflow2();
+
+Cc: hugues.fruchet@st.com
+Cc: mchehab@s-opensource.com
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ drivers/media/platform/sti/delta/delta-ipc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/platform/sti/delta/delta-ipc.c b/drivers/media/platform/sti/delta/delta-ipc.c
+index 186d88f02ecd..371429d81ea1 100644
+--- a/drivers/media/platform/sti/delta/delta-ipc.c
++++ b/drivers/media/platform/sti/delta/delta-ipc.c
+@@ -175,8 +175,8 @@ int delta_ipc_open(struct delta_ctx *pctx, const char *name,
+ 	msg.ipc_buf_size = ipc_buf_size;
+ 	msg.ipc_buf_paddr = ctx->ipc_buf->paddr;
+
+-	memcpy(msg.name, name, sizeof(msg.name));
+-	msg.name[sizeof(msg.name) - 1] = 0;
++	memset(msg.name, 0, sizeof(msg.name));
++	strcpy(msg.name, name);
+
+ 	msg.param_size = param->size;
+ 	memcpy(ctx->ipc_buf->vaddr, param->data, msg.param_size);
+--
+2.30.2
+
+From 1a95dc0a81a418c2838a8a7d7efa9b1b7854ee5d Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Tue, 19 Mar 2019 05:40:37 -0700
+Subject: [PATCH 12/39] amdkfd: Fix extern declaration
+
+When you use bare externs outside include files, need to at least specify
+matching types. This fixes a type confusion between u16 and unsigned.
+
+Cc: Yong.Zhao@amd.com
+Cc: alexander.deucher@amd.com
+Cc: airlied@redhat.com
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ drivers/gpu/drm/amd/amdkfd/kfd_iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_iommu.c b/drivers/gpu/drm/amd/amdkfd/kfd_iommu.c
+index 66bbca61e3ef..e846844c8059 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_iommu.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_iommu.c
+@@ -330,8 +330,8 @@ int kfd_iommu_resume(struct kfd_dev *kfd)
+ }
+
+ extern bool amd_iommu_pc_supported(void);
+-extern u8 amd_iommu_pc_get_max_banks(u16 devid);
+-extern u8 amd_iommu_pc_get_max_counters(u16 devid);
++extern u8 amd_iommu_pc_get_max_banks(unsigned devid);
++extern u8 amd_iommu_pc_get_max_counters(unsigned devid);
+
+ /** kfd_iommu_add_perf_counters - Add IOMMU performance counters to topology
+  */
+--
+2.30.2
+
+From 013f93c96f4c55511c046153d757b7b6deb99ce9 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Tue, 19 Mar 2019 06:59:58 -0700
+Subject: [PATCH 13/39] x86/xen: Mark xen_vcpu_stolen as __visible
+
+This function is referenced from assembler, so needs to be marked
+__visible for LTO.
+
+Cc: jgross@suse.com
+Cc: boris.ostrovsky@oracle.com
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ drivers/xen/time.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/xen/time.c b/drivers/xen/time.c
+index 108edbcbc040..fc7dd451b019 100644
+--- a/drivers/xen/time.c
++++ b/drivers/xen/time.c
+@@ -144,7 +144,7 @@ void xen_get_runstate_snapshot(struct vcpu_runstate_info *res)
+ }
+
+ /* return true when a vcpu could run but has no real cpu to run on */
+-bool xen_vcpu_stolen(int vcpu)
++__visible bool xen_vcpu_stolen(int vcpu)
+ {
+ 	return per_cpu(xen_runstate, vcpu).state == RUNSTATE_runnable;
+ }
+--
+2.30.2
+
+From 5889b5d0cef1443b7142fd2e38804e640af20bf7 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Thu, 25 Jun 2020 09:59:04 -0700
+Subject: [PATCH 14/39] lto: Export export symbol assembler symbols for LTO
+
+LTO can move top level assembler statements into different files. This
+means that any C symbols referenced by them need to be global and
+__visilble. Do this for the C symbols referenced by EXPORT_SYMBOL
+assembler code.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ include/linux/export.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/export.h b/include/linux/export.h
+index 6271a5d9c988..2ebd8c84d24f 100644
+--- a/include/linux/export.h
++++ b/include/linux/export.h
+@@ -96,12 +96,14 @@ struct kernel_symbol {
+  */
+ #define ___EXPORT_SYMBOL(sym, sec, ns)						\
+ 	extern typeof(sym) sym;							\
+-	extern const char __kstrtab_##sym[];					\
+-	extern const char __kstrtabns_##sym[];					\
++	extern const char __visible __kstrtab_##sym[];				\
++	extern const char __visible __kstrtabns_##sym[];			\
+ 	__CRC_SYMBOL(sym, sec);							\
+ 	asm("	.section \"__ksymtab_strings\",\"aMS\",%progbits,1	\n"	\
++	    "   .globl __kstrtab_" #sym	"				\n"	\
+ 	    "__kstrtab_" #sym ":					\n"	\
+ 	    "	.asciz 	\"" #sym "\"					\n"	\
++	    "   .globl __kstrtabns_" #sym "				\n"	\
+ 	    "__kstrtabns_" #sym ":					\n"	\
+ 	    "	.asciz 	\"" ns "\"					\n"	\
+ 	    "	.previous						\n");	\
+--
+2.30.2
+
+From 924865f86e51730faf8466553b2c49833d8df49c Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Thu, 25 Jun 2020 09:59:04 -0700
+Subject: [PATCH 15/39] x86/alternative/lto: Export int3 assembler symbols for
+ LTO
+
+LTO can move top level assembler statements into different files. This
+means that any C symbols referenced by them need to be global and
+__visilble. Do this for the int3* symbols referenced by assembler code.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ arch/x86/kernel/alternative.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index 8d778e46725d..e1c52f7d4f89 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -634,11 +634,12 @@ extern struct paravirt_patch_site __start_parainstructions[],
+  * convention such that we can 'call' it from assembly.
+  */
+
+-extern void int3_magic(unsigned int *ptr); /* defined in asm */
++extern __visible void int3_magic(unsigned int *ptr); /* defined in asm */
+
+ asm (
+ "	.pushsection	.init.text, \"ax\", @progbits\n"
+ "	.type		int3_magic, @function\n"
++"	.globl		int3_magic\n"
+ "int3_magic:\n"
+ "	movl	$1, (%" _ASM_ARG1 ")\n"
+ "	ret\n"
+@@ -646,7 +647,7 @@ asm (
+ "	.popsection\n"
+ );
+
+-extern __initdata unsigned long int3_selftest_ip; /* defined in asm below */
++extern __initdata __visible unsigned long int3_selftest_ip; /* defined in asm below */
+
+ static int __init
+ int3_exception_notify(struct notifier_block *self, unsigned long val, void *data)
+@@ -687,6 +688,7 @@ static void __init int3_selftest(void)
+ 	asm volatile ("1: int3; nop; nop; nop; nop\n\t"
+ 		      ".pushsection .init.data,\"aw\"\n\t"
+ 		      ".align " __ASM_SEL(4, 8) "\n\t"
++		      ".globl int3_selftest_ip\n\t"
+ 		      ".type int3_selftest_ip, @object\n\t"
+ 		      ".size int3_selftest_ip, " __ASM_SEL(4, 8) "\n\t"
+ 		      "int3_selftest_ip:\n\t"
+--
+2.30.2
+
+From 91b3071321913d5fa98c20884d7ac9f89005599b Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Tue, 31 Mar 2015 03:45:39 -0700
+Subject: [PATCH 16/39] lto: Add __noreorder and mark initcalls __noreorder
+
+gcc 5 has a new no_reorder attribute that prevents top level
+reordering only for that symbol.
+
+Kernels don't like any reordering of initcalls between files, as several
+initcalls depend on each other. LTO previously needed to use
+-fno-toplevel-reordering to prevent boot failures.
+
+Add a __noreorder wrapper for the no_reorder attribute and use
+it for initcalls.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ include/linux/compiler_attributes.h | 11 +++++++++++
+ include/linux/init.h                |  2 +-
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
+index c043b8d2b17b..10c603dd21f8 100644
+--- a/include/linux/compiler_attributes.h
++++ b/include/linux/compiler_attributes.h
+@@ -34,6 +34,7 @@
+ # define __GCC4_has_attribute___no_caller_saved_registers__ 0
+ # define __GCC4_has_attribute___noclone__             1
+ # define __GCC4_has_attribute___nonstring__           0
++# define __GCC4_has_attribute___no_reorder__          0
+ # define __GCC4_has_attribute___no_sanitize_address__ (__GNUC_MINOR__ >= 8)
+ # define __GCC4_has_attribute___no_sanitize_undefined__ (__GNUC_MINOR__ >= 9)
+ # define __GCC4_has_attribute___fallthrough__         0
+@@ -290,4 +291,14 @@
+  */
+ #define __weak                          __attribute__((__weak__))
+
++/*
++ * https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes
++ */
++
++#if __has_attribute(__no_reorder__)
++#define __noreorder			__attribute__((no_reorder))
++#else
++#define __noreorder
++#endif
++
+ #endif /* __LINUX_COMPILER_ATTRIBUTES_H */
+diff --git a/include/linux/init.h b/include/linux/init.h
+index 31f54de58429..4223047dfc36 100644
+--- a/include/linux/init.h
++++ b/include/linux/init.h
+@@ -245,7 +245,7 @@ extern bool initcall_debug;
+ 	    ".previous					\n");
+ #else
+ #define ____define_initcall(fn, __unused, __name, __sec)	\
+-	static initcall_t __name __used 			\
++	static initcall_t __name __used __noreorder 		\
+ 		__attribute__((__section__(__sec))) = fn;
+ #endif
+
+--
+2.30.2
+
+From ed0e2fd944cecd4772a755ab68c5e3f9a36f06cc Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Mon, 17 Dec 2018 22:58:45 -0800
+Subject: [PATCH 17/39] lto, bpf: Mark interpreter jump table as noreorder
+
+gcc LTO has a problem that can cause static variables containing &&
+labels to be put into a different LTO partition and then fail the build.
+This can happen with the jump table in the BPF interprer.
+
+Mark the interpreter function and the jump table as noreorder, this
+guarantees they both end up in the first partition.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ kernel/bpf/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 75244ecb2389..1b89e0ecea07 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1373,7 +1373,7 @@ u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
+  *
+  * Decode and execute eBPF instructions.
+  */
+-static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
++static u64 __noreorder ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
+ {
+ #define BPF_INSN_2_LBL(x, y)    [BPF_##x | BPF_##y] = &&x##_##y
+ #define BPF_INSN_3_LBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = &&x##_##y##_##z
+--
+2.30.2
+
+From e7c9e3a92d53031fcf78d6c76e529af03ff6271e Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sat, 27 Jun 2020 20:48:16 -0700
+Subject: [PATCH 18/39] x86/realmode/lto: Disable LTO for real mode code
+
+The early real mode bootup code makes various assumptions that break
+with LTO. For example it assumes that top level assembler statements
+don't get reordered. Disable LTO for the real mode code.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ arch/x86/realmode/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/realmode/Makefile b/arch/x86/realmode/Makefile
+index 6b1f3a4eeb44..af8945f4bc78 100644
+--- a/arch/x86/realmode/Makefile
++++ b/arch/x86/realmode/Makefile
+@@ -10,6 +10,7 @@
+ # Sanitizer runtimes are unavailable and cannot be linked here.
+ KASAN_SANITIZE			:= n
+ KCSAN_SANITIZE			:= n
++#KBUILD_CFLAGS 			+= $(DISABLE_LTO)
+ OBJECT_FILES_NON_STANDARD	:= y
+
+ subdir- := rm
+--
+2.30.2
+
+From c3487f68c44cdd6c66dc6206d000d082bca84538 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sun, 9 Apr 2017 22:10:40 -0700
+Subject: [PATCH 19/39] lto: Use C version for SYSCALL_ALIAS / cond_syscall
+
+With LTO aliases get largely resolved in the compiler, not in the linker.
+
+Implement cond_syscall and SYSCALL_ALIAS in C to let the compiler
+understand the aliases so that it can resolve it properly.
+
+Likely the architecture specific versions are now not needed
+anymore, but I kept them for now.
+
+There is one sublety here:
+
+The assembler version didn't care whether there was a prototype
+or not. This variant assumes there is no prototypes because
+it uses a dummy (void) signature. This works for sys_ni.c,
+but breaks for kernel/time/posix-stubs.c. To avoid problems
+here I added a second variant of the macro (_PROTO) that
+uses the previous type.
+
+I actually tried to avoid this by adding prototypes for
+sys_ni and only use the _PROTO variant, but it resulted in very large
+patches and lots of problems with all the different cases.
+Eventually I gave up and just special cases the prototype
+case in posix-stubs.c
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ include/linux/linkage.h   | 16 ++++++++--------
+ kernel/time/posix-stubs.c |  2 +-
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/include/linux/linkage.h b/include/linux/linkage.h
+index dbf8506decca..645e5a73b9ed 100644
+--- a/include/linux/linkage.h
++++ b/include/linux/linkage.h
+@@ -23,17 +23,17 @@
+ #endif
+
+ #ifndef cond_syscall
+-#define cond_syscall(x)	asm(				\
+-	".weak " __stringify(x) "\n\t"			\
+-	".set  " __stringify(x) ","			\
+-		 __stringify(sys_ni_syscall))
++#define cond_syscall(x)	\
++	extern long x(void) __attribute__((alias("sys_ni_syscall"), weak));
+ #endif
+
+ #ifndef SYSCALL_ALIAS
+-#define SYSCALL_ALIAS(alias, name) asm(			\
+-	".globl " __stringify(alias) "\n\t"		\
+-	".set   " __stringify(alias) ","		\
+-		  __stringify(name))
++#define SYSCALL_ALIAS(a, name) \
++	long a(void) __attribute__((alias(__stringify(name))))
++#define SYSCALL_ALIAS_PROTO(a, name) \
++	typeof(a) a __attribute__((alias(__stringify(name))))
++#else
++#define SYSCALL_ALIAS_PROTO(a, name) SYSCALL_ALIAS(a, name)
+ #endif
+
+ #define __page_aligned_data	__section(".data..page_aligned") __aligned(PAGE_SIZE)
+diff --git a/kernel/time/posix-stubs.c b/kernel/time/posix-stubs.c
+index fcb3b21d8bdc..24fafe7782a9 100644
+--- a/kernel/time/posix-stubs.c
++++ b/kernel/time/posix-stubs.c
+@@ -31,7 +31,7 @@ asmlinkage long sys_ni_posix_timers(void)
+ }
+
+ #ifndef SYS_NI
+-#define SYS_NI(name)  SYSCALL_ALIAS(sys_##name, sys_ni_posix_timers)
++#define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
+ #endif
+
+ #ifndef COMPAT_SYS_NI
+--
+2.30.2
+
+From 390ae50054b897016470277734c751d000d709e5 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sat, 27 Jun 2020 20:48:38 -0700
+Subject: [PATCH 20/39] Kbuild, lto: Fixes for gcc-ld
+
+- Add some missing linker and gcc command line arguments
+- When V=1 is specified print the final gcc command line
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ scripts/gcc-ld | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/scripts/gcc-ld b/scripts/gcc-ld
+index 997b818c3962..13e85ece8d04 100755
+--- a/scripts/gcc-ld
++++ b/scripts/gcc-ld
+@@ -6,18 +6,26 @@
+
+ ARGS="-nostdlib"
+
++for j in "$@" ; do
++	if [ "$j" = -v ] ; then
++		exec `$CC -print-prog-name=ld` -v
++	fi
++done
++
+ while [ "$1" != "" ] ; do
+ 	case "$1" in
+-	-save-temps|-m32|-m64) N="$1" ;;
++	-save-temps*|-m32|-m64) N="$1" ;;
+ 	-r) N="$1" ;;
++	-flinker-output*) N="$1" ;;
+ 	-[Wg]*) N="$1" ;;
+ 	-[olv]|-[Ofd]*|-nostdlib) N="$1" ;;
+-	--end-group|--start-group)
++	--end-group|--start-group|--whole-archive|--no-whole-archive|\
++--no-undefined|--hash-style*|--build-id*|--eh-frame-hdr|-Bsymbolic)
+ 		 N="-Wl,$1" ;;
+ 	-[RTFGhIezcbyYu]*|\
+ --script|--defsym|-init|-Map|--oformat|-rpath|\
+--rpath-link|--sort-section|--section-start|-Tbss|-Tdata|-Ttext|\
+---version-script|--dynamic-list|--version-exports-symbol|--wrap|-m)
++-rpath-link|--sort-section|--section-start|-Tbss|-Tdata|-Ttext|-soname|\
++--version-script|--dynamic-list|--version-exports-symbol|--wrap|-m|-z)
+ 		A="$1" ; shift ; N="-Wl,$A,$1" ;;
+ 	-[m]*) N="$1" ;;
+ 	-*) N="-Wl,$1" ;;
+@@ -27,4 +35,6 @@ while [ "$1" != "" ] ; do
+ 	shift
+ done
+
++[ -n "$V" ] && echo >&2 $CC $ARGS
++
+ exec $CC $ARGS
+--
+2.30.2
+
+From 7297aa47914675eb758883f782ba6b8abafb6f26 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sun, 4 Apr 2021 21:13:44 -0700
+Subject: [PATCH 21/39] lto: Use CONFIG_LTO for many LTO specific actions
+
+The clang LTO and the gcc LTO share some changes in Makefiles
+and build scripts. Change those to use CONFIG_LTO instead of
+CONFIG_LTO_CLANG to use them for gcc too.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ scripts/Makefile.build    | 10 +++++-----
+ scripts/Makefile.modfinal |  6 +++---
+ scripts/Makefile.modpost  |  4 ++--
+ scripts/gen_autoksyms.sh  |  4 ++--
+ scripts/link-vmlinux.sh   | 10 +++++-----
+ 5 files changed, 17 insertions(+), 17 deletions(-)
+
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 1b6094a13034..8041dbc807c5 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -165,7 +165,7 @@ ifdef CONFIG_MODVERSIONS
+ #   the actual value of the checksum generated by genksyms
+ # o remove .tmp_<file>.o to <file>.o
+
+-ifdef CONFIG_LTO_CLANG
++ifdef CONFIG_LTO
+ # Generate .o.symversions files for each .o with exported symbols, and link these
+ # to the kernel and/or modules at the end.
+ cmd_modversions_c =								\
+@@ -217,7 +217,7 @@ cmd_record_mcount = $(if $(findstring $(strip $(CC_FLAGS_FTRACE)),$(_c_flags)),
+ endif # CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
+
+ ifdef CONFIG_STACK_VALIDATION
+-ifndef CONFIG_LTO_CLANG
++ifndef CONFIG_LTO
+ ifneq ($(SKIP_STACK_VALIDATION),1)
+
+ __objtool_obj := $(objtree)/tools/objtool/objtool
+@@ -233,7 +233,7 @@ objtool_obj = $(if $(patsubst y%,, \
+ 	$(__objtool_obj))
+
+ endif # SKIP_STACK_VALIDATION
+-endif # CONFIG_LTO_CLANG
++endif # CONFIG_LTO
+ endif # CONFIG_STACK_VALIDATION
+
+ # Rebuild all objects when objtool changes, or is enabled/disabled.
+@@ -382,7 +382,7 @@ $(subdir-modorder): $(obj)/%/modules.order: $(obj)/% ;
+
+ # combine symversions for later processing
+ quiet_cmd_update_lto_symversions = SYMVER  $@
+-ifeq ($(CONFIG_LTO_CLANG) $(CONFIG_MODVERSIONS),y y)
++ifeq ($(CONFIG_LTO) $(CONFIG_MODVERSIONS),y y)
+       cmd_update_lto_symversions =					\
+ 	rm -f $@.symversions						\
+ 	$(foreach n, $(filter-out FORCE,$^),				\
+@@ -433,7 +433,7 @@ $(obj)/lib.a: $(lib-y) FORCE
+ # Do not replace $(filter %.o,^) with $(real-prereqs). When a single object
+ # module is turned into a multi object module, $^ will contain header file
+ # dependencies recorded in the .*.cmd file.
+-ifdef CONFIG_LTO_CLANG
++ifdef CONFIG_LTO
+ quiet_cmd_link_multi-m = AR [M]  $@
+ cmd_link_multi-m =						\
+ 	$(cmd_update_lto_symversions);				\
+diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
+index 735e11e9041b..dfda559a0ab6 100644
+--- a/scripts/Makefile.modfinal
++++ b/scripts/Makefile.modfinal
+@@ -30,8 +30,8 @@ quiet_cmd_cc_o_c = CC [M]  $@
+
+ ARCH_POSTLINK := $(wildcard $(srctree)/arch/$(SRCARCH)/Makefile.postlink)
+
+-ifdef CONFIG_LTO_CLANG
+-# With CONFIG_LTO_CLANG, reuse the object file we compiled for modpost to
++ifdef CONFIG_LTO
++# With CONFIG_LTO, reuse the object file we compiled for modpost to
+ # avoid a second slow LTO link
+ prelink-ext := .lto
+
+@@ -47,7 +47,7 @@ cmd_ld_ko_o +=								\
+ endif # SKIP_STACK_VALIDATION
+ endif # CONFIG_STACK_VALIDATION
+
+-endif # CONFIG_LTO_CLANG
++endif # CONFIG_LTO
+
+ quiet_cmd_ld_ko_o = LD [M]  $@
+       cmd_ld_ko_o +=							\
+diff --git a/scripts/Makefile.modpost b/scripts/Makefile.modpost
+index 066beffca09a..bfd99216b905 100644
+--- a/scripts/Makefile.modpost
++++ b/scripts/Makefile.modpost
+@@ -105,8 +105,8 @@ $(input-symdump):
+ 	@echo >&2 'WARNING: Symbol version dump "$@" is missing.'
+ 	@echo >&2 '         Modules may not have dependencies or modversions.'
+
+-ifdef CONFIG_LTO_CLANG
+-# With CONFIG_LTO_CLANG, .o files might be LLVM bitcode, so we need to run
++ifdef CONFIG_LTO
++# With CONFIG_LTO, .o files might be LLVM bitcode, so we need to run
+ # LTO to compile them into native code before running modpost
+ prelink-ext := .lto
+
+diff --git a/scripts/gen_autoksyms.sh b/scripts/gen_autoksyms.sh
+index da320151e7c3..ece61af2c443 100755
+--- a/scripts/gen_autoksyms.sh
++++ b/scripts/gen_autoksyms.sh
+@@ -26,10 +26,10 @@ if [ -n "$CONFIG_MODVERSIONS" ]; then
+ 	needed_symbols="$needed_symbols module_layout"
+ fi
+
+-# With CONFIG_LTO_CLANG, LLVM bitcode has not yet been compiled into a binary
++# With CONFIG_LTO, LLVM bitcode has not yet been compiled into a binary
+ # when the .mod files are generated, which means they don't yet contain
+ # references to certain symbols that will be present in the final binaries.
+-if [ -n "$CONFIG_LTO_CLANG" ]; then
++if [ -n "$CONFIG_LTO" ]; then
+ 	# intrinsic functions
+ 	needed_symbols="$needed_symbols memcpy memmove memset"
+ 	# ftrace
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 3b261b0f74f0..fe7a57158632 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -54,7 +54,7 @@ gen_initcalls()
+ 		> .tmp_initcalls.lds
+ }
+
+-# If CONFIG_LTO_CLANG is selected, collect generated symbol versions into
++# If CONFIG_LTO is selected, collect generated symbol versions into
+ # .tmp_symversions.lds
+ gen_symversions()
+ {
+@@ -106,7 +106,7 @@ objtool_link()
+ 	local objtoolcmd;
+ 	local objtoolopt;
+
+-	if [ "${CONFIG_LTO_CLANG} ${CONFIG_STACK_VALIDATION}" = "y y" ]; then
++	if [ "${CONFIG_LTO} ${CONFIG_STACK_VALIDATION}" = "y y" ] ; then
+ 		# Don't perform vmlinux validation unless explicitly requested,
+ 		# but run objtool on vmlinux.o now that we have an object file.
+ 		if [ -n "${CONFIG_UNWINDER_ORC}" ]; then
+@@ -132,7 +132,7 @@ objtool_link()
+ 		if [ -z "${CONFIG_FRAME_POINTER}" ]; then
+ 			objtoolopt="${objtoolopt} --no-fp"
+ 		fi
+-		if [ -n "${CONFIG_GCOV_KERNEL}" ] || [ -n "${CONFIG_LTO_CLANG}" ]; then
++		if [ -n "${CONFIG_GCOV_KERNEL}" ] || [ -n "${CONFIG_LTO}" ]; then
+ 			objtoolopt="${objtoolopt} --no-unreachable"
+ 		fi
+ 		if [ -n "${CONFIG_RETPOLINE}" ]; then
+@@ -162,12 +162,12 @@ vmlinux_link()
+ 	shift
+
+ 	# The kallsyms linking does not need debug symbols included.
+-	if [ "$output" != "${output#.tmp_vmlinux.kallsyms}" ] ; then
++	if [ "$output" != "${output#.tmp_vmlinux.kallsyms}" ]; then
+ 		strip_debug=-Wl,--strip-debug
+ 	fi
+
+ 	if [ "${SRCARCH}" != "um" ]; then
+-		if [ -n "${CONFIG_LTO_CLANG}" ]; then
++		if [ -n "${CONFIG_LTO}" ]; then
+ 			# Use vmlinux.o instead of performing the slow LTO
+ 			# link again.
+ 			objects="--whole-archive		\
+--
+2.30.2
+
+From 66cab4f329859db2a8546e0eb6d46cc2be3ab129 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Mon, 3 Sep 2012 21:18:23 +0200
+Subject: [PATCH 22/39] Kbuild, lto: Add Link Time Optimization support
+
+This patch adds gcc LTO support. It leverages some
+of the existing support for clang LTO.
+
+With LTO gcc will do whole program optimizations for
+the whole kernel and each module. This increases compile time,
+but can generate faster and smaller code and allows
+the compiler to do global checking. For example the compiler
+can complain now about type mismatches for symbols between
+different files.
+
+LTO allows gcc to inline functions between different files and
+do various other optimization across the whole binary.
+
+The LTO patches have been used for many years by various
+users, mostly to make their kernel smaller.  The original
+versions date back to 2012.
+
+This version has a lot of outdated cruft dropped and doesn't need
+any special tool chain (except for new enough) anymore.
+
+This adds the basic Kbuild plumbing for LTO:
+
+- Add a new LDFINAL variable that controls the final link
+for vmlinux or module. In this case we call gcc-ld instead
+of ld, to run the LTO step.
+
+- Add Makefile support to enable LTO
+
+For more information see Documentation/kbuild/lto-build.rst
+
+Thanks to HJ Lu, Joe Mario, Honza Hubicka, Richard Guenther,
+Don Zickus, Changlong Xie, Gleb Schukin, Martin Liska,
+various github contributors, who helped with this project
+(and probably some more who I forgot, sorry)
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ Documentation/kbuild/lto-build.rst | 70 ++++++++++++++++++++++++++++++
+ Makefile                           |  9 ++--
+ arch/Kconfig                       | 52 ++++++++++++++++++++++
+ scripts/Makefile.build             | 11 ++---
+ scripts/Makefile.lib               |  2 +-
+ scripts/Makefile.lto               | 40 +++++++++++++++++
+ scripts/Makefile.modfinal          |  4 +-
+ scripts/Makefile.modpost           |  2 +-
+ scripts/link-vmlinux.sh            | 16 ++++---
+ 9 files changed, 188 insertions(+), 18 deletions(-)
+ create mode 100644 Documentation/kbuild/lto-build.rst
+ create mode 100644 scripts/Makefile.lto
+
+diff --git a/Documentation/kbuild/lto-build.rst b/Documentation/kbuild/lto-build.rst
+new file mode 100644
+index 000000000000..e8a0f149e8ce
+--- /dev/null
++++ b/Documentation/kbuild/lto-build.rst
+@@ -0,0 +1,70 @@
++=====================================================
++gcc link time optimization (LTO) for the Linux kernel
++=====================================================
++
++Link Time Optimization allows the compiler to optimize the complete program
++instead of just each file.
++
++The compiler can inline functions between files and do various other global
++optimizations, like specializing functions for common parameters,
++determing when global variables are clobbered, making functions pure/const,
++propagating constants globally, removing unneeded data and others.
++
++It will also drop unused functions which can make the kernel
++image smaller in some circumstances, in particular for small kernel
++configurations.
++
++For small monolithic kernels it can throw away unused code very effectively
++(especially when modules are disabled) and usually shrinks
++the code size.
++
++Build time and memory consumption at build time will increase, depending
++on the size of the largest binary. Modular kernels are less affected.
++With LTO incremental builds are less incremental, as always the whole
++binary needs to be re-optimized (but not re-parsed)
++
++Oopses can be somewhat more difficult to read, due to the more aggressive
++inlining: it helps to use scripts/faddr2line.
++
++It is currently incompatible with live patching.
++
++Normal "reasonable" builds work with less than 4GB of RAM, but very large
++configurations like allyesconfig typically need more memory. The actual
++memory needed depends on the available memory (gcc sizes its garbage
++collector pools based on that or on the ulimit -m limits) and
++the compiler version.
++
++Requirements:
++-------------
++- Enough memory: 4GB for a standard build, more for allyesconfig
++The peak memory usage happens single threaded (when lto-wpa merges types),
++so dialing back -j options will not help much.
++
++A 32bit hosted compiler is unlikely to work due to the memory requirements.
++You can however build a kernel targeted at 32bit on a 64bit host.
++
++FAQs:
++-----
++Q: I get a section type attribute conflict
++A: Usually because of someone doing
++const __initdata (should be const __initconst) or const __read_mostly
++(should be just const). Check both symbols reported by gcc.
++
++References:
++-----------
++
++Presentation on Kernel LTO
++(note, performance numbers/details totally outdated.)
++http://halobates.de/kernel-lto.pdf
++
++Generic gcc LTO:
++http://www.ucw.cz/~hubicka/slides/labs2013.pdf
++http://www.hipeac.net/system/files/barcelona.pdf
++
++Somewhat outdated too:
++http://gcc.gnu.org/projects/lto/lto.pdf
++http://gcc.gnu.org/projects/lto/whopr.pdf
++
++Happy Link-Time-Optimizing!
++
++Andi Kleen
+diff --git a/Makefile b/Makefile
+index e5536960ad70..6d26d1677014 100644
+--- a/Makefile
++++ b/Makefile
+@@ -437,6 +437,7 @@ STRIP		= llvm-strip
+ else
+ CC		= $(CROSS_COMPILE)gcc
+ LD		= $(CROSS_COMPILE)ld
++LDFINAL		= $(LD)
+ AR		= $(CROSS_COMPILE)ar
+ NM		= $(CROSS_COMPILE)nm
+ OBJCOPY		= $(CROSS_COMPILE)objcopy
+@@ -509,7 +510,7 @@ CLANG_FLAGS :=
+ export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC
+ export CPP AR NM STRIP OBJCOPY OBJDUMP READELF PAHOLE RESOLVE_BTFIDS LEX YACC AWK INSTALLKERNEL
+ export PERL PYTHON3 CHECK CHECKFLAGS MAKE UTS_MACHINE HOSTCXX
+-export KGZIP KBZIP2 KLZOP LZMA LZ4 XZ ZSTD
++export KGZIP KBZIP2 KLZOP LZMA LZ4 XZ ZSTD LDFINAL
+ export KBUILD_HOSTCXXFLAGS KBUILD_HOSTLDFLAGS KBUILD_HOSTLDLIBS LDFLAGS_MODULE
+
+ export KBUILD_CPPFLAGS NOSTDINC_FLAGS LINUXINCLUDE OBJCOPYFLAGS KBUILD_LDFLAGS
+@@ -977,6 +978,7 @@ include-$(CONFIG_KASAN)		+= scripts/Makefile.kasan
+ include-$(CONFIG_KCSAN)		+= scripts/Makefile.kcsan
+ include-$(CONFIG_UBSAN)		+= scripts/Makefile.ubsan
+ include-$(CONFIG_KCOV)		+= scripts/Makefile.kcov
++include-$(CONFIG_LTO_GCC)	+= scripts/Makefile.lto
+ include-$(CONFIG_GCC_PLUGINS)	+= scripts/Makefile.gcc-plugins
+
+ include $(addprefix $(srctree)/, $(include-y))
+@@ -1194,8 +1196,9 @@ $(autoksyms_h):
+ ARCH_POSTLINK := $(wildcard $(srctree)/arch/$(SRCARCH)/Makefile.postlink)
+
+ # Final link of vmlinux with optional arch pass after final link
+-cmd_link-vmlinux =                                                 \
+-	$(CONFIG_SHELL) $< "$(LD)" "$(KBUILD_LDFLAGS)" "$(LDFLAGS_vmlinux)";    \
++cmd_link-vmlinux =                                                  \
++	$(CONFIG_SHELL) $< "$(LD)" "$(LDFINAL)" "$(KBUILD_LDFLAGS)" \
++	"$(LDFLAGS_vmlinux)" ;					    \
+ 	$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
+
+ vmlinux: scripts/link-vmlinux.sh autoksyms_recursive $(vmlinux-deps) FORCE
+diff --git a/arch/Kconfig b/arch/Kconfig
+index ecfd3520b676..4cab0655622c 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -643,6 +643,21 @@ config HAS_LTO_CLANG
+ 	  The compiler and Kconfig options support building with Clang's
+ 	  LTO.
+
++config ARCH_SUPPORTS_GCC_LTO
++	bool
++
++# Some ar versions leak file descriptors when using the LTO
++# plugin and cause strange errors when ulimit -n is too low.
++# Pick an arbitrary threshold, which should be enough for most
++# kernel configs. This was a regression that is only
++# in some transient binutils version, so either older or
++# new enough is ok.
++# This might not be the exact range with this bug.
++config BAD_AR
++	depends on LD_VERSION = 23000
++	depends on $(shell,ulimit -n) < 4000
++	def_bool y
++
+ choice
+ 	prompt "Link Time Optimization (LTO)"
+ 	default LTO_NONE
+@@ -690,8 +705,45 @@ config LTO_CLANG_THIN
+ 	    https://clang.llvm.org/docs/ThinLTO.html
+
+ 	  If unsure, say Y.
++
++config LTO_GCC
++	bool "gcc LTO"
++	depends on ARCH_SUPPORTS_GCC_LTO && CC_IS_GCC
++	depends on GCC_VERSION >= 90000
++	depends on LD_VERSION >= 22700
++	depends on !BAD_AR
++	select LTO
++	help
++	  Enable whole program (link time) optimizations (LTO) for the the
++	  whole kernel and each module.  This usually increases compile time,
++	  especially for incremential builds, but tends to generate better code
++	  as well as some global checks.
++
++	  It allows the compiler to inline functions between different files
++	  and do other global optimization, like propagating constants between
++	  functions, determine side effects of functions, avoid unnecessary
++	  register saving around functions, or optimize unused function arguments.
++	  It also allows the compiler to drop unused functions.
++
++	  With this option the compiler will also do some global checking over
++	  different source files.
++
++	  This requires a gcc 9 or later compiler and binutils >= 2.27.
++
++	  On larger non modular configurations this may need more than 4GB of
++	  RAM for the link phase, as well as a 64bit host compiler.
++
++	  For more information see Documentation/kbuild/lto-build.rst
+ endchoice
+
++config LTO_CP_CLONE
++	bool "Allow aggressive cloning for function specialization"
++	depends on LTO_GCC
++	help
++	  Allow the compiler to clone and specialize functions for specific
++	  arguments when it determines these arguments are commonly
++	  called.  Experimential. Will increase text size.
++
+ config HAVE_ARCH_WITHIN_STACK_FRAMES
+ 	bool
+ 	help
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 8041dbc807c5..3029f3c81c17 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -179,7 +179,7 @@ cmd_modversions_c =								\
+ 		$(call cmd_gensymtypes_c,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))	\
+ 		    > $(@D)/.tmp_$(@F:.o=.ver);					\
+ 										\
+-		$(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@ 		\
++		$(LDFINAL) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@		\
+ 			-T $(@D)/.tmp_$(@F:.o=.ver);				\
+ 		mv -f $(@D)/.tmp_$(@F) $@;					\
+ 		rm -f $(@D)/.tmp_$(@F:.o=.ver);					\
+@@ -280,7 +280,8 @@ $(obj)/%.mod: $(obj)/%.o FORCE
+ 	$(call if_changed,mod)
+
+ quiet_cmd_cc_lst_c = MKLST   $@
+-      cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
++      cmd_cc_lst_c = $(if $(CONFIG_LTO),$(warning Listing in LTO mode does not match final binary)) \
++		     $(CC) $(c_flags) -g -c -o $*.o $< && \
+ 		     $(CONFIG_SHELL) $(srctree)/scripts/makelst $*.o \
+ 				     System.map $(OBJDUMP) > $@
+
+@@ -341,7 +342,7 @@ cmd_modversions_S =								\
+ 		$(call cmd_gensymtypes_S,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))	\
+ 		    > $(@D)/.tmp_$(@F:.o=.ver);					\
+ 										\
+-		$(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@ 		\
++		$(LDFINAL) $(KBUILD_LDFLAGS) -r $(KBUILD_MOD_LDFLAGS) -o $(@D)/.tmp_$(@F) $@	\
+ 			-T $(@D)/.tmp_$(@F:.o=.ver);				\
+ 		mv -f $(@D)/.tmp_$(@F) $@;					\
+ 		rm -f $(@D)/.tmp_$(@F:.o=.ver);					\
+@@ -440,8 +441,8 @@ cmd_link_multi-m =						\
+ 	rm -f $@; 						\
+ 	$(AR) cDPrsT $@ $(filter %.o,$^)
+ else
+-quiet_cmd_link_multi-m = LD [M]  $@
+-      cmd_link_multi-m = $(LD) $(ld_flags) -r -o $@ $(filter %.o,$^)
++quiet_cmd_link_multi-m = LDFINAL [M]  $@
++      cmd_link_multi-m = $(LDFINAL) $(ld_flags) -r -o $@ $(filter %.o,$^)
+ endif
+
+ $(multi-used-m): FORCE
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 8cd67b1b6d15..d5d5e564345e 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -188,7 +188,7 @@ quiet_modtag = $(if $(part-of-module),[M],   )
+
+ modkern_cflags =                                          \
+ 	$(if $(part-of-module),                           \
+-		$(KBUILD_CFLAGS_MODULE) $(CFLAGS_MODULE), \
++                $(KBUILD_CFLAGS_MODULE) $(CFLAGS_MODULE), \
+ 		$(KBUILD_CFLAGS_KERNEL) $(CFLAGS_KERNEL) $(modfile_flags))
+
+ modkern_aflags = $(if $(part-of-module),				\
+diff --git a/scripts/Makefile.lto b/scripts/Makefile.lto
+new file mode 100644
+index 000000000000..df97be2d929e
+--- /dev/null
++++ b/scripts/Makefile.lto
+@@ -0,0 +1,40 @@
++#
++# Support for gcc link time optimization
++#
++
++DISABLE_LTO_GCC :=
++export DISABLE_LTO_GCC
++
++ifdef CONFIG_LTO_GCC
++	CC_FLAGS_LTO_GCC := -flto
++	DISABLE_LTO_GCC := -fno-lto
++
++	KBUILD_CFLAGS += ${CC_FLAGS_LTO_GCC}
++
++	lto-flags-y := -flto -flinker-output=nolto-rel -flto=jobserver
++	lto-flags-y += -fwhole-program
++
++	lto-flags-$(CONFIG_LTO_CP_CLONE) += -fipa-cp-clone
++
++	# allow extra flags from command line
++	lto-flags-y += ${LTO_EXTRA_CFLAGS}
++
++	# For LTO we need to use gcc to do the linking, not ld
++	# directly. Use a wrapper to convert the ld command line
++	# to gcc
++	LDFINAL := ${CONFIG_SHELL} ${srctree}/scripts/gcc-ld \
++                  ${lto-flags-y}
++
++	# LTO gcc creates a lot of files in TMPDIR, and with /tmp as tmpfs
++	# it's easy to drive the machine OOM. Use the object directory
++	# instead for temporaries.
++	# This has the drawback that there might be some junk more visible
++	# after interrupted compilations, but you would have that junk
++	# there anyways in /tmp.
++	TMPDIR ?= $(objtree)
++	export TMPDIR
++
++	# use plugin aware tools
++	AR = $(CROSS_COMPILE)gcc-ar
++	NM = $(CROSS_COMPILE)gcc-nm
++endif # CONFIG_LTO_GCC
+diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
+index dfda559a0ab6..4033e880334d 100644
+--- a/scripts/Makefile.modfinal
++++ b/scripts/Makefile.modfinal
+@@ -49,9 +49,9 @@ endif # CONFIG_STACK_VALIDATION
+
+ endif # CONFIG_LTO
+
+-quiet_cmd_ld_ko_o = LD [M]  $@
++quiet_cmd_ld_ko_o = LDFINAL [M]  $@
+       cmd_ld_ko_o +=							\
+-	$(LD) -r $(KBUILD_LDFLAGS)					\
++	$(LDFINAL) -r $(KBUILD_LDFLAGS)					\
+ 		$(KBUILD_LDFLAGS_MODULE) $(LDFLAGS_MODULE)		\
+ 		-T scripts/module.lds -o $@ $(filter %.o, $^);		\
+ 	$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
+diff --git a/scripts/Makefile.modpost b/scripts/Makefile.modpost
+index bfd99216b905..54ec57859072 100644
+--- a/scripts/Makefile.modpost
++++ b/scripts/Makefile.modpost
+@@ -112,7 +112,7 @@ prelink-ext := .lto
+
+ quiet_cmd_cc_lto_link_modules = LTO [M] $@
+ cmd_cc_lto_link_modules =						\
+-	$(LD) $(ld_flags) -r -o $@					\
++	$(LDFINAL) $(ld_flags) -r -o $@					\
+ 		$(shell [ -s $(@:.lto.o=.o.symversions) ] &&		\
+ 			echo -T $(@:.lto.o=.o.symversions))		\
+ 		--whole-archive $^
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index fe7a57158632..0e039a4cf2cb 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -31,8 +31,9 @@
+ set -e
+
+ LD="$1"
+-KBUILD_LDFLAGS="$2"
+-LDFLAGS_vmlinux="$3"
++LDFINAL="$2"
++KBUILD_LDFLAGS="$3"
++LDFLAGS_vmlinux="$4"
+
+ # Nice output in kbuild format
+ # Will be supressed by "make -s"
+@@ -82,9 +83,12 @@ modpost_link()
+ 		${KBUILD_VMLINUX_LIBS}				\
+ 		--end-group"
+
+-	if [ -n "${CONFIG_LTO_CLANG}" ]; then
+-		gen_initcalls
+-		lds="-T .tmp_initcalls.lds"
++	if [ -n "${CONFIG_LTO}" ]; then
++		lds=""
++		if [ -n "${CONFIG_LTO_CLANG}" ] ; then
++			gen_initcalls
++			lds="-T .tmp_initcalls.lds"
++		fi
+
+ 		if [ -n "${CONFIG_MODVERSIONS}" ]; then
+ 			gen_symversions
+@@ -98,7 +102,7 @@ modpost_link()
+ 		info LD ${1}
+ 	fi
+
+-	${LD} ${KBUILD_LDFLAGS} -r -o ${1} ${lds} ${objects}
++	${LDFINAL} ${KBUILD_LDFLAGS} -r -o ${1} ${lds} ${objects}
+ }
+
+ objtool_link()
+--
+2.30.2
+
+From ad4ec61969a3dbea5f1371e6d2697759524fb5e1 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Mon, 29 Mar 2021 08:17:46 -0700
+Subject: [PATCH 23/39] Compiler attributes: Disable __flatten with LTO
+
+Using __flatten causes a simple gcc 10 LTO build not fit into 16GB
+anymore. Disable flatten with LTO.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ include/linux/compiler_attributes.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
+index 10c603dd21f8..48a004dea9f0 100644
+--- a/include/linux/compiler_attributes.h
++++ b/include/linux/compiler_attributes.h
+@@ -215,7 +215,12 @@
+  * gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes
+  * clang: https://clang.llvm.org/docs/AttributeReference.html#flatten
+  */
++#ifndef CONFIG_LTO_GCC
+ # define __flatten			__attribute__((flatten))
++#else
++/* Causes very large memory use with gcc 10 in LTO mode */
++# define __flatten
++#endif
+
+ /*
+  * Note the missing underscores.
+--
+2.30.2
+
+From 6a58ea5ff45b3c7709c731474635cd27e92bee88 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 03:46:17 -0700
+Subject: [PATCH 24/39] Kbuild, lto: Disable LTO for mod tools
+
+The mod tools scan assembler for generating symbols, which doesn't work
+with LTO. Just disable LTO for scripts/mod/
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ scripts/mod/Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/scripts/mod/Makefile b/scripts/mod/Makefile
+index c9e38ad937fd..aa3465d6bc4a 100644
+--- a/scripts/mod/Makefile
++++ b/scripts/mod/Makefile
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ OBJECT_FILES_NON_STANDARD := y
+ CFLAGS_REMOVE_empty.o += $(CC_FLAGS_LTO)
++CFLAGS_REMOVE_empty.o += $(CC_FLAGS_LTO_GCC)
+
+ hostprogs-always-y	+= modpost mk_elfconfig
+ always-y		+= empty.o
+@@ -9,6 +10,8 @@ modpost-objs	:= modpost.o file2alias.o sumversion.o
+
+ devicetable-offsets-file := devicetable-offsets.h
+
++$(obj)/devicetable-offsets.s: KBUILD_CFLAGS += $(DISABLE_LTO_GCC)
++
+ $(obj)/$(devicetable-offsets-file): $(obj)/devicetable-offsets.s FORCE
+ 	$(call filechk,offsets,__DEVICETABLE_OFFSETS_H__)
+
+--
+2.30.2
+
+From 9f30235f8d169125ca5a35deab642074cf244ca3 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 10:21:15 -0700
+Subject: [PATCH 25/39] Kbuild, lto: Disable LTO for bounds/asm-offset
+
+Disable LTO when generating the bounds/asm-offset.s files which
+are scanned for C constants. With a LTO build the file would contain
+the gcc IR in assembler form, which breaks the scanning scripts.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ Kbuild | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Kbuild b/Kbuild
+index fa441b98c9f6..69c86a38e7f7 100644
+--- a/Kbuild
++++ b/Kbuild
+@@ -10,6 +10,8 @@ bounds-file := include/generated/bounds.h
+ always-y := $(bounds-file)
+ targets := kernel/bounds.s
+
++kernel/bounds.s: KBUILD_CFLAGS += $(DISABLE_LTO_GCC)
++
+ $(bounds-file): kernel/bounds.s FORCE
+ 	$(call filechk,offsets,__LINUX_BOUNDS_H__)
+
+@@ -32,6 +34,7 @@ always-y += $(offsets-file)
+ targets += arch/$(SRCARCH)/kernel/asm-offsets.s
+
+ arch/$(SRCARCH)/kernel/asm-offsets.s: $(timeconst-file) $(bounds-file)
++arch/$(SRCARCH)/kernel/asm-offsets.s: KBUILD_CFLAGS += $(DISABLE_LTO_GCC)
+
+ $(offsets-file): arch/$(SRCARCH)/kernel/asm-offsets.s FORCE
+ 	$(call filechk,offsets,__ASM_OFFSETS_H__)
+--
+2.30.2
+
+From af2547cdcd446d5a8f22ccf950d189e528871a8d Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Mon, 6 Jul 2020 17:36:07 -0700
+Subject: [PATCH 26/39] kbuild, link-vmlinux: Don't delete output files with
+ make -i
+
+make -i is useful to see output files which normally get deleted on an
+error.  Make this work with link-vmlinux.sh too. Don't delete the output
+files on error when make -i is used.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ scripts/link-vmlinux.sh | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 0e039a4cf2cb..a1a57f214c58 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -300,6 +300,11 @@ sorttable()
+ # Delete output files in case of error
+ cleanup()
+ {
++	# don't delete for make -i
++	case "$MFLAGS" in
++	*-i*) return ;;
++	esac
++
+ 	rm -f .btf.*
+ 	rm -f .tmp_System.map
+ 	rm -f .tmp_initcalls.lds
+--
+2.30.2
+
+From 4c7e24490a7ae525272b0a79cb6c3a2f11525376 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Mon, 19 Apr 2021 22:21:15 -0700
+Subject: [PATCH 27/39] Kbuild, lto: Don't include weak source file symbols in
+ System.map
+
+The LTO build can generate some extra weak source code file name symbols
+on the second kallsyms link. This causes kallsyms errors due to
+mismatches in the stage1 vs stage2 kallsyms link. Filter those
+out when generating the System.map.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ scripts/mksysmap | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/mksysmap b/scripts/mksysmap
+index 9aa23d15862a..8b525c484755 100755
+--- a/scripts/mksysmap
++++ b/scripts/mksysmap
+@@ -34,6 +34,7 @@
+ #   U - undefined global symbols
+ #   N - debugging symbols
+ #   w - local weak symbols
++#   W - weak symbols if they contain .c.
+
+ # readprofile starts reading symbols when _stext is found, and
+ # continue until it finds a symbol which is not either of 'T', 't',
+@@ -41,4 +42,4 @@
+ # so we just ignore them to let readprofile continue to work.
+ # (At least sparc64 has __crc_ in the middle).
+
+-$NM -n $1 | grep -v '\( [aNUw] \)\|\(__crc_\)\|\( \$[adt]\)\|\( \.L\)' > $2
++$NM -n $1 | grep -v '\( [aNUw] \)\|\(__crc_\)\|\( \$[adt]\)\|\( \.L\)\|\(W .*\.c\.\)' > $2
+--
+2.30.2
+
+From 68e72b298578779851fcc3da522abc15fc811c70 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sun, 28 Jun 2020 08:25:12 -0700
+Subject: [PATCH 28/39] x86/lto: Disable relative init pointers with LTO
+
+Relative init pointers are implemented using custom top level assembler
+that references the init function. With LTO the top level assembler
+statement can end up in other assembler files than the init function,
+which then causes linker errors if the init function was static.
+
+This could be fixed by making all the init functions global, but that
+would be a very intrusive change all over the tree.
+
+Disable relative init pointers for LTO.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ arch/x86/Kconfig | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 2792879d398e..4e2b7589f324 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -156,7 +156,9 @@ config X86
+ 	select HAVE_ARCH_MMAP_RND_BITS		if MMU
+ 	select HAVE_ARCH_MMAP_RND_COMPAT_BITS	if MMU && COMPAT
+ 	select HAVE_ARCH_COMPAT_MMAP_BASES	if MMU && COMPAT
+-	select HAVE_ARCH_PREL32_RELOCATIONS
++	# LTO can move assembler to different files, so all
++	# the init functions would need to be global for this to work
++	select HAVE_ARCH_PREL32_RELOCATIONS	if !LTO_GCC
+ 	select HAVE_ARCH_SECCOMP_FILTER
+ 	select HAVE_ARCH_THREAD_STRUCT_WHITELIST
+ 	select HAVE_ARCH_STACKLEAK
+--
+2.30.2
+
+From 176f114cff480c9a80d7f11c2f408bdc50be2be6 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Tue, 7 Jul 2020 16:15:18 -0700
+Subject: [PATCH 29/39] x86/purgatory/lto: Disable gcc LTO for purgatory
+
+Various issues with gcc LTOing the purgatory code, so disable LTO here.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ arch/x86/purgatory/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/purgatory/Makefile b/arch/x86/purgatory/Makefile
+index 95ea17a9d20c..e3b04a62df2d 100644
+--- a/arch/x86/purgatory/Makefile
++++ b/arch/x86/purgatory/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ OBJECT_FILES_NON_STANDARD := y
++KBUILD_CFLAGS	     += $(DISABLE_LTO_GCC)
+
+ purgatory-y := purgatory.o stack.o setup-x86_$(BITS).o sha256.o entry64.o string.o
+
+--
+2.30.2
+
+From aefa8de4ea5f15655e2b3337f2733fd4ab8dd0a6 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Tue, 13 Oct 2020 15:54:56 -0700
+Subject: [PATCH 30/39] x86/livepatch/lto: Disable live patching with LTO
+
+Not supported by gcc 10 so far, causes compiler "sorry" messages.
+
+Other than the compiler support there shouldn't be any barriers for live
+patching LTOed kernels, although it might be more difficult to create
+patches for larger functions.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ kernel/livepatch/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/livepatch/Kconfig b/kernel/livepatch/Kconfig
+index 53d51ed619a3..8c004f211a44 100644
+--- a/kernel/livepatch/Kconfig
++++ b/kernel/livepatch/Kconfig
+@@ -12,6 +12,7 @@ config LIVEPATCH
+ 	depends on KALLSYMS_ALL
+ 	depends on HAVE_LIVEPATCH
+ 	depends on !TRIM_UNUSED_KSYMS
++	depends on !LTO_GCC # not supported in gcc 10
+ 	help
+ 	  Say Y here if you want to support kernel live patching.
+ 	  This option has no runtime impact until a kernel "patch"
+--
+2.30.2
+
+From 9ac4cb32b68e96cb11b673b72fd79596d51054ef Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sun, 28 Mar 2021 10:23:21 -0700
+Subject: [PATCH 31/39] x86/vdso/lto: Disable gcc LTO for the vdso
+
+Disable gcc LTO for the vdso. It's not really useful here and
+causes various strange problems.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ arch/x86/entry/vdso/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/x86/entry/vdso/Makefile b/arch/x86/entry/vdso/Makefile
+index 05c4abc2fdfd..35dad94373c3 100644
+--- a/arch/x86/entry/vdso/Makefile
++++ b/arch/x86/entry/vdso/Makefile
+@@ -3,6 +3,8 @@
+ # Building vDSO images for x86.
+ #
+
++KBUILD_CFLAGS +=		$(DISABLE_LTO_GCC)
++
+ # Absolute relocation type $(ARCH_REL_TYPE_ABS) needs to be defined before
+ # the inclusion of generic Makefile.
+ ARCH_REL_TYPE_ABS := R_X86_64_JUMP_SLOT|R_X86_64_GLOB_DAT|R_X86_64_RELATIVE|
+--
+2.30.2
+
+From 8041286cecc4f736c1b32fb476e72628b7d090fb Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sat, 3 Apr 2021 09:30:36 -0700
+Subject: [PATCH 32/39] x86/preempt/lto: Make preempt_schedule_thunk* __visble
+
+These functions are called from assembler, thus need to be visible
+for gcc LTO.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ arch/x86/include/asm/preempt.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/preempt.h b/arch/x86/include/asm/preempt.h
+index f8cb8af4de5c..903ad9011186 100644
+--- a/arch/x86/include/asm/preempt.h
++++ b/arch/x86/include/asm/preempt.h
+@@ -106,12 +106,12 @@ static __always_inline bool should_resched(int preempt_offset)
+ #ifdef CONFIG_PREEMPTION
+
+ extern asmlinkage void preempt_schedule(void);
+-extern asmlinkage void preempt_schedule_thunk(void);
++extern __visible asmlinkage void preempt_schedule_thunk(void);
+
+ #define __preempt_schedule_func preempt_schedule_thunk
+
+ extern asmlinkage void preempt_schedule_notrace(void);
+-extern asmlinkage void preempt_schedule_notrace_thunk(void);
++extern __visible asmlinkage void preempt_schedule_notrace_thunk(void);
+
+ #define __preempt_schedule_notrace_func preempt_schedule_notrace_thunk
+
+--
+2.30.2
+
+From 5326976a6a99d76478963c0da4a6f92a327dc918 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sat, 3 Apr 2021 09:31:39 -0700
+Subject: [PATCH 33/39] x86/module/lto: Don't take address of memcpy
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Taking the address of memcpy can trigger a compiler problem
+in gcc 10 LTO:
+
+inlining failed in call to ‘always_inline’
+‘memcpy’: --param max-inline-insns-auto limit reached
+
+For more details see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99828
+
+This is fixed now in gcc, but work around it on older compilers
+by using a wrapper.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ arch/x86/kernel/module.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index 5e9a34b5bd74..ff61a45fc36b 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -218,6 +218,11 @@ static int __apply_relocate_add(Elf64_Shdr *sechdrs,
+ 	return -ENOEXEC;
+ }
+
++static void *copy_write(void *dest, const void *src, size_t len)
++{
++	return memcpy(dest, src, len);
++}
++
+ int apply_relocate_add(Elf64_Shdr *sechdrs,
+ 		   const char *strtab,
+ 		   unsigned int symindex,
+@@ -226,7 +231,7 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
+ {
+ 	int ret;
+ 	bool early = me->state == MODULE_STATE_UNFORMED;
+-	void *(*write)(void *, const void *, size_t) = memcpy;
++	void *(*write)(void *, const void *, size_t) = copy_write;
+
+ 	if (!early) {
+ 		write = text_poke;
+--
+2.30.2
+
+From 1ae2c5cdceb32e48e3e32384f503d70c44d5c6be Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sat, 3 Apr 2021 09:38:37 -0700
+Subject: [PATCH 34/39] lto: Work around gcc crash in FRE pass
+
+Two media functions in the kernel trigger crash in the FRE pass in gcc
+with LTO.  Work around this by disabling the FRE pass for those functions.
+I disabled it only with LTO and for older compilers.
+
+The problem is already fixed in gcc 11, and the fix was backported
+to gcc 10.3.
+
+Cc: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ arch/Kconfig                          |  1 +
+ drivers/media/pci/cobalt/cobalt-i2c.c |  2 +-
+ drivers/media/pci/cx18/cx18-i2c.c     |  2 +-
+ include/linux/compiler_types.h        | 10 ++++++++++
+ init/Kconfig                          |  6 ++++++
+ 5 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 4cab0655622c..23702ce4a6a9 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -713,6 +713,7 @@ config LTO_GCC
+ 	depends on LD_VERSION >= 22700
+ 	depends on !BAD_AR
+ 	select LTO
++	select CC_NEEDS_FRE_WA if GCC_VERSION < 100300
+ 	help
+ 	  Enable whole program (link time) optimizations (LTO) for the the
+ 	  whole kernel and each module.  This usually increases compile time,
+diff --git a/drivers/media/pci/cobalt/cobalt-i2c.c b/drivers/media/pci/cobalt/cobalt-i2c.c
+index 10c9ee33f73e..ab8b7e31ed53 100644
+--- a/drivers/media/pci/cobalt/cobalt-i2c.c
++++ b/drivers/media/pci/cobalt/cobalt-i2c.c
+@@ -302,7 +302,7 @@ static const struct i2c_algorithm cobalt_algo = {
+ };
+
+ /* init + register i2c algo-bit adapter */
+-int cobalt_i2c_init(struct cobalt *cobalt)
++__no_fre int cobalt_i2c_init(struct cobalt *cobalt)
+ {
+ 	int i, err;
+ 	int status;
+diff --git a/drivers/media/pci/cx18/cx18-i2c.c b/drivers/media/pci/cx18/cx18-i2c.c
+index a83435245251..ae775ab0bda8 100644
+--- a/drivers/media/pci/cx18/cx18-i2c.c
++++ b/drivers/media/pci/cx18/cx18-i2c.c
+@@ -214,7 +214,7 @@ static const struct i2c_algo_bit_data cx18_i2c_algo_template = {
+ };
+
+ /* init + register i2c adapter */
+-int init_cx18_i2c(struct cx18 *cx)
++__no_fre int init_cx18_i2c(struct cx18 *cx)
+ {
+ 	int i, err;
+ 	CX18_DEBUG_I2C("i2c init\n");
+diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+index e5dd5a4ae946..bac3c526fca3 100644
+--- a/include/linux/compiler_types.h
++++ b/include/linux/compiler_types.h
+@@ -252,6 +252,16 @@ struct ftrace_likely_data {
+ #define asm_inline asm
+ #endif
+
++/*
++ * Work around compiler crash in some gcc versions by disabling
++ * FRE pass for a function.
++ */
++#ifdef CONFIG_CC_NEEDS_FRE_WA
++#define __no_fre __attribute__((optimize("-fno-tree-fre")))
++#else
++#define __no_fre
++#endif
++
+ /* Are two types/vars the same type (ignoring qualifiers)? */
+ #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
+
+diff --git a/init/Kconfig b/init/Kconfig
+index b8054b654d61..facd4186e1ce 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1350,6 +1350,12 @@ config HAVE_LD_DEAD_CODE_DATA_ELIMINATION
+ 	  sections (e.g., '.text.init'). Typically '.' in section names
+ 	  is used to distinguish them from label names / C identifiers.
+
++config CC_NEEDS_FRE_WA
++	bool
++	help
++	  Disable FRE compiler pass in some functions to work around
++	  gcc segfault.
++
+ config LD_DEAD_CODE_DATA_ELIMINATION
+ 	bool "Dead code and data elimination (EXPERIMENTAL)"
+ 	depends on HAVE_LD_DEAD_CODE_DATA_ELIMINATION
+--
+2.30.2
+
+From 84b28bcebd2bdf6fb908bb3786e73312f0f75389 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sat, 3 Apr 2021 09:42:29 -0700
+Subject: [PATCH 35/39] softirq/lto: Make irq_exit_rcu visible
+
+irq_exit_rcu is called from assembler, thus needs to be __visible with
+gcc LTO.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ kernel/softirq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index 9908ec4a9bfe..462c8f6b8709 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -429,7 +429,7 @@ static inline void __irq_exit_rcu(void)
+  *
+  * Also processes softirqs if needed and possible.
+  */
+-void irq_exit_rcu(void)
++__visible void irq_exit_rcu(void)
+ {
+ 	__irq_exit_rcu();
+ 	 /* must be last! */
+--
+2.30.2
+
+From 88f3cdfff6164644e06c6ce452ec5d9a1148fdb5 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sun, 4 Apr 2021 21:17:41 -0700
+Subject: [PATCH 36/39] x86/lto: Mark 32bit mem{cpy,move,set} __used
+
+gcc doesn't always recognize that memcpy/set/move called
+through __builtins are referenced because the reference happens too
+late in the RTL expansion phase. This can lead LTO to drop
+them, leading to undefined symbols. Mark them as __used to avoid
+that.
+
+This is only needed on 32bit, on 64bit they're assembler anyways.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ arch/x86/lib/memcpy_32.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/lib/memcpy_32.c b/arch/x86/lib/memcpy_32.c
+index e565d1c9019e..3435cd7543ba 100644
+--- a/arch/x86/lib/memcpy_32.c
++++ b/arch/x86/lib/memcpy_32.c
+@@ -5,7 +5,7 @@
+ #undef memcpy
+ #undef memset
+
+-__visible void *memcpy(void *to, const void *from, size_t n)
++__used __visible void *memcpy(void *to, const void *from, size_t n)
+ {
+ #if defined(CONFIG_X86_USE_3DNOW) && !defined(CONFIG_FORTIFY_SOURCE)
+ 	return __memcpy3d(to, from, n);
+@@ -15,13 +15,13 @@ __visible void *memcpy(void *to, const void *from, size_t n)
+ }
+ EXPORT_SYMBOL(memcpy);
+
+-__visible void *memset(void *s, int c, size_t count)
++__used __visible void *memset(void *s, int c, size_t count)
+ {
+ 	return __memset(s, c, count);
+ }
+ EXPORT_SYMBOL(memset);
+
+-__visible void *memmove(void *dest, const void *src, size_t n)
++__used __visible void *memmove(void *dest, const void *src, size_t n)
+ {
+ 	int d0,d1,d2,d3,d4,d5;
+ 	char *ret = dest;
+--
+2.30.2
+
+From 7edb2a24b345036fdc66218e76af2777b37e27fc Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sat, 27 Jun 2020 20:44:29 -0700
+Subject: [PATCH 37/39] x86/lto: Finally enable LTO for x86
+
+Now that everything is in place, allow gcc LTO for the x86 build.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 4e2b7589f324..ec50a0a36bce 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -244,6 +244,7 @@ config X86
+ 	select PCI_DOMAINS			if PCI
+ 	select PCI_LOCKLESS_CONFIG		if PCI
+ 	select PERF_EVENTS
++	select ARCH_SUPPORTS_GCC_LTO
+ 	select RTC_LIB
+ 	select RTC_MC146818_LIB
+ 	select SPARSE_IRQ
+--
+2.30.2
+
+From b9438301444c80df2a98d0a7ab30fe8a519bc54a Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sun, 25 Apr 2021 16:35:36 -0700
+Subject: [PATCH 38/39] kbuild/lto: Check for C symbol for modversions
+
+The gcc LTO nm doesn't output assembler symbols, which
+makes the symversions check fail because ksymtab is defined
+in assembler. Check for a C symbol that is generated too
+instead.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ scripts/Makefile.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 3029f3c81c17..59de68083b48 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -169,7 +169,7 @@ ifdef CONFIG_LTO
+ # Generate .o.symversions files for each .o with exported symbols, and link these
+ # to the kernel and/or modules at the end.
+ cmd_modversions_c =								\
+-	if $(NM) $@ 2>/dev/null | grep -q __ksymtab; then			\
++	if $(NM) $@ 2>/dev/null | grep -q __kstrtab; then			\
+ 		$(call cmd_gensymtypes_c,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))	\
+ 		    > $@.symversions;						\
+ 	fi;
+--
+2.30.2
+
+From e846b5b94549fa03b1bcca2bc1948b3a547e860d Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sun, 25 Apr 2021 16:36:42 -0700
+Subject: [PATCH 39/39] kbuild/bloat-o-meter: Handle gcc LTO
+
+gcc LTO can add .lto_priv postfixes to symbols. Ignore those
+in bloat-o-meter to allow comparision of non LTO with LTO
+kernels.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ scripts/bloat-o-meter | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/bloat-o-meter b/scripts/bloat-o-meter
+index dcd8d8750b8b..ec5ece4eed65 100755
+--- a/scripts/bloat-o-meter
++++ b/scripts/bloat-o-meter
+@@ -37,7 +37,7 @@ def getsizes(file, format):
+                 if name.startswith("__addressable_"): continue
+                 if name == "linux_banner": continue
+                 # statics and some other optimizations adds random .NUMBER
+-                name = re_NUMBER.sub('', name)
++                name = re_NUMBER.sub('', name).replace(".lto_priv", "")
+                 sym[name] = sym.get(name, 0) + int(size, 16)
+     return sym
+
+--
+2.30.2

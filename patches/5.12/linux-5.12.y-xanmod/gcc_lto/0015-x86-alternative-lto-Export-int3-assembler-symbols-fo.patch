@@ -1,0 +1,53 @@
+From 924865f86e51730faf8466553b2c49833d8df49c Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Thu, 25 Jun 2020 09:59:04 -0700
+Subject: [PATCH 15/39] x86/alternative/lto: Export int3 assembler symbols for
+ LTO
+
+LTO can move top level assembler statements into different files. This
+means that any C symbols referenced by them need to be global and
+__visilble. Do this for the int3* symbols referenced by assembler code.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ arch/x86/kernel/alternative.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index 8d778e46725d..e1c52f7d4f89 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -634,11 +634,12 @@ extern struct paravirt_patch_site __start_parainstructions[],
+  * convention such that we can 'call' it from assembly.
+  */
+ 
+-extern void int3_magic(unsigned int *ptr); /* defined in asm */
++extern __visible void int3_magic(unsigned int *ptr); /* defined in asm */
+ 
+ asm (
+ "	.pushsection	.init.text, \"ax\", @progbits\n"
+ "	.type		int3_magic, @function\n"
++"	.globl		int3_magic\n"
+ "int3_magic:\n"
+ "	movl	$1, (%" _ASM_ARG1 ")\n"
+ "	ret\n"
+@@ -646,7 +647,7 @@ asm (
+ "	.popsection\n"
+ );
+ 
+-extern __initdata unsigned long int3_selftest_ip; /* defined in asm below */
++extern __initdata __visible unsigned long int3_selftest_ip; /* defined in asm below */
+ 
+ static int __init
+ int3_exception_notify(struct notifier_block *self, unsigned long val, void *data)
+@@ -687,6 +688,7 @@ static void __init int3_selftest(void)
+ 	asm volatile ("1: int3; nop; nop; nop; nop\n\t"
+ 		      ".pushsection .init.data,\"aw\"\n\t"
+ 		      ".align " __ASM_SEL(4, 8) "\n\t"
++		      ".globl int3_selftest_ip\n\t"
+ 		      ".type int3_selftest_ip, @object\n\t"
+ 		      ".size int3_selftest_ip, " __ASM_SEL(4, 8) "\n\t"
+ 		      "int3_selftest_ip:\n\t"
+-- 
+2.30.2
+

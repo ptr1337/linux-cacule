@@ -1,0 +1,29 @@
+From e7c9e3a92d53031fcf78d6c76e529af03ff6271e Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sat, 27 Jun 2020 20:48:16 -0700
+Subject: [PATCH 18/39] x86/realmode/lto: Disable LTO for real mode code
+
+The early real mode bootup code makes various assumptions that break
+with LTO. For example it assumes that top level assembler statements
+don't get reordered. Disable LTO for the real mode code.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ arch/x86/realmode/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/realmode/Makefile b/arch/x86/realmode/Makefile
+index 6b1f3a4eeb44..af8945f4bc78 100644
+--- a/arch/x86/realmode/Makefile
++++ b/arch/x86/realmode/Makefile
+@@ -10,6 +10,7 @@
+ # Sanitizer runtimes are unavailable and cannot be linked here.
+ KASAN_SANITIZE			:= n
+ KCSAN_SANITIZE			:= n
++#KBUILD_CFLAGS 			+= $(DISABLE_LTO)
+ OBJECT_FILES_NON_STANDARD	:= y
+ 
+ subdir- := rm
+-- 
+2.30.2
+

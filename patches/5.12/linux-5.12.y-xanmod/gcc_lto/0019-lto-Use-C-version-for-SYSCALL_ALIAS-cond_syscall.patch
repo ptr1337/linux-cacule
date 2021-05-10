@@ -1,0 +1,80 @@
+From c3487f68c44cdd6c66dc6206d000d082bca84538 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sun, 9 Apr 2017 22:10:40 -0700
+Subject: [PATCH 19/39] lto: Use C version for SYSCALL_ALIAS / cond_syscall
+
+With LTO aliases get largely resolved in the compiler, not in the linker.
+
+Implement cond_syscall and SYSCALL_ALIAS in C to let the compiler
+understand the aliases so that it can resolve it properly.
+
+Likely the architecture specific versions are now not needed
+anymore, but I kept them for now.
+
+There is one sublety here:
+
+The assembler version didn't care whether there was a prototype
+or not. This variant assumes there is no prototypes because
+it uses a dummy (void) signature. This works for sys_ni.c,
+but breaks for kernel/time/posix-stubs.c. To avoid problems
+here I added a second variant of the macro (_PROTO) that
+uses the previous type.
+
+I actually tried to avoid this by adding prototypes for
+sys_ni and only use the _PROTO variant, but it resulted in very large
+patches and lots of problems with all the different cases.
+Eventually I gave up and just special cases the prototype
+case in posix-stubs.c
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ include/linux/linkage.h   | 16 ++++++++--------
+ kernel/time/posix-stubs.c |  2 +-
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/include/linux/linkage.h b/include/linux/linkage.h
+index dbf8506decca..645e5a73b9ed 100644
+--- a/include/linux/linkage.h
++++ b/include/linux/linkage.h
+@@ -23,17 +23,17 @@
+ #endif
+ 
+ #ifndef cond_syscall
+-#define cond_syscall(x)	asm(				\
+-	".weak " __stringify(x) "\n\t"			\
+-	".set  " __stringify(x) ","			\
+-		 __stringify(sys_ni_syscall))
++#define cond_syscall(x)	\
++	extern long x(void) __attribute__((alias("sys_ni_syscall"), weak));
+ #endif
+ 
+ #ifndef SYSCALL_ALIAS
+-#define SYSCALL_ALIAS(alias, name) asm(			\
+-	".globl " __stringify(alias) "\n\t"		\
+-	".set   " __stringify(alias) ","		\
+-		  __stringify(name))
++#define SYSCALL_ALIAS(a, name) \
++	long a(void) __attribute__((alias(__stringify(name))))
++#define SYSCALL_ALIAS_PROTO(a, name) \
++	typeof(a) a __attribute__((alias(__stringify(name))))
++#else
++#define SYSCALL_ALIAS_PROTO(a, name) SYSCALL_ALIAS(a, name)
+ #endif
+ 
+ #define __page_aligned_data	__section(".data..page_aligned") __aligned(PAGE_SIZE)
+diff --git a/kernel/time/posix-stubs.c b/kernel/time/posix-stubs.c
+index fcb3b21d8bdc..24fafe7782a9 100644
+--- a/kernel/time/posix-stubs.c
++++ b/kernel/time/posix-stubs.c
+@@ -31,7 +31,7 @@ asmlinkage long sys_ni_posix_timers(void)
+ }
+ 
+ #ifndef SYS_NI
+-#define SYS_NI(name)  SYSCALL_ALIAS(sys_##name, sys_ni_posix_timers)
++#define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
+ #endif
+ 
+ #ifndef COMPAT_SYS_NI
+-- 
+2.30.2
+

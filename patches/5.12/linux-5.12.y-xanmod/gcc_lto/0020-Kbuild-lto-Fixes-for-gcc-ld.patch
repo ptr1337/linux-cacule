@@ -1,0 +1,58 @@
+From 390ae50054b897016470277734c751d000d709e5 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Sat, 27 Jun 2020 20:48:38 -0700
+Subject: [PATCH 20/39] Kbuild, lto: Fixes for gcc-ld
+
+- Add some missing linker and gcc command line arguments
+- When V=1 is specified print the final gcc command line
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ scripts/gcc-ld | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/scripts/gcc-ld b/scripts/gcc-ld
+index 997b818c3962..13e85ece8d04 100755
+--- a/scripts/gcc-ld
++++ b/scripts/gcc-ld
+@@ -6,18 +6,26 @@
+ 
+ ARGS="-nostdlib"
+ 
++for j in "$@" ; do
++	if [ "$j" = -v ] ; then
++		exec `$CC -print-prog-name=ld` -v
++	fi
++done
++
+ while [ "$1" != "" ] ; do
+ 	case "$1" in
+-	-save-temps|-m32|-m64) N="$1" ;;
++	-save-temps*|-m32|-m64) N="$1" ;;
+ 	-r) N="$1" ;;
++	-flinker-output*) N="$1" ;;
+ 	-[Wg]*) N="$1" ;;
+ 	-[olv]|-[Ofd]*|-nostdlib) N="$1" ;;
+-	--end-group|--start-group)
++	--end-group|--start-group|--whole-archive|--no-whole-archive|\
++--no-undefined|--hash-style*|--build-id*|--eh-frame-hdr|-Bsymbolic)
+ 		 N="-Wl,$1" ;;
+ 	-[RTFGhIezcbyYu]*|\
+ --script|--defsym|-init|-Map|--oformat|-rpath|\
+--rpath-link|--sort-section|--section-start|-Tbss|-Tdata|-Ttext|\
+---version-script|--dynamic-list|--version-exports-symbol|--wrap|-m)
++-rpath-link|--sort-section|--section-start|-Tbss|-Tdata|-Ttext|-soname|\
++--version-script|--dynamic-list|--version-exports-symbol|--wrap|-m|-z)
+ 		A="$1" ; shift ; N="-Wl,$A,$1" ;;
+ 	-[m]*) N="$1" ;;
+ 	-*) N="-Wl,$1" ;;
+@@ -27,4 +35,6 @@ while [ "$1" != "" ] ; do
+ 	shift
+ done
+ 
++[ -n "$V" ] && echo >&2 $CC $ARGS
++
+ exec $CC $ARGS
+-- 
+2.30.2
+

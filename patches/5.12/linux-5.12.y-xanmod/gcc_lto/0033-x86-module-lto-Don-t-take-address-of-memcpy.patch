@@ -1,0 +1,52 @@
+From 5326976a6a99d76478963c0da4a6f92a327dc918 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Sat, 3 Apr 2021 09:31:39 -0700
+Subject: [PATCH 33/39] x86/module/lto: Don't take address of memcpy
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Taking the address of memcpy can trigger a compiler problem
+in gcc 10 LTO:
+
+inlining failed in call to ‘always_inline’
+‘memcpy’: --param max-inline-insns-auto limit reached
+
+For more details see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99828
+
+This is fixed now in gcc, but work around it on older compilers
+by using a wrapper.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ arch/x86/kernel/module.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index 5e9a34b5bd74..ff61a45fc36b 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -218,6 +218,11 @@ static int __apply_relocate_add(Elf64_Shdr *sechdrs,
+ 	return -ENOEXEC;
+ }
+ 
++static void *copy_write(void *dest, const void *src, size_t len)
++{
++	return memcpy(dest, src, len);
++}
++
+ int apply_relocate_add(Elf64_Shdr *sechdrs,
+ 		   const char *strtab,
+ 		   unsigned int symindex,
+@@ -226,7 +231,7 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
+ {
+ 	int ret;
+ 	bool early = me->state == MODULE_STATE_UNFORMED;
+-	void *(*write)(void *, const void *, size_t) = memcpy;
++	void *(*write)(void *, const void *, size_t) = copy_write;
+ 
+ 	if (!early) {
+ 		write = text_poke;
+-- 
+2.30.2
+

@@ -1,0 +1,39 @@
+From 5889b5d0cef1443b7142fd2e38804e640af20bf7 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Thu, 25 Jun 2020 09:59:04 -0700
+Subject: [PATCH 14/39] lto: Export export symbol assembler symbols for LTO
+
+LTO can move top level assembler statements into different files. This
+means that any C symbols referenced by them need to be global and
+__visilble. Do this for the C symbols referenced by EXPORT_SYMBOL
+assembler code.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ include/linux/export.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/export.h b/include/linux/export.h
+index 6271a5d9c988..2ebd8c84d24f 100644
+--- a/include/linux/export.h
++++ b/include/linux/export.h
+@@ -96,12 +96,14 @@ struct kernel_symbol {
+  */
+ #define ___EXPORT_SYMBOL(sym, sec, ns)						\
+ 	extern typeof(sym) sym;							\
+-	extern const char __kstrtab_##sym[];					\
+-	extern const char __kstrtabns_##sym[];					\
++	extern const char __visible __kstrtab_##sym[];				\
++	extern const char __visible __kstrtabns_##sym[];			\
+ 	__CRC_SYMBOL(sym, sec);							\
+ 	asm("	.section \"__ksymtab_strings\",\"aMS\",%progbits,1	\n"	\
++	    "   .globl __kstrtab_" #sym	"				\n"	\
+ 	    "__kstrtab_" #sym ":					\n"	\
+ 	    "	.asciz 	\"" #sym "\"					\n"	\
++	    "   .globl __kstrtabns_" #sym "				\n"	\
+ 	    "__kstrtabns_" #sym ":					\n"	\
+ 	    "	.asciz 	\"" ns "\"					\n"	\
+ 	    "	.previous						\n");	\
+-- 
+2.30.2
+

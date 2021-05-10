@@ -1,0 +1,52 @@
+From 068d1477fabbeaef9c7dd06b32791b01baf640df Mon Sep 17 00:00:00 2001
+From: Andi Kleen <ak@linux.intel.com>
+Date: Thu, 23 Nov 2017 16:06:26 -0800
+Subject: [PATCH 11/39] Fix read buffer overflow in delta-ipc
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The single caller passes a string to delta_ipc_open, which copies with a
+fixed size larger than the string. So it copies some random data after
+the original string the ro segment.
+
+If the string was at the end of a page it may fault.
+
+Just copy the string with a normal strcpy after clearing the field.
+
+Found by a LTO build (which errors out)
+because the compiler inlines the functions and can resolve
+the string sizes and triggers the compile time checks in memcpy.
+
+In function ‘memcpy’,
+    inlined from ‘delta_ipc_open.constprop’ at linux/drivers/media/platform/sti/delta/delta-ipc.c:178:0,
+    inlined from ‘delta_mjpeg_ipc_open’ at linux/drivers/media/platform/sti/delta/delta-mjpeg-dec.c:227:0,
+    inlined from ‘delta_mjpeg_decode’ at linux/drivers/media/platform/sti/delta/delta-mjpeg-dec.c:403:0:
+/home/andi/lsrc/linux/include/linux/string.h:337:0: error: call to ‘__read_overflow2’ declared with attribute error: detected read beyond size of object passed as 2nd parameter
+    __read_overflow2();
+
+Cc: hugues.fruchet@st.com
+Cc: mchehab@s-opensource.com
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+---
+ drivers/media/platform/sti/delta/delta-ipc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/platform/sti/delta/delta-ipc.c b/drivers/media/platform/sti/delta/delta-ipc.c
+index 186d88f02ecd..371429d81ea1 100644
+--- a/drivers/media/platform/sti/delta/delta-ipc.c
++++ b/drivers/media/platform/sti/delta/delta-ipc.c
+@@ -175,8 +175,8 @@ int delta_ipc_open(struct delta_ctx *pctx, const char *name,
+ 	msg.ipc_buf_size = ipc_buf_size;
+ 	msg.ipc_buf_paddr = ctx->ipc_buf->paddr;
+ 
+-	memcpy(msg.name, name, sizeof(msg.name));
+-	msg.name[sizeof(msg.name) - 1] = 0;
++	memset(msg.name, 0, sizeof(msg.name));
++	strcpy(msg.name, name);
+ 
+ 	msg.param_size = param->size;
+ 	memcpy(ctx->ipc_buf->vaddr, param->data, msg.param_size);
+-- 
+2.30.2
+

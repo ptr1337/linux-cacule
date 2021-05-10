@@ -1,0 +1,37 @@
+From 4c7e24490a7ae525272b0a79cb6c3a2f11525376 Mon Sep 17 00:00:00 2001
+From: Andi Kleen <andi@firstfloor.org>
+Date: Mon, 19 Apr 2021 22:21:15 -0700
+Subject: [PATCH 27/39] Kbuild, lto: Don't include weak source file symbols in
+ System.map
+
+The LTO build can generate some extra weak source code file name symbols
+on the second kallsyms link. This causes kallsyms errors due to
+mismatches in the stage1 vs stage2 kallsyms link. Filter those
+out when generating the System.map.
+
+Signed-off-by: Andi Kleen <andi@firstfloor.org>
+---
+ scripts/mksysmap | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/mksysmap b/scripts/mksysmap
+index 9aa23d15862a..8b525c484755 100755
+--- a/scripts/mksysmap
++++ b/scripts/mksysmap
+@@ -34,6 +34,7 @@
+ #   U - undefined global symbols
+ #   N - debugging symbols
+ #   w - local weak symbols
++#   W - weak symbols if they contain .c.
+ 
+ # readprofile starts reading symbols when _stext is found, and
+ # continue until it finds a symbol which is not either of 'T', 't',
+@@ -41,4 +42,4 @@
+ # so we just ignore them to let readprofile continue to work.
+ # (At least sparc64 has __crc_ in the middle).
+ 
+-$NM -n $1 | grep -v '\( [aNUw] \)\|\(__crc_\)\|\( \$[adt]\)\|\( \.L\)' > $2
++$NM -n $1 | grep -v '\( [aNUw] \)\|\(__crc_\)\|\( \$[adt]\)\|\( \.L\)\|\(W .*\.c\.\)' > $2
+-- 
+2.30.2
+
