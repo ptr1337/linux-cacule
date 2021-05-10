@@ -3,7 +3,7 @@
 ## General Informations
 
     - Linux-cacule is the stable kernel
-    - The linux-cacule-rdb is still a expermiental patch.
+    - The linux-cacule-rdb is still a expermiental kernel.At the moment not maintained, needs to be updated
     - Follow the readme, the sysctl options can improve much your expierence!!!
 
 ### amd64 /  x86_64
@@ -13,7 +13,7 @@
         - linux-cacule-rdb                     https://aur.archlinux.org/packages/linux-cacule-rdb/
     # Linux 5.11.y
         - linux-hardened-cacule                https://aur.archlinux.org/packages/linux-hardened-cacule/
-    # Linux 5.13-rc (not updated right now)
+    # Linux 5.13-rc
         - linux-cacule-rc                      https://aur.archlinux.org/packages/linux-cacule-rc/
         - linux-cacule-rdb-rc                  https://aur.archlinux.org/packages/linux-cacule-rdb-rc/
 
@@ -46,14 +46,17 @@
 
 You can tune the scheduler with following commands:
 
-             ## Cacule-Settings ##
+             ## Cacule-Settings - these are default values ##
             kernel.sched_interactivity_factor=32768
             kernel.sched_max_lifetime_ms=22000
-            kernel.sched_nr_fork_threshold=(set your thread number -1; example: 6 Cores 12 Threds + 1 = 11
+            kernel.interactivity_threshold=1000
+            #  kernel.sched_harsh_mode_enabled=0
+            ## CacULE-Testing ##
+            kernel.sched_nr_fork_threshold=(set your thread number -1; example: 6 Cores 12 Threds + 1 = 11 ## default value is "0"
             kernel.sched_fake_interactive_win_time_ms=1000
-            kernel.sched_harsh_mode_enabled=0
+            ## You can disable the Interactivity mechanism when setting ernel.sched_nr_fork_threshold to 100000
 
-           ### Network-Settings ##
+           ### Some general Network-Settings ##
 
             net.core.netdev_max_backlog = 16384
             net.core.somaxconn = 8192
@@ -80,7 +83,7 @@ You can tune the scheduler with following commands:
 
 ## prebuilt Kernels
 
-Im providing a fileserver where i upload my builded kernels, if you want to use them just  watch their:
+Im providing a fileserver where i upload my builded kernels - Skylake and Generic ones.
 
 https://ptr1337.dev
 
@@ -90,7 +93,7 @@ Here you find the repo from the creator of the scheduler:
 
 https://github.com/hamadmarri/cacule-cpu-scheduler
 
-## CacULE revision 2 Changes:
+## CacULE revision 2 - testing Changes:
 
 - Added 2000HZ as an option
 - Added Responsive wakup/new task to be placed in a CPU with least Interactive score (to balance out interactive tasks among cpus)
@@ -98,15 +101,23 @@ https://github.com/hamadmarri/cacule-cpu-scheduler
 - Increased the precision of lifetime normalize from x8 to x1024
 - Decoupled se.vruntime from cn.vruntime
 
+## RaspberryPi Cacule - Testing
+
+- Take a watch at this image-builder, he is providing a solid and stable image-builder and included now for testing purposes the cacule-scheduler
+
+- pyavitz  https://github.com/pyavitz/rpi-img-builder/tree/RIB-3.10
+
 # Credits
 
 Hamad Marri for his cacule scheduler https://github.com/hamadmarri
+
+Alexandre Frade - XanMod https://github.com/xanmod
 
 SirLucjan (Piotr Gorski) for his patches https://github.com/sirlucjan/kernel-patches
 
 vd (torvic9) - thanks for your tips! https://github.com/torvic9
 
-Arch
+Archlinux
 
 GarudaLinux
 
