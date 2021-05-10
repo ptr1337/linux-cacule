@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+require 'rbconfig'
+require 'optparse'
+require 'io/console'
+
+if !((host_os = RbConfig::CONFIG['host_os']) =~ /linux/)
+	STDERR.puts "ERROR: This program runs only on Linux platform (detected: #{host_os})"
+	exit
+elsif RUBY_ENGINE != 'ruby'
+	STDERR.puts "ERROR: This program runs only on Matz' Ruby Implementation (detected: #{RUBY_ENGINE})"
+	exit
+end
+
+opt = OptionParser.new
+opt.on('-j N', '--jobs=N', 'Runs in N parallel threads'){|v| @parallel_count = v.to_i}
+opt.on('-s N', '--speed=N', 'Spawns N new job(s) in average per second'){|v| (t = v.to_i) > 0 and @jobs_per_sec = t}
+opt.on('-?', '-h', '--help', 'Shows this help'){|v| puts opt.help; exit}
+
+@parallel_count = @cpu_count = `nproc --all`.to_i
+@jobs_per_sec = @cpu_count
+opt.parse!(ARGV)
+avg_duration = @parallel_count.to_f / @jobs_per_sec
+
+print <<-EOS
+CPU core count: #{@cpu_count}
+Parallel count: #{@parallel_count}
+Spawning speed: #{@jobs_per_sec} job(s) per second
+<Press any key to quit>
+EOS
+
+threads = (1..@parallel_count).map do
+	Thread.new do
+		begin
+			loop do
+				pid = nil
+				begin
+					pid = fork{loop{Math.sqrt(rand)}}
+					sleep avg_duration * rand * 2
+					print '.'
+				ensure
+					if pid
+						Process.kill('TERM', pid)
+						Process.wait(pid)
+					end
+				end
+			end
+		rescue StandardError
+		end
+	end
+end
+
+STDIN.raw(&:getc)
+threads.each do |thr|
+	thr.raise(StandardError)
+	thr.join
+end
+puts
+
