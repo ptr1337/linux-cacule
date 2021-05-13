@@ -56,7 +56,7 @@ pkgver=${_major}
 #_stable=${_major}.${_minor}
 #_stablerc=${_major}-${_rcver}
 _srcname=linux-${_major}
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux-CacULE-testing Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -76,7 +76,7 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v5.x/linux-${_stablerc}.tar.xz
         "${_patchsource}/futex2-stable-patches-v2/0001-futex2-resync-from-gitlab.collabora.com.patch"
         "${_patchsource}/wine-esync-patches/0001-v5.12-winesync.patch"
         "${_patchsource}/zen-patches-v2/0001-zen-patches.patch"
-        "${_patchsource}/bfq-patches-v2/0001-bfq-patches.patch"
+        "${_patchsource}/bfq-patches-v3/0001-bfq-patches.patch"
         "${_patchsource}/block-patches/0001-block-patches.patch"
         "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
         "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
@@ -309,9 +309,16 @@ prepare() {
       scripts/config --set-str CONFIG_DEFAULT_TCP_CONG bbr2
       echo "Enable CONFIG_VHBA"
       scripts/config --module CONFIG_VHBA
-      echo "Disable BPF preloading"
+      # disable CONFIG_DEBUG_INFO at build time otherwise memory usage blows up and
+      # can easily overwhelm a system with 32 GB of memory using a tmpfs build.
+      # introduced by FS#66260, see:
+      # https://git.archlinux.org/svntogit/packages.git/commit/trunk?h=packages/linux&id=663b08666b269eeeeaafbafaee07fd03389ac8d7
+      scripts/config --disable CONFIG_DEBUG_INFO
+      scripts/config --disable CONFIG_CGROUP_BPF
+      scripts/config --disable CONFIG_BPF_LSM
       scripts/config --disable CONFIG_BPF_PRELOAD
-
+      scripts/config --disable CONFIG_BPF_LIRC_MODE2
+      scripts/config --disable CONFIG_BPF_KPROBE_OVERRIDE
 
   ### Optionally load needed modules for the make localmodconfig
   # See https://aur.archlinux.org/packages/modprobed-db

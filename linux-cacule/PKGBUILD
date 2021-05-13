@@ -69,7 +69,6 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v5.x/linux-${_stablerc}.tar.xz
         "https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/$_srcname.tar.xz"
         "config"
         "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/linux-5.12.y-xanmod/pci_acso/0001-pci-Enable-overrides-for-missing-ACS-capabilities.patch"
         "${_patchsource}/cacule-patches/cacule-5.12.patch"
         "${_patchsource}/cacule-patches/0002-cacule-Change-default-preemption-latency-to-2ms-for-.patch"
         "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
@@ -94,7 +93,6 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v5.x/linux-${_stablerc}.tar.xz
 sha512sums=('295a943bb0d2366715c844a6e2ca424d17f4caceab8c9e095250851857928902a5deb8aa51cff5c3c7e982d168f79f4df3a39bdd47ec22b51237c91732dc8af0'
             '52f19783cc560a5688f4914db70e1f59d0e549cbf1a057d891e38f6e9436691d51c18a1d78f13173a970d8f4153275c53f9ab093c01b59d283f0375f072930ab'
             'aed7844c51ec705ef1ef5d9f1adf27939073c99d4fcc97051bed2fba1ec161fdde4c57cbe039209fb86c72918493bea55ed26189c1dda3dbea3a3a7019363818'
-            '7a7037ad007eff7fd0c1a7ad0b0a990d21b8bf9fa4e2d72425863bfd9e817428432a0f7a50e33cbe5ca1f5ff749c26bc94843fa1b267943de3b9d88dcae71fe6'
             'a57b95e3c38378f98f29fcf405f0e4ec6c125da95629f59f60722909926131497df460f4938d9d873db584cf567122409407e29345b4545d885547c282be28f5'
             'bafda1ec6114a360bed8a9f8ae6b1e8dc5c22adf15f7545c3455a090f14b491639707f6624d7a891ec66b459842e61df9d62274b070b7a611f0bdbd367219ae5'
             '15933126feeb56ccc6ace70db9fa7afb64d148900e41a780e42e03ce09faf7bab12413f526675b918aeff55e91dc038ad58884bb7add4a45962aca79d576cb93'
