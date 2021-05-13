@@ -1,7 +1,7 @@
-From 2c0d022db56206fb3b7c1e8ca959cfa9de452c9e Mon Sep 17 00:00:00 2001
+From 438d154ab2b0c7760c11034dd3a2f6d7c96d7b40 Mon Sep 17 00:00:00 2001
 From: Lin Feng <linf@wangsu.com>
 Date: Thu, 15 Apr 2021 11:39:20 +0800
-Subject: [PATCH 10/20] blk-mq: bypass IO scheduler's limit_depth for
+Subject: [PATCH 10/24] blk-mq: bypass IO scheduler's limit_depth for
  passthrough request
 
 Commit 01e99aeca39796003 ("blk-mq: insert passthrough request into
@@ -65,5 +65,5 @@ index 158aefae1..0d81eed39 100644
  {
  	return req->ioprio;
 -- 
-2.31.1.305.gd1b10fc6d8
+2.31.1.527.g2d677e5b15
 

@@ -1,7 +1,7 @@
-From 5f7f2a5adb9e6c208a87d64c7d710670ac047794 Mon Sep 17 00:00:00 2001
+From 137d9b6b73b4c8ff6370389095842cc7d22e7b05 Mon Sep 17 00:00:00 2001
 From: Lin Feng <linf@wangsu.com>
 Date: Thu, 15 Apr 2021 11:43:26 +0800
-Subject: [PATCH 11/20] bfq/mq-deadline: remove redundant check for passthrough
+Subject: [PATCH 11/24] bfq/mq-deadline: remove redundant check for passthrough
  request
 
 Since commit 01e99aeca39796003 'blk-mq: insert passthrough request into
@@ -24,7 +24,7 @@ Signed-off-by: Jens Axboe <axboe@kernel.dk>
  2 files changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index d26fe7d53..75c52bdba 100644
+index e67adfdfc..71de9beaf 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
 @@ -5964,8 +5964,7 @@ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
@@ -38,7 +38,7 @@ index d26fe7d53..75c52bdba 100644
  			list_add(&rq->queuelist, &bfqd->dispatch);
  		else
 diff --git a/block/mq-deadline.c b/block/mq-deadline.c
-index f3631a287..04aded71e 100644
+index 41279e43d..6a616cb17 100644
 --- a/block/mq-deadline.c
 +++ b/block/mq-deadline.c
 @@ -500,11 +500,8 @@ static void dd_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
@@ -56,5 +56,5 @@ index f3631a287..04aded71e 100644
  		deadline_add_rq_rb(dd, rq);
  
 -- 
-2.31.1.305.gd1b10fc6d8
+2.31.1.527.g2d677e5b15
 

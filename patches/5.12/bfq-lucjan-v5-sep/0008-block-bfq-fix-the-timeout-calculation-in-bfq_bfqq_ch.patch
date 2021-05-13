@@ -1,7 +1,7 @@
-From 35c0031e1568a43bba730a1fb9bb40ba8f4340f1 Mon Sep 17 00:00:00 2001
+From 94810d1c5f427f1e38499793102502021f63d8e5 Mon Sep 17 00:00:00 2001
 From: Rokudo Yan <wu-yan () tcl ! com>
 Date: Wed, 24 Mar 2021 02:33:41 +0000
-Subject: [PATCH 08/21] block,bfq: fix the timeout calculation in
+Subject: [PATCH 08/25] block,bfq: fix the timeout calculation in
  bfq_bfqq_charge_time
 
 in bfq_bfqq_charge_time, timeout_ms is calculated with global
@@ -28,5 +28,5 @@ index 7a462df71..f2e1522ee 100644
  	int serv_to_charge_for_time =
  		(bfqd->bfq_max_budget * bounded_time_ms) / timeout_ms;
 -- 
-2.31.1.305.gd1b10fc6d8
+2.31.1.527.g2d677e5b15
 
