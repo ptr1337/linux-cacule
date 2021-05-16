@@ -70,7 +70,7 @@ source=("https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/$_srcname.tar.xz"
         "${_patchsource}/arch-patches-v2/0001-arch-patches.patch"
         "${_patchsource}/cacule-patches/cacule-5.12.patch"
         "${_patchsource}/cacule-patches/rdb.patch"
-        "${_patchsource}/cacule-patches/rdb-5.12-fix.patch"
+        "${_patchsource}/cacule-patches/0002-cacule-Change-default-preemption-latency-to-2ms-for-.patch"
         "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
         "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
         "${_patchsource}/futex2-stable-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
@@ -94,7 +94,7 @@ sha512sums=('db6dd1746ffbf2e702336e444ddf31d2f50d62998566663ed07ec696dd2af860255
             'd7015f3886a66d1a0d6f919566417e754a5f94d5ddb323c459424b6acf04bf6af942e9c3dc1c81962adb14803e1de8585c703a96bb665484941e91c57e92724b'
             '97e661d3fbd75a6e9edeb79a694f42c49174f317bd35ae25dd13d71797d29fca630e88e1440415faca05fb46935591965fae0dcc4365c80e3cefa3d8b615c3b8'
             'c571eea850984d7de4031b4072d4ec64b837c97cd9a3b8561bce5712a584dc6e57dedba14ff504f8c17b1b0568b18c3ed3a20a7e6922b470d691edd1779c1b7f'
-            'b79531b1d4b84fe887ac0885906828ae7ffa76f07a62ab5650e5b22fb670cf062274440626a3acf583ed9cdc80db797c94d57f2b5359b5b0e8ddd0858bf905bf'
+            'bafda1ec6114a360bed8a9f8ae6b1e8dc5c22adf15f7545c3455a090f14b491639707f6624d7a891ec66b459842e61df9d62274b070b7a611f0bdbd367219ae5'
             '15933126feeb56ccc6ace70db9fa7afb64d148900e41a780e42e03ce09faf7bab12413f526675b918aeff55e91dc038ad58884bb7add4a45962aca79d576cb93'
             '449570b8b9a04391cc2cc171cc806b3a132c6e969c7cedf9c4925d24244888e6f2e5afb6c551521fe62fcb7e2bf08cb8d396f9ec785ecfcdd5ea27dd9ffed4ea'
             'f0ae3cd8cc8237c620f2a069a48d1e156589c42ee6cb13b7fa54b7004cf9c940d4363c05706df3c231ff405bfb0488d9121c610c6583ae94ab732ecb11942b5b'
