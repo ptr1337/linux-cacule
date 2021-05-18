@@ -1,4 +1,4 @@
-From c767c88012ec50eea695e44d9b28cf3e958f7d8a Mon Sep 17 00:00:00 2001
+From 1b74613ea8bd2658b07043b899a39da40dfa830c Mon Sep 17 00:00:00 2001
 From: Steven Barrett <steven@liquorix.net>
 Date: Wed, 30 Dec 2020 15:23:55 -0600
 Subject: [PATCH 2/3] zen: Allow MSR writes by default
@@ -24,5 +24,5 @@ index ed8ac6bcb..d6fc5bdb0 100644
  static ssize_t msr_read(struct file *file, char __user *buf,
  			size_t count, loff_t *ppos)
 -- 
-2.31.0.97.g1424303384
+2.31.1.621.g97eea85a0a
 
