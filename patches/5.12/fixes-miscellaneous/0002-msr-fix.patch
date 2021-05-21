@@ -1,0 +1,407 @@
+
+From 396a66aa1172ef2b78c21651f59b40b87b2e5e1e Mon Sep 17 00:00:00 2001
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Mon, 22 Mar 2021 17:45:36 +0100
+Subject: x86/msr: Fix wr/rdmsr_safe_regs_on_cpu() prototypes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Arnd Bergmann <arnd@arndb.de>
+
+commit 396a66aa1172ef2b78c21651f59b40b87b2e5e1e upstream.
+
+gcc-11 warns about mismatched prototypes here:
+
+  arch/x86/lib/msr-smp.c:255:51: error: argument 2 of type ‘u32 *’ {aka ‘unsigned int *’} declared as a pointer [-Werror=array-parameter=]
+    255 | int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 *regs)
+        |                                              ~~~~~^~~~
+  arch/x86/include/asm/msr.h:347:50: note: previously declared as an array ‘u32[8]’ {aka ‘unsigned int[8]’}
+
+GCC is right here - fix up the types.
+
+[ mingo: Twiddled the changelog. ]
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20210322164541.912261-1-arnd@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/lib/msr-smp.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/arch/x86/lib/msr-smp.c
++++ b/arch/x86/lib/msr-smp.c
+@@ -252,7 +252,7 @@ static void __wrmsr_safe_regs_on_cpu(voi
+ 	rv->err = wrmsr_safe_regs(rv->regs);
+ }
+ 
+-int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 *regs)
++int rdmsr_safe_regs_on_cpu(unsigned int cpu, u32 regs[8])
+ {
+ 	int err;
+ 	struct msr_regs_info rv;
+@@ -265,7 +265,7 @@ int rdmsr_safe_regs_on_cpu(unsigned int
+ }
+ EXPORT_SYMBOL(rdmsr_safe_regs_on_cpu);
+ 
+-int wrmsr_safe_regs_on_cpu(unsigned int cpu, u32 *regs)
++int wrmsr_safe_regs_on_cpu(unsigned int cpu, u32 regs[8])
+ {
+ 	int err;
+ 	struct msr_regs_info rv;
+From fec4d42724a1bf3dcba52307e55375fdb967b852 Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sat, 8 May 2021 11:30:22 -0700
+Subject: drm/i915/display: fix compiler warning about array overrun
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Linus Torvalds <torvalds@linux-foundation.org>
+
+commit fec4d42724a1bf3dcba52307e55375fdb967b852 upstream.
+
+intel_dp_check_mst_status() uses a 14-byte array to read the DPRX Event
+Status Indicator data, but then passes that buffer at offset 10 off as
+an argument to drm_dp_channel_eq_ok().
+
+End result: there are only 4 bytes remaining of the buffer, yet
+drm_dp_channel_eq_ok() wants a 6-byte buffer.  gcc-11 correctly warns
+about this case:
+
+  drivers/gpu/drm/i915/display/intel_dp.c: In function ‘intel_dp_check_mst_status’:
+  drivers/gpu/drm/i915/display/intel_dp.c:3491:22: warning: ‘drm_dp_channel_eq_ok’ reading 6 bytes from a region of size 4 [-Wstringop-overread]
+   3491 |                     !drm_dp_channel_eq_ok(&esi[10], intel_dp->lane_count)) {
+        |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  drivers/gpu/drm/i915/display/intel_dp.c:3491:22: note: referencing argument 1 of type ‘const u8 *’ {aka ‘const unsigned char *’}
+  In file included from drivers/gpu/drm/i915/display/intel_dp.c:38:
+  include/drm/drm_dp_helper.h:1466:6: note: in a call to function ‘drm_dp_channel_eq_ok’
+   1466 | bool drm_dp_channel_eq_ok(const u8 link_status[DP_LINK_STATUS_SIZE],
+        |      ^~~~~~~~~~~~~~~~~~~~
+       6:14 elapsed
+
+This commit just extends the original array by 2 zero-initialized bytes,
+avoiding the warning.
+
+There may be some underlying bug in here that caused this confusion, but
+this is at least no worse than the existing situation that could use
+random data off the stack.
+
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/i915/display/intel_dp.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/i915/display/intel_dp.c
++++ b/drivers/gpu/drm/i915/display/intel_dp.c
+@@ -4488,7 +4488,18 @@ intel_dp_check_mst_status(struct intel_d
+ 	drm_WARN_ON_ONCE(&i915->drm, intel_dp->active_mst_links < 0);
+ 
+ 	for (;;) {
+-		u8 esi[DP_DPRX_ESI_LEN] = {};
++		/*
++		 * The +2 is because DP_DPRX_ESI_LEN is 14, but we then
++		 * pass in "esi+10" to drm_dp_channel_eq_ok(), which
++		 * takes a 6-byte array. So we actually need 16 bytes
++		 * here.
++		 *
++		 * Somebody who knows what the limits actually are
++		 * should check this, but for now this is at least
++		 * harmless and avoids a valid compiler warning about
++		 * using more of the array than we have allocated.
++		 */
++		u8 esi[DP_DPRX_ESI_LEN+2] = {};
+ 		bool handled;
+ 		int retry;
+ 
+From 7909a590eba6d021f104958857cbc4f0089daceb Mon Sep 17 00:00:00 2001
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Tue, 23 Mar 2021 14:16:28 +0100
+Subject: airo: work around stack usage warning
+
+From: Arnd Bergmann <arnd@arndb.de>
+
+commit 7909a590eba6d021f104958857cbc4f0089daceb upstream.
+
+gcc-11 with KASAN on 32-bit arm produces a warning about a function
+that needs a lot of stack space:
+
+drivers/net/wireless/cisco/airo.c: In function 'setup_card.constprop':
+drivers/net/wireless/cisco/airo.c:3960:1: error: the frame size of 1512 bytes is larger than 1400 bytes [-Werror=frame-larger-than=]
+
+Most of this is from a single large structure that could be dynamically
+allocated or moved into the per-device structure.  However, as the callers
+all seem to have a fairly well bounded call chain, the easiest change
+is to pull out the part of the function that needs the large variables
+into a separate function and mark that as noinline_for_stack. This does
+not reduce the total stack usage, but it gets rid of the warning and
+requires minimal changes otherwise.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210323131634.2669455-1-arnd@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/wireless/cisco/airo.c |  117 +++++++++++++++++++++-----------------
+ 1 file changed, 65 insertions(+), 52 deletions(-)
+
+--- a/drivers/net/wireless/cisco/airo.c
++++ b/drivers/net/wireless/cisco/airo.c
+@@ -3817,6 +3817,68 @@ static inline void set_auth_type(struct
+ 		local->last_auth = auth_type;
+ }
+ 
++static int noinline_for_stack airo_readconfig(struct airo_info *ai, u8 *mac, int lock)
++{
++	int i, status;
++	/* large variables, so don't inline this function,
++	 * maybe change to kmalloc
++	 */
++	tdsRssiRid rssi_rid;
++	CapabilityRid cap_rid;
++
++	kfree(ai->SSID);
++	ai->SSID = NULL;
++	// general configuration (read/modify/write)
++	status = readConfigRid(ai, lock);
++	if (status != SUCCESS) return ERROR;
++
++	status = readCapabilityRid(ai, &cap_rid, lock);
++	if (status != SUCCESS) return ERROR;
++
++	status = PC4500_readrid(ai, RID_RSSI, &rssi_rid, sizeof(rssi_rid), lock);
++	if (status == SUCCESS) {
++		if (ai->rssi || (ai->rssi = kmalloc(512, GFP_KERNEL)) != NULL)
++			memcpy(ai->rssi, (u8*)&rssi_rid + 2, 512); /* Skip RID length member */
++	}
++	else {
++		kfree(ai->rssi);
++		ai->rssi = NULL;
++		if (cap_rid.softCap & cpu_to_le16(8))
++			ai->config.rmode |= RXMODE_NORMALIZED_RSSI;
++		else
++			airo_print_warn(ai->dev->name, "unknown received signal "
++					"level scale");
++	}
++	ai->config.opmode = adhoc ? MODE_STA_IBSS : MODE_STA_ESS;
++	set_auth_type(ai, AUTH_OPEN);
++	ai->config.modulation = MOD_CCK;
++
++	if (le16_to_cpu(cap_rid.len) >= sizeof(cap_rid) &&
++	    (cap_rid.extSoftCap & cpu_to_le16(1)) &&
++	    micsetup(ai) == SUCCESS) {
++		ai->config.opmode |= MODE_MIC;
++		set_bit(FLAG_MIC_CAPABLE, &ai->flags);
++	}
++
++	/* Save off the MAC */
++	for (i = 0; i < ETH_ALEN; i++) {
++		mac[i] = ai->config.macAddr[i];
++	}
++
++	/* Check to see if there are any insmod configured
++	   rates to add */
++	if (rates[0]) {
++		memset(ai->config.rates, 0, sizeof(ai->config.rates));
++		for (i = 0; i < 8 && rates[i]; i++) {
++			ai->config.rates[i] = rates[i];
++		}
++	}
++	set_bit (FLAG_COMMIT, &ai->flags);
++
++	return SUCCESS;
++}
++
++
+ static u16 setup_card(struct airo_info *ai, u8 *mac, int lock)
+ {
+ 	Cmd cmd;
+@@ -3863,58 +3925,9 @@ static u16 setup_card(struct airo_info *
+ 	if (lock)
+ 		up(&ai->sem);
+ 	if (ai->config.len == 0) {
+-		int i;
+-		tdsRssiRid rssi_rid;
+-		CapabilityRid cap_rid;
+-
+-		kfree(ai->SSID);
+-		ai->SSID = NULL;
+-		// general configuration (read/modify/write)
+-		status = readConfigRid(ai, lock);
+-		if (status != SUCCESS) return ERROR;
+-
+-		status = readCapabilityRid(ai, &cap_rid, lock);
+-		if (status != SUCCESS) return ERROR;
+-
+-		status = PC4500_readrid(ai, RID_RSSI,&rssi_rid, sizeof(rssi_rid), lock);
+-		if (status == SUCCESS) {
+-			if (ai->rssi || (ai->rssi = kmalloc(512, GFP_KERNEL)) != NULL)
+-				memcpy(ai->rssi, (u8*)&rssi_rid + 2, 512); /* Skip RID length member */
+-		}
+-		else {
+-			kfree(ai->rssi);
+-			ai->rssi = NULL;
+-			if (cap_rid.softCap & cpu_to_le16(8))
+-				ai->config.rmode |= RXMODE_NORMALIZED_RSSI;
+-			else
+-				airo_print_warn(ai->dev->name, "unknown received signal "
+-						"level scale");
+-		}
+-		ai->config.opmode = adhoc ? MODE_STA_IBSS : MODE_STA_ESS;
+-		set_auth_type(ai, AUTH_OPEN);
+-		ai->config.modulation = MOD_CCK;
+-
+-		if (le16_to_cpu(cap_rid.len) >= sizeof(cap_rid) &&
+-		    (cap_rid.extSoftCap & cpu_to_le16(1)) &&
+-		    micsetup(ai) == SUCCESS) {
+-			ai->config.opmode |= MODE_MIC;
+-			set_bit(FLAG_MIC_CAPABLE, &ai->flags);
+-		}
+-
+-		/* Save off the MAC */
+-		for (i = 0; i < ETH_ALEN; i++) {
+-			mac[i] = ai->config.macAddr[i];
+-		}
+-
+-		/* Check to see if there are any insmod configured
+-		   rates to add */
+-		if (rates[0]) {
+-			memset(ai->config.rates, 0, sizeof(ai->config.rates));
+-			for (i = 0; i < 8 && rates[i]; i++) {
+-				ai->config.rates[i] = rates[i];
+-			}
+-		}
+-		set_bit (FLAG_COMMIT, &ai->flags);
++		status = airo_readconfig(ai, mac, lock);
++		if (status != SUCCESS)
++			return ERROR;
+ 	}
+ 
+ 	/* Setup the SSIDs if present */
+From 40cc3a80bb42587db1e6ae21d6f3090582d33e89 Mon Sep 17 00:00:00 2001
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Mon, 22 Mar 2021 17:43:03 +0100
+Subject: kgdb: fix gcc-11 warning on indentation
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Arnd Bergmann <arnd@arndb.de>
+
+commit 40cc3a80bb42587db1e6ae21d6f3090582d33e89 upstream.
+
+gcc-11 starts warning about misleading indentation inside of macros:
+
+drivers/misc/kgdbts.c: In function ‘kgdbts_break_test’:
+drivers/misc/kgdbts.c:103:9: error: this ‘if’ clause does not guard... [-Werror=misleading-indentation]
+  103 |         if (verbose > 1) \
+      |         ^~
+drivers/misc/kgdbts.c:200:9: note: in expansion of macro ‘v2printk’
+  200 |         v2printk("kgdbts: breakpoint complete\n");
+      |         ^~~~~~~~
+drivers/misc/kgdbts.c:105:17: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+  105 |                 touch_nmi_watchdog();   \
+      |                 ^~~~~~~~~~~~~~~~~~
+
+The code looks correct to me, so just reindent it for readability.
+
+Fixes: e8d31c204e36 ("kgdb: add kgdb internal test suite")
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20210322164308.827846-1-arnd@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/misc/kgdbts.c |   26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+--- a/drivers/misc/kgdbts.c
++++ b/drivers/misc/kgdbts.c
+@@ -95,19 +95,19 @@
+ 
+ #include <asm/sections.h>
+ 
+-#define v1printk(a...) do { \
+-	if (verbose) \
+-		printk(KERN_INFO a); \
+-	} while (0)
+-#define v2printk(a...) do { \
+-	if (verbose > 1) \
+-		printk(KERN_INFO a); \
+-		touch_nmi_watchdog();	\
+-	} while (0)
+-#define eprintk(a...) do { \
+-		printk(KERN_ERR a); \
+-		WARN_ON(1); \
+-	} while (0)
++#define v1printk(a...) do {		\
++	if (verbose)			\
++		printk(KERN_INFO a);	\
++} while (0)
++#define v2printk(a...) do {		\
++	if (verbose > 1)		\
++		printk(KERN_INFO a);	\
++	touch_nmi_watchdog();		\
++} while (0)
++#define eprintk(a...) do {		\
++	printk(KERN_ERR a);		\
++	WARN_ON(1);			\
++} while (0)
+ #define MAX_CONFIG_LEN		40
+ 
+ static struct kgdb_io kgdbts_io_ops;
+From 8460f6003a1d2633737b89c4f69d6f4c0c7c65a3 Mon Sep 17 00:00:00 2001
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Mon, 22 Mar 2021 17:42:26 +0100
+Subject: usb: sl811-hcd: improve misleading indentation
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Arnd Bergmann <arnd@arndb.de>
+
+commit 8460f6003a1d2633737b89c4f69d6f4c0c7c65a3 upstream.
+
+gcc-11 now warns about a confusingly indented code block:
+
+drivers/usb/host/sl811-hcd.c: In function ‘sl811h_hub_control’:
+drivers/usb/host/sl811-hcd.c:1291:9: error: this ‘if’ clause does not guard... [-Werror=misleading-indentation]
+ 1291 |         if (*(u16*)(buf+2))     /* only if wPortChange is interesting */
+      |         ^~
+drivers/usb/host/sl811-hcd.c:1295:17: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+ 1295 |                 break;
+
+Rewrite this to use a single if() block with the __is_defined() macro.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20210322164244.827589-1-arnd@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/usb/host/sl811-hcd.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+--- a/drivers/usb/host/sl811-hcd.c
++++ b/drivers/usb/host/sl811-hcd.c
+@@ -1287,11 +1287,10 @@ sl811h_hub_control(
+ 			goto error;
+ 		put_unaligned_le32(sl811->port1, buf);
+ 
+-#ifndef	VERBOSE
+-	if (*(u16*)(buf+2))	/* only if wPortChange is interesting */
+-#endif
+-		dev_dbg(hcd->self.controller, "GetPortStatus %08x\n",
+-			sl811->port1);
++		if (__is_defined(VERBOSE) ||
++		    *(u16*)(buf+2)) /* only if wPortChange is interesting */
++			dev_dbg(hcd->self.controller, "GetPortStatus %08x\n",
++				sl811->port1);
+ 		break;
+ 	case SetPortFeature:
+ 		if (wIndex != 1 || wLength != 0)
