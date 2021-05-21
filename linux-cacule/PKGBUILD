@@ -27,22 +27,6 @@ _kyber_disable=y
 _2k_HZ_ticks=
 _1k_HZ_ticks=y
 _500_HZ_ticks=
-# Compile ONLY used modules to VASTLYreduce the number of modules built
-# and the build time.
-#
-# To keep track of which modules are needed for your specific system/hardware,
-# give module_db script a try: https://aur.archlinux.org/packages/modprobed-db
-# This PKGBUILD read the database kept if it exists
-#
-# More at this wiki page ---> https://wiki.archlinux.org/index.php/Modprobed-db
-_localmodcfg=
-
-# Use the current kernel's .config file
-# Enabling this option will use the .config of the RUNNING kernel rather than
-# the ARCH defaults. Useful when the package gets updated and you already went
-# through the trouble of customizing your config options.  NOT recommended when
-# a new kernel is released, but again, convenient for package bumps.
-_use_current=
 
 ### Do not edit below this line unless you know what you're doing
 
@@ -148,21 +132,6 @@ prepare() {
         make -s kernelrelease > version
         echo "Prepared $pkgbase version $(<version)"
 
-    ### Optionally use running kernel's config
-	# code originally by nous; http://aur.archlinux.org/packages.php?#ID=40191
-	if [ -n "$_use_current" ]; then
-		if [[ -s /proc/config.gz ]]; then
-			echo "Extracting config from /proc/config.gz..."
-			# modprobe configs
-			zcat /proc/config.gz > ./.config
-		else
-			warning "Your kernel was not compiled with IKCONFIG_PROC!"
-			warning "You cannot read the current config!"
-			warning "Aborting!"
-			exit
-		fi
- fi
-
   ### CPU_ARCH SCRIPT ##
     source "${startdir}"/configure
 
@@ -176,93 +145,93 @@ prepare() {
         scripts/config --set-val CONFIG_HZ 2000
       fi
 
-  ### Optionally set tickrate to 1000
-	   if [ -n "$_1k_HZ_ticks" ]; then
+    ### Optionally set tickrate to 1000
+	     if [ -n "$_1k_HZ_ticks" ]; then
 		    echo "Setting tick rate to 1k..."
         scripts/config --disable CONFIG_HZ_300
         scripts/config --enable CONFIG_HZ_1000
         scripts/config --set-val CONFIG_HZ 1000
-	   fi
+	     fi
 
-  ### Optionally set tickrate to 500HZ
-    if [ -n "$_500_HZ_ticks" ]; then
-      echo "Setting tick rate to 500HZ..."
-      scripts/config --disable CONFIG_HZ_300
-      scripts/config --enable CONFIG_HZ_500
-      scripts/config --set-val CONFIG_HZ 500
-    fi
+    ### Optionally set tickrate to 500HZ
+      if [ -n "$_500_HZ_ticks" ]; then
+        echo "Setting tick rate to 500HZ..."
+        scripts/config --disable CONFIG_HZ_300
+        scripts/config --enable CONFIG_HZ_500
+        scripts/config --set-val CONFIG_HZ 500
+      fi
 
   ### Optionally disable NUMA for 64-bit kernels only
     # (x86 kernels do not support NUMA)
-    if [ -n "$_NUMAdisable" ]; then
-      echo "Disabling NUMA from kernel config..."
-      scripts/config --disable CONFIG_NUMA
-    fi
+      if [ -n "$_NUMAdisable" ]; then
+        echo "Disabling NUMA from kernel config..."
+        scripts/config --disable CONFIG_NUMA
+      fi
 
-    if [ -n "$_fsync" ]; then
-      echo "Enable Fsync support"
-      scripts/config --enable CONFIG_FUTEX
-      scripts/config --enable CONFIG_FUTEX_PI
-    fi
+      if [ -n "$_fsync" ]; then
+        echo "Enable Fsync support"
+        scripts/config --enable CONFIG_FUTEX
+        scripts/config --enable CONFIG_FUTEX_PI
+      fi
 
-    if [ -n "$_futex2" ]; then
-      echo "Enable Futex2 support"
-      scripts/config --enable CONFIG_FUTEX2
-    fi
+      if [ -n "$_futex2" ]; then
+        echo "Enable Futex2 support"
+        scripts/config --enable CONFIG_FUTEX2
+      fi
 
-    if [ -n "$_winesync" ]; then
-          echo "Enable winesync support"
+      if [ -n "$_winesync" ]; then
+        echo "Enable winesync support"
         scripts/config --module CONFIG_WINESYNC
-    fi
+      fi
 
   ### Set performance governor
-    if [ -n "$_per_gov" ]; then
-      echo "Setting performance governor..."
-  		scripts/config --disable CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
-  		scripts/config --enable CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
-  		echo "Disabling uneeded governors..."
-  		scripts/config --enable CONFIG_CPU_FREQ_GOV_ONDEMAND
-  		scripts/config --disable CONFIG_CPU_FREQ_GOV_CONSERVATIVE
-  		scripts/config --disable CONFIG_CPU_FREQ_GOV_USERSPACE
-  		scripts/config --disable CONFIG_CPU_FREQ_GOV_SCHEDUTIL
-    fi
+      if [ -n "$_per_gov" ]; then
+        echo "Setting performance governor..."
+  		  scripts/config --disable CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
+  		  scripts/config --enable CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
+  		  echo "Disabling uneeded governors..."
+  		  scripts/config --enable CONFIG_CPU_FREQ_GOV_ONDEMAND
+  		  scripts/config --disable CONFIG_CPU_FREQ_GOV_CONSERVATIVE
+  		  scripts/config --disable CONFIG_CPU_FREQ_GOV_USERSPACE
+  		  scripts/config --disable CONFIG_CPU_FREQ_GOV_SCHEDUTIL
+      fi
 
   ### Disable Deadline I/O scheduler
-  	if [ -n "$_deadline_disable" ]; then
-  		echo "Disabling Deadline I/O scheduler..."
-  		scripts/config --disable CONFIG_MQ_IOSCHED_DEADLINE
-  	fi
+  	   if [ -n "$_deadline_disable" ]; then
+  		   echo "Disabling Deadline I/O scheduler..."
+  		   scripts/config --disable CONFIG_MQ_IOSCHED_DEADLINE
+  	   fi
 
   ### Disable Kyber I/O scheduler
-  	if [ -n "$_kyber_disable" ]; then
-  		echo "Disabling Kyber I/O scheduler..."
-  		scripts/config --disable CONFIG_MQ_IOSCHED_KYBER
-  	fi
+  	   if [ -n "$_kyber_disable" ]; then
+  		    echo "Disabling Kyber I/O scheduler..."
+  		    scripts/config --disable CONFIG_MQ_IOSCHED_KYBER
+  	    fi
 
     ### Enable protect file mappings under memory pressure
 
-    echo "Enabling protect file mappings under memory pressure..."
-    scripts/config --enable CONFIG_UNEVICTABLE_FILE
-    scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
-    scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
+        echo "Enabling protect file mappings under memory pressure..."
+        scripts/config --enable CONFIG_UNEVICTABLE_FILE
+        scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
+        scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
 
     ### Enable multigenerational LRU
 
-    echo "Enabling multigenerational LRU..."
-    scripts/config --enable CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG
-    scripts/config --enable CONFIG_LRU_GEN
-    scripts/config --set-val CONFIG_NR_LRU_GENS 5
-    scripts/config --set-val CONFIG_TIERS_PER_GEN 3
-    scripts/config --enable CONFIG_LRU_GEN_ENABLED
-    scripts/config --disable CONFIG_LRU_GEN_STATS
+        echo "Enabling multigenerational LRU..."
+        scripts/config --enable CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG
+        scripts/config --enable CONFIG_LRU_GEN
+        scripts/config --set-val CONFIG_NR_LRU_GENS 5
+        scripts/config --set-val CONFIG_TIERS_PER_GEN 3
+        scripts/config --enable CONFIG_LRU_GEN_ENABLED
+        scripts/config --disable CONFIG_LRU_GEN_STATS
 
   ### Enabling ZSTD COMPRESSION ##
-      echo "Set module compression to ZSTD"
-      scripts/config --enable CONFIG_MODULE_COMPRESS
-      scripts/config --disable CONFIG_MODULE_COMPRESS_XZ
-      scripts/config --enable CONFIG_MODULE_COMPRESS_ZSTD
-      scripts/config --set-val CONFIG_MODULE_COMPRESS_ZSTD_LEVEL 19
-      scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
+        echo "Set module compression to ZSTD"
+        scripts/config --enable CONFIG_MODULE_COMPRESS
+        scripts/config --disable CONFIG_MODULE_COMPRESS_XZ
+        scripts/config --enable CONFIG_MODULE_COMPRESS_ZSTD
+        scripts/config --set-val CONFIG_MODULE_COMPRESS_ZSTD_LEVEL 19
+        scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
 
   ### Enabling Cacule-Config ##
       echo "Enable CacULE CPU scheduler..."
@@ -311,20 +280,6 @@ prepare() {
       echo "Enable CONFIG_VHBA"
       scripts/config --module CONFIG_VHBA
       scripts/config --disable CONFIG_BPF_PRELOAD
-
-
-
-  ### Optionally load needed modules for the make localmodconfig
-  # See https://aur.archlinux.org/packages/modprobed-db
-      if [ -n "$_localmodcfg" ]; then
-          if [ -f $HOME/.config/modprobed.db ]; then
-          echo "Running Steven Rostedt's make localmodconfig now"
-          make LSMOD=$HOME/.config/modprobed.db localmodconfig
-      else
-          echo "No modprobed.db data found"
-          exit
-          fi
-      fi
 
   ### Save configuration for later reuse
      echo "Save config for reuse"
