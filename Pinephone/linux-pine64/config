@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 5.12.6-1 Kernel Configuration
+# Linux/arm64 5.12.7-1 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="aarch64-linux-gnu-gcc (GCC) 9.3.0"
 CONFIG_CC_IS_GCC=y
@@ -767,7 +767,7 @@ CONFIG_BLK_PM=y
 #
 CONFIG_MQ_IOSCHED_DEADLINE=y
 CONFIG_MQ_IOSCHED_KYBER=y
-# CONFIG_IOSCHED_BFQ is not set
+CONFIG_IOSCHED_BFQ=y
 # end of IO Schedulers
 
 CONFIG_PREEMPT_NOTIFIERS=y

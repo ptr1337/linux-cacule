@@ -5,7 +5,7 @@ buildarch=8
 
 pkgbase=linux-pine64
 _desc="Pine64 PinePhone"
-pkgver=5.12.6
+pkgver=5.12.7
 pkgrel=1
 arch=('aarch64')
 url="https://github.com/megous/linux"
@@ -16,6 +16,7 @@ options=('!strip')
 # Source
 _commit="d0a1bbfe63e93253c37025ef39b6dc4dadfd6989"
 source=("linux-$_commit.tar.gz::https://github.com/megous/linux/archive/${_commit}.tar.gz"
+        '5.12.6-5.12.7.patch'
         'config'
         'enable-hdmi-output-pinetab.patch'
         'cacule-5.12.patch'
@@ -51,6 +52,7 @@ prepare() {
   cd linux-$_commit
 
   # PinePhone patches
+  patch -p1 -N < ../5.12.6-5.12.7.patch
   patch -p1 -N < ../0013-fix-pogopin-i2c.patch
   patch -p1 -N < ../dts-pinephone-drop-modem-power-node.patch
 
@@ -267,7 +269,8 @@ for _p in "${pkgname[@]}"; do
 done
 
 md5sums=('715189119d92d89ceeb40eaaf539bfe8'
-         'ae5315b4736ce84a48114dc1938bd010'
+         '22c4641cbbd7ecdd1893ea3474ff4ca9'
+         '504557b78819ad5b8e7e948043bb02a4'
          '979a787cf84bef9c60da78e72ec96550'
          '43bf75915b0b657c99a7e0fc6d23e3f5'
          'f79300740a7350d2d24ab5e120831b52'
