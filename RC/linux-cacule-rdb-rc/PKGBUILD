@@ -70,7 +70,7 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v5.x/linux-${_stablerc}.tar.xz
         "config"
         "${_patchsource}/arch-patches-v3/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
         "${_patchsource}/cacule-patches/cacule-5.13.patch"
-        "${_patchsource}/cacule-patches/rdb-testing.patch"
+        "${_patchsource}/cacule-patches/rdb-5.13.patch"
         "${_patchsource}/cpu-patches-v2/0001-cpu-patches.patch"
       #  "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
       #  "${_patchsource}/futex2-stable-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
@@ -79,7 +79,7 @@ source=(#"https://www.kernel.org/pub/linux/kernel/v5.x/linux-${_stablerc}.tar.xz
        # "${_patchsource}/lqx-patches-v2/0001-lqx-patches.patch"
       #  "${_patchsource}/bfq-patches-v8/0001-bfq-patches.patch"
       #  "${_patchsource}/block-patches-v3/0001-block-patches.patch"
-        "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
+         "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
       #  "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
     #    "${_patchsource}/bbr2-patches-v2/0001-bbr2-5.12-introduce-BBRv2.patch"
       #  "${_patchsource}/btrfs-patches-v8/0001-btrfs-patches.patch"
@@ -96,7 +96,8 @@ sha512sums=('e836fb1873adbdb434b142aa64323e0e5f7fe2bad6060edd42e5e7e6c82ea821105
             '13e846acdb24a19e1834b62e81b144469ccfdb86cf37cb10febfaaf5052ba97db3f299feec50c935c8cb92f009ce2a40f482f3f9e54d5ccad171eb1f79402f81'
             'f07743a59c992f7a48cd1604a0ed30663fe043f5bc93dfe54780da88421c920e7daf801fa345b475ab551f7855360a72774cd2b117e41d5a4ac35005250e3c2f'
             '0ca83b1c2d97dfa6f6498694266d3785e67d877a7b5abe66505f96b8f31cb62d93e719212d19bfef522826166f8c00719cfec442a128ca0d261761a75d334ea6'
-            '7595e5c6b386d1d1661c9f2538a35c93c27de6a076865578f36c3450557a5f20208047bb3062b6f7ef145293b82c14733f23c10454fa99b069c8e4e3daa9c721'
+            '2758525ecee7feaf6facee7cb53405041359b9b048cd4fdf7ca404e82a4e7c2336e9006b519710dbe1878c222bde91ed83a7e2c290ebc7ac05e113667a3630a0'
+            '9f8a99c50f93bff64dd674179dcb41aacf4a23ac8de61b8178e1a4da66b1c7f9dadf836e728ba7e0ac23ead05aa4fe278cb02d28b5248eff19162acdcf5e6b3d'
             '60bda2070739a52af4f81816ebda8f3520a8d75ea5e00f65a903a3416ae31edba56fe151f6a9e02dc90ec3be7854e9a62e10e72120d7148fd3838806d8b9e986'
             '47f265716ebd268e4296aaba1efe5098df00736b69ec7d0413cace6dbb5cb162c1c952f7527a2a41b246ed76e6e112514c5349e8dc52f4609def30257e18d7aa'
             '341492bf6b899a8fb4a0ef375e5461ec6e49c96755c10dd85d36b3b35a62d4e15a8b2df14aecc6bcc13485a16ad21a360050a091cf69b5aa4fc84a74dee34020')
