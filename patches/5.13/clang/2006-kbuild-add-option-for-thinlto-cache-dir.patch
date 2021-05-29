@@ -1,0 +1,101 @@
+From 7eef5c361de91b2e9285148311724b846e1ca2d7 Mon Sep 17 00:00:00 2001
+From: Tor Vic <torvic9@mailbox.org>
+Date: Mon, 10 May 2021 14:26:51 +0200
+Subject: [PATCH] Kbuild/Kconfig: add option for thinlto cache dir
+
+On some distros and configurations, it might be useful to allow for
+specifying a directory where Clang stores its ThinLTO cache.
+
+More specifically, when building the VirtualBox extramodules on Arch with
+its proper 'makepkg' build system and DKMS, against an already installed
+ThinLTO kernel, the build fails because it tries to create the ThinLTO
+cache in a directory that is not user-writable.
+
+This is more likely an issue with DKMS and not a kernel problem, but while
+awaiting a proper fix, add an option that allows the user to choose a
+ThinLTO cache directory.
+
+Signed-off-by: Tor Vic <torvic9@mailbox.org>
+---
+ Makefile                  |  3 ++-
+ arch/Kconfig              | 10 ++++++++++
+ scripts/Makefile.lib      |  4 ++++
+ scripts/Makefile.modfinal |  4 ++++
+ 4 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 53d09c4..2afb1df 100644
+--- a/Makefile
++++ b/Makefile
+@@ -919,9 +919,10 @@ endif
+ 
+ ifdef CONFIG_LTO_CLANG
+ ifdef CONFIG_LTO_CLANG_THIN
+ CC_FLAGS_LTO	:= -flto=thin -fsplit-lto-unit
+-KBUILD_LDFLAGS	+= --thinlto-cache-dir=$(extmod_prefix).thinlto-cache
++export thinlto-dir = $(if $(CONFIG_LTO_CLANG_THIN_CACHEDIR),$(CONFIG_LTO_CLANG_THIN_CACHEDIR)/)
++KBUILD_LDFLAGS	+= --thinlto-cache-dir=$(thinlto-dir)$(extmod_prefix).thinlto-cache
+ else
+ CC_FLAGS_LTO	:= -flto
+ endif
+ CC_FLAGS_LTO	+= -fvisibility=hidden
+diff --git a/arch/Kconfig b/arch/Kconfig
+index c45b770..25ae2ab 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -688,8 +688,18 @@ config LTO_CLANG_THIN
+ 
+ 	    https://clang.llvm.org/docs/ThinLTO.html
+ 
+ 	  If unsure, say Y.
++
++config LTO_CLANG_THIN_CACHEDIR
++	string "Clang ThinLTO cache directory"
++	depends on LTO_CLANG_THIN
++	default ""
++	help
++	  This option allows users to choose a directory that stores
++	  Clang's ThinLTO cache.
++	  Leave empty for default.
++
+ endchoice
+ 
+ config ARCH_SUPPORTS_CFI_CLANG
+ 	bool
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 1095055..bca87a6 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -196,8 +196,12 @@ endif
+ 
+ part-of-module = $(if $(filter $(basename $@).o, $(real-obj-m)),y)
+ quiet_modtag = $(if $(part-of-module),[M],   )
+ 
++ifdef CONFIG_LTO_CLANG_THIN
++KBUILD_LDFLAGS	+= --thinlto-cache-dir=$(thinlto-dir)$(extmod-prefix).thinlto-cache
++endif
++
+ modkern_cflags =                                          \
+ 	$(if $(part-of-module),                           \
+ 		$(KBUILD_CFLAGS_MODULE) $(CFLAGS_MODULE), \
+ 		$(KBUILD_CFLAGS_KERNEL) $(CFLAGS_KERNEL) $(modfile_flags))
+diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
+index dd87cea..18634cd 100644
+--- a/scripts/Makefile.modfinal
++++ b/scripts/Makefile.modfinal
+@@ -34,8 +34,12 @@ ifdef CONFIG_LTO_CLANG
+ # With CONFIG_LTO_CLANG, reuse the object file we compiled for modpost to
+ # avoid a second slow LTO link
+ prelink-ext := .lto
+ 
++ifdef CONFIG_LTO_CLANG_THIN
++KBUILD_LDFLAGS	+= --thinlto-cache-dir=$(thinlto-dir)$(extmod-prefix).thinlto-cache
++endif
++
+ # ELF processing was skipped earlier because we didn't have native code,
+ # so let's now process the prelinked binary before we link the module.
+ 
+ ifdef CONFIG_STACK_VALIDATION
+-- 
+2.31.1
+
