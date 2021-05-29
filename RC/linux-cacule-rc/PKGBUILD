@@ -45,6 +45,7 @@ elif [[ "$_compiler" = "2" ]]; then
   CXX=clang++
   HOSTCC=clang
   HOSTCXX=clang++
+  export LLVM=1 LLVM_IAS=1
 else
   _compiler=1
   CC=gcc
