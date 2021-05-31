@@ -51,7 +51,7 @@ pkgbase=linux-cacule-rdb-rc
 _major=5.13
 #_minor=1
 #_minorc=$((_minor+1))
-_rcver=rc3
+_rcver=rc4
 pkgver=${_major}.${_rcver}
 #_stable=${_major}.${_minor}
 _stablerc=${_major}-${_rcver}
@@ -67,37 +67,23 @@ makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
 _patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.12"
 _patchsource2="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.13"
 source=(#"https://www.kernel.org/pub/linux/kernel/v5.x/linux-${_stablerc}.tar.xz"
-        "https://git.kernel.org/torvalds/t/linux-5.13-rc3.tar.gz"
-        "config"
-    #    "${_patchsource}/arch-patches-v3/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource2}/cacule-patches/cacule-5.13.patch"
-        "${_patchsource2}/cacule-patches/rdb-5.13.patch"
-        "${_patchsource2}/bbr2-5.13.patch"
-        "${_patchsource2}/bfq-5.13.patch"
-        "${_patchsource2}/ksm-5.13.patch"
-        "${_patchsource2}/cpu-5.13.patch"
-       # "${_patchsource2}/fixes-5.13.patch"
-        "${_patchsource2}/zstd-5.13.patch"
-        "${_patchsource2}/misc/2002-tune-vm-mm-and-vfs-settings.patch"
-   #     "${_patchsource}/cpu-patches-v2/0001-cpu-patches.patch"
-      #  "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
-      #  "${_patchsource}/futex2-stable-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
-       # "${_patchsource}/wine-esync-patches/0001-v5.12-winesync.patch"
-       # "${_patchsource}/zen-patches-v2/0001-zen-patches.patch"
-       # "${_patchsource}/lqx-patches-v2/0001-lqx-patches.patch"
-      #  "${_patchsource}/bfq-patches-v8/0001-bfq-patches.patch"
-      #  "${_patchsource}/block-patches-v3/0001-block-patches.patch"
-         "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
-      #  "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
-    #    "${_patchsource}/bbr2-patches-v2/0001-bbr2-5.12-introduce-BBRv2.patch"
-      #  "${_patchsource}/btrfs-patches-v8/0001-btrfs-patches.patch"
-       # "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
-       # "${_patchsource}/pf-patches-v2/0001-pf-patches.patch"
-        "${_patchsource}/lru-gen/PATCH-v3-00-14-Multigenerational-LRU-Framework.patch"
-       # "${_patchsource}/ntfs3-patches-v2/0001-ntfs3-patches.patch"
-      #  "${_patchsource}/zstd-dev-patches-v3/0001-zstd-dev-patches.patch"
-      #  "${_patchsource}/clearlinux-patches-v3/0001-clearlinux-patches.patch"
-      #  "${_patchsource}/initramfs-patches/0001-initramfs-patches.patch"
+                     "https://git.kernel.org/torvalds/t/linux-5.13-rc4.tar.gz"
+                     "config"
+                 #    "${_patchsource}/arch-patches-v3/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
+                     "${_patchsource2}/cacule-patches/cacule-5.13.patch"
+                    "${_patchsource2}/cacule-patches/rdb-5.13.patch"
+                     "${_patchsource2}/bbr2-5.13.patch"
+                     "${_patchsource2}/bfq-5.13.patch"
+                     "${_patchsource2}/ksm-5.13.patch"
+                     "${_patchsource2}/cpu-5.13.patch"
+                     "${_patchsource2}/fixes-5.13.patch"
+                     "${_patchsource2}/zstd-5.13.patch"
+                     "${_patchsource}/futex/1001-futex-513-wait_multiple.patch"
+                     "${_patchsource2}/misc/2002-tune-vm-mm-and-vfs-settings.patch"
+                     "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
+                     "${_patchsource}/lru-gen/PATCH-v3-00-14-Multigenerational-LRU-Framework.patch"
+             #        "${_patchsource}/lrng/1004-dev-random-new-lrng-approach-v40.patch"
+                     "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
       )
 
 sha512sums=('e836fb1873adbdb434b142aa64323e0e5f7fe2bad6060edd42e5e7e6c82ea821105e2eb50a9cb578ff7028d87c07948383fc01b8fff70978fbf08d14bb7dc37c'
@@ -299,16 +285,17 @@ prepare() {
     scripts/config --enable  CONFIG_ANDROID_BINDER_IPC
     scripts/config --enable  CONFIG_ANDROID_BINDERFS
     scripts/config --set-str CONFIG_ANDROID_BINDER_DEVICES binder,hwbinder,vndbinder
-#    echo "Disabling TCP_CONG_CUBIC..."
-#    scripts/config --module CONFIG_TCP_CONG_CUBIC
-#    scripts/config --disable CONFIG_DEFAULT_CUBIC
-#    echo "Enabling TCP_CONG_BBR2..."
-#    scripts/config --enable CONFIG_TCP_CONG_BBR2
-#    scripts/config --enable CONFIG_DEFAULT_BBR2
-#    scripts/config --set-str CONFIG_DEFAULT_TCP_CONG bbr2
-#    echo "Enable CONFIG_VHBA"
-#    scripts/config --module CONFIG_VHBA
-#    scripts/config --disable CONFIG_BPF_PRELOAD
+    echo "Disabling TCP_CONG_CUBIC..."
+    scripts/config --module CONFIG_TCP_CONG_CUBIC
+    scripts/config --disable CONFIG_DEFAULT_CUBIC
+    echo "Enabling TCP_CONG_BBR2..."
+    scripts/config --enable CONFIG_TCP_CONG_BBR2
+   scripts/config --enable CONFIG_DEFAULT_BBR2
+    scripts/config --set-str CONFIG_DEFAULT_TCP_CONG bbr2
+    echo "Enable CONFIG_VHBA"
+    scripts/config --module CONFIG_VHBA
+    scripts/config --disable CONFIG_BPF_PRELOAD
+    scripts/config --disable CONFIG_GCC_PLUGINS
 
 
 
