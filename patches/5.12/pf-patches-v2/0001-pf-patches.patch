@@ -50,10 +50,10 @@ index f21362355..0ff6d41d1 100644
 @@ -1388,7 +1388,7 @@ int i2c_handle_smbus_host_notify(struct i2c_adapter *adap, unsigned short addr)
  	if (irq <= 0)
  		return -ENXIO;
- 
+
 -	generic_handle_irq(irq);
 +	generic_dispatch_irq(irq);
- 
+
  	return 0;
  }
 diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
@@ -62,10 +62,10 @@ index 891b32326..adb4d3b76 100644
 +++ b/include/linux/irqdesc.h
 @@ -159,6 +159,7 @@ static inline void generic_handle_irq_desc(struct irq_desc *desc)
  }
- 
+
  int generic_handle_irq(unsigned int irq);
 +int generic_dispatch_irq(unsigned int irq);
- 
+
  #ifdef CONFIG_HANDLE_DOMAIN_IRQ
  /*
 diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
@@ -75,7 +75,7 @@ index cc1a09406..6c2a75eb6 100644
 @@ -654,6 +654,27 @@ int generic_handle_irq(unsigned int irq)
  }
  EXPORT_SYMBOL_GPL(generic_handle_irq);
- 
+
 +/**
 + * generic_dispatch_irq - Dispatch an interrupt from an interrupt handler
 + * @irq:	The irq number to handle
@@ -100,7 +100,7 @@ index cc1a09406..6c2a75eb6 100644
  #ifdef CONFIG_HANDLE_DOMAIN_IRQ
  /**
   * __handle_domain_irq - Invoke the handler for a HW irq belonging to a domain
--- 
+--
 2.31.1.362.g311531c9de
 
 
@@ -148,7 +148,7 @@ index a45cd2b41..b1085ada7 100644
 +	struct igb_q_vector *q_vector;
 +	bool clean_complete;
  	int work_done = 0;
- 
+
 +	/* if budget is zero, we have a special case for netconsole, so
 +	 * make sure to set clean_complete to false in that case.
 +	 */
@@ -158,6 +158,5 @@ index a45cd2b41..b1085ada7 100644
  #ifdef CONFIG_IGB_DCA
  	if (q_vector->adapter->flags & IGB_FLAG_DCA_ENABLED)
  		igb_update_dca(q_vector);
--- 
+--
 2.31.1.362.g311531c9de
-
