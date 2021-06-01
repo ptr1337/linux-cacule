@@ -254,7 +254,7 @@ prepare() {
   ### Enabling Cacule-Config ##
       echo "Enable CacULE CPU scheduler..."
       scripts/config --enable CONFIG_CACULE_SCHED
-      scripts/config --enable CONFIG_FAIR_GROUP_SCHED
+      scripts/config --disable CONFIG_FAIR_GROUP_SCHED
       scripts/config --enable CONFIG_SCHED_AUTOGROUP
       scripts/config --disable CONFIG_EXPERT
       scripts/config --disable CONFIG_SCHED_DEBUG
