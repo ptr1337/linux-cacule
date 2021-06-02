@@ -1,4 +1,4 @@
-# Maintainer: Piotr Gorski <lucjan.lucjanov@gmail.com>
+# Maintainer: Peter Jung (ptr1337) <admin@ptr1337.dev>
 # Contributor: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
 # Contributor: Tobias Powalowski <tpowa@archlinux.org>
 # Contributor: Thomas Baechler <thomas@archlinux.org>
@@ -17,25 +17,15 @@ _makemenuconfig=
 _NUMAdisable=y
 # Enable fsync
 _fsync=y
-#enable futex2
-_futex2=y
-#enable winesync
-_winesync=y
 ### Set performance governor as default
 _per_gov=y
-### Disable Deadline I/O scheduler
-_deadline_disable=y
-### Disable Kyber I/O scheduler
-_kyber_disable=y
 ### Running with a 2000 HZ, 1000HZ or 500HZ tick rate
-_2k_HZ_ticks=
-_1k_HZ_ticks=y
+_2k_HZ_ticks=y
+_1k_HZ_ticks=
 _500_HZ_ticks=
 ### Enable protect file mappings under memory pressure
 _mm_protect=y
-### Enable multigenerational LRU
-_lru_enable=y
-# Compile ONLY used modules to VASTLYreduce the number of modules built
+ # Compile ONLY used modules to VASTLYreduce the number of modules built
 # and the build time.
 #
 # To keep track of which modules are needed for your specific system/hardware,
@@ -54,11 +44,9 @@ _use_current=
 
 ### Do not edit below this line unless you know what you're doing
 
-pkgbase=linux-cacule-rt
+pkgbase=linux-cacule-rt-lts
 _major=5.4
 _minor=123
-#_rtver=39
-#_rtpatchver=rt${_rtver}
 pkgver=${_major}.${_minor}.${_rtpatchver}
 _pkgver=${_major}.${_minor}
 _srcname=linux-${_pkgver}
@@ -72,29 +60,21 @@ makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
 _patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.10"
 source=("https://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
         #"https://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.sign"
-        "http://www.kernel.org/pub/linux/kernel/projects/rt/${_major}/patch-${_pkgver}-${_rtpatchver}.patch.xz"
+        #"http://www.kernel.org/pub/linux/kernel/projects/rt/${_major}/patch-${_pkgver}-${_rtpatchver}.patch.xz"
         #"http://www.kernel.org/pub/linux/kernel/projects/rt/${_major}/patch-${_pkgver}-${_rtpatchver}.patch.sign"
-        "${_patchsource}/arch-patches-v6/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/cacule-patches/cacule-5.12.patch"
-        "${_patchsource}/cpu-patches-v2/0001-cpu-patches.patch"
-        "${_patchsource}/futex-patches-v2/0001-futex-resync-from-gitlab.collabora.com.patch"
-        "${_patchsource}/futex2-stable-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
-        "${_patchsource}/wine-esync-patches/0001-v5.12-winesync.patch"
-        "${_patchsource}/zen-patches-v2/0001-zen-patches.patch"
-        "${_patchsource}/lqx-patches-v3/0001-zen-Allow-MSR-writes-by-default.patch"
-        "${_patchsource}/bfq-patches-v9/0001-bfq-patches.patch"
-        "${_patchsource}/block-patches-v3/0001-block-patches.patch"
-        "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
-        "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
-        "${_patchsource}/bbr2-patches-v2/0001-bbr2-5.12-introduce-BBRv2.patch"
-        "${_patchsource}/btrfs-patches-v9/0001-btrfs-patches.patch"
-        "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
-        "${_patchsource}/pf-patches-v2/0001-pf-patches.patch"
-        "${_patchsource}/lru-patches-v4/0001-lru-patches.patch"
-        "${_patchsource}/ntfs3-patches-v2/0001-ntfs3-patches.patch"
-        "${_patchsource}/zstd-dev-patches-v3/0001-zstd-dev-patches.patch"
-        "${_patchsource}/clearlinux-patches-v3/0001-clearlinux-patches.patch"
-        "${_patchsource}/initramfs-patches/0001-initramfs-patches.patch"
+        "${_patchsource}/cacule-patches/cacule-5.4-rt.patch"
+        "${_patchsource}/bbr2-patches-v3/0001-bbr2-5.10-introduce-BBRv2.patch"
+        "${_patchsource}/zen-patches-v8/0001-zen-patches.patch"
+        "${_patchsource}bfq-dev/5.4-bfq-dev-v11-r2K200203.patch"
+#        "${_patchsource}/block-patches-v3/0001-block-patches.patch"
+        "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
+        "${_patchsource}/fixes-miscellaneous-v5/0001-fixes-miscellaneous.patch"
+        "${_patchsource}/ksm-patches/0001-ksm-patches.patch"
+        "${_patchsource}/mm-patches-v4/0001-mm-patches.patch"
+        "${_patchsource}/lqx-patches-v4/0001-lqx-patches.patch"
+        "${_patchsource}/clearlinux-patches-v6 /0001-clearlinux-patches.patch"
+        "${_patchsource}/futex-patches-v2/0001-futex-Add-support-for-multiple-keys-at-the-same-time.patch"
+#        "${_patchsource}/futex2-trunk-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
         'config')
 
 export KBUILD_BUILD_HOST=archlinux
@@ -103,10 +83,6 @@ export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EP
 
 prepare() {
     cd $_srcname
-
-    ### Add rt patch
-        echo "Add rt patch"
-        patch -Np1 -i ../patch-${_pkgver}-${_rtpatchver}.patch
 
     ### Setting version
         echo "Setting version..."
@@ -147,6 +123,11 @@ prepare() {
 			exit
 		fi
 	fi
+
+	  ### CPU_ARCH SCRIPT ##
+    source "${startdir}"/configure
+
+    cpu_arch
   ### Optionally set tickrate to 2000HZ
     if [ -n "$_2k_HZ_ticks" ]; then
       echo "Setting tick rate to 2k..."
@@ -184,15 +165,6 @@ prepare() {
       scripts/config --enable CONFIG_FUTEX_PI
     fi
 
-    if [ -n "$_futex2" ]; then
-      echo "Enable Futex2 support"
-      scripts/config --enable CONFIG_FUTEX2
-    fi
-
-    if [ -n "$_winesync" ]; then
-      echo "Enable winesync support"
-      scripts/config --module CONFIG_WINESYNC
-    fi
 
 ### Set performance governor
     if [ -n "$_per_gov" ]; then
@@ -206,17 +178,6 @@ prepare() {
       scripts/config --disable CONFIG_CPU_FREQ_GOV_SCHEDUTIL
     fi
 
-### Disable Deadline I/O scheduler
-     if [ -n "$_deadline_disable" ]; then
-       echo "Disabling Deadline I/O scheduler..."
-       scripts/config --disable CONFIG_MQ_IOSCHED_DEADLINE
-     fi
-
-### Disable Kyber I/O scheduler
-     if [ -n "$_kyber_disable" ]; then
-        echo "Disabling Kyber I/O scheduler..."
-        scripts/config --disable CONFIG_MQ_IOSCHED_KYBER
-      fi
 
 
   ### Enable protect file mappings under memory pressure
@@ -227,16 +188,6 @@ prepare() {
         scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
       fi
 
-          ### Enable multigenerational LRU
-      if [ -n "$_lru_enable" ]; then
-        echo "Enabling multigenerational LRU..."
-        scripts/config --enable CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG
-        scripts/config --enable CONFIG_LRU_GEN
-        scripts/config --set-val CONFIG_NR_LRU_GENS 7
-        scripts/config --set-val CONFIG_TIERS_PER_GEN 4
-        scripts/config --enable CONFIG_LRU_GEN_ENABLED
-        scripts/config --disable CONFIG_LRU_GEN_STATS
-      fi
 
       echo "Enabling standard ZSTD compression ratio..."
       scripts/config --set-val CONFIG_KERNEL_ZSTD_LEVEL 19
@@ -252,7 +203,7 @@ prepare() {
 ### Enabling Cacule-Config ##
     echo "Enable CacULE CPU scheduler..."
     scripts/config --enable CONFIG_CACULE_SCHED
-    scripts/config --enable CONFIG_FAIR_GROUP_SCHED
+    scripts/config --disable CONFIG_FAIR_GROUP_SCHED
     scripts/config --enable CONFIG_SCHED_AUTOGROUP
     scripts/config --disable CONFIG_EXPERT
     scripts/config --disable CONFIG_SCHED_DEBUG
@@ -260,32 +211,10 @@ prepare() {
     scripts/config --disable CONFIG_SCHEDSTATS
     scripts/config --disable CONFIG_DEBUG_KERNEL
     scripts/config --enable CONFIG_NO_HZ
-    scripts/config --enable CONFIG_NO_HZ_COMMON
+    scripts/config --enable CONFIG_NO_HZ_FULL
     echo "Enabling KBUILD_CFLAGS -O3..."
     scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
     scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
-    echo "Enable PREEMPT"
-    scripts/config --disable CONFIG_PREEMPT_NONE
-    scripts/config --disable CONFIG_PREEMPT_VOLUNTARY
-    scripts/config --enable CONFIG_PREEMPT
-    scripts/config --enable CONFIG_PREEMPT_COUNT
-    scripts/config --enable CONFIG_PREEMPTION
-    echo "Enable NTFS3"
-    scripts/config --module CONFIG_NTFS_FS
-    scripts/config --enable CONFIG_NTFS_RW
-    scripts/config --enable CONFIG_NTFS_DEBUG
-    scripts/config --module CONFIG_NTFS3_FS
-    scripts/config --enable CONFIG_NTFS3_64BIT_CLUSTER
-    scripts/config --enable CONFIG_NTFS3_LZX_XPRESS
-    scripts/config --enable CONFIG_NTFS3_FS_POSIX_ACL
-    echo "Enable Anbox"
-    scripts/config --module  CONFIG_ASHMEM
-    scripts/config --enable  CONFIG_ANDROID_BINDER_IPC_SELFTEST
-    scripts/config --enable  CONFIG_ANDROID
-    scripts/config --enable  CONFIG_ANDROID_BINDER_IPC
-    scripts/config --enable  CONFIG_ANDROID_BINDERFS
-    scripts/config --set-str CONFIG_ANDROID_BINDER_DEVICES binder,hwbinder,vndbinder
-    echo "Disabling TCP_CONG_CUBIC..."
     scripts/config --module CONFIG_TCP_CONG_CUBIC
     scripts/config --disable CONFIG_DEFAULT_CUBIC
     echo "Enabling TCP_CONG_BBR2..."
@@ -294,8 +223,6 @@ prepare() {
     scripts/config --set-str CONFIG_DEFAULT_TCP_CONG bbr2
     echo "Enable CONFIG_VHBA"
     scripts/config --module CONFIG_VHBA
-    scripts/config --disable CONFIG_BPF_PRELOAD
-    scripts/config --disable CONFIG_GCC_PLUGINS
 
     ### Optionally load needed modules for the make localmodconfig
         # See https://aur.archlinux.org/packages/modprobed-db
@@ -329,7 +256,7 @@ _package() {
     optdepends=('crda: to set the correct wireless channels of your country'
                 'linux-firmware: firmware images needed for some devices'
                 'modprobed-db: Keeps track of EVERY kernel module that has ever been probed - useful for those of us who make localmodconfig')
-    provides=(VIRTUALBOX-GUEST-MODULES WIREGUARD-MODULE linux-cacule-rt)
+    provides=(VIRTUALBOX-GUEST-MODULES WIREGUARD-MODULE linux-cacule-rt-lts)
 
   cd $_srcname
   local kernver="$(<version)"
@@ -352,7 +279,7 @@ _package() {
 
 _package-headers() {
     pkgdesc="Headers and scripts for building modules for the $pkgdesc kernel"
-    depends=('linux-cacule-rt' 'pahole')
+    depends=('linux-cacule-rt-lts' 'pahole')
 
   cd $_srcname
   local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
@@ -436,15 +363,12 @@ for _p in "${pkgname[@]}"; do
   }"
 done
 
-sha512sums=('69bf72b99b0ef55cb9cd8c37bc9670e0dc7d97ab1f5b9f7edd2c161e8489d3aac43eeb23fd52f32fb78a627dc74fbaeaeb7df63bf93420f5ae588fe9f457e98e'
-            'SKIP'
-            'e37ebf7e6c0f669f35bbc96bbbb096ae37541aeb65c540caa1201fcc11ebd7b7cca1a6a5f42b92e1da4040c92f882fb7830d054051d5b37a7b178a2de5ca3e24'
-            'SKIP'
-            '1225355dae67ca06d734ab724bcbaef0aae07ad3864bb4ec2d464f62b0a4b03043710f78afdbb42d4f16c4d24b42ed49bafca0cd278540e8016ab6e5df669153'
-            '08ba50a763f71267215ebf00f136edf68c63aa8afa362c30d6b06fbf38d5cd03c4300165eebb9db9571e7c47150eaa6efbbb7a7f53053b05570cb11f3b4a8303'
-            '4d9f5419f41e0f5a937c077e3c0ee605c08f65b54e1e07affa84cb1d9d68cf59cbffdcac79b40a62fe14fbdea4b34521f9e43786f29b40044d156fa5375d3e8a'
-            'bdf872b8cc237730c2a174771d65e2d1c261cdb5c2359a8e0af88aeedc76dc510b86602941e0a7819d388163fb2ee2c0053ff79348b641c46d282c4dc11a42ca'
-            'fe0e8f597d20e44344787f267913544256ff4a9545f08dd5d7dc3eb15240c570a127b34328ab62e958dd47d85c82ff2b24e16f00e05175b6b6e88960c3f84de3'
-            'a6700231756b7fe28e78234a5b02bed96d53d198e5af67c411a2f6a2d32f79b5d1afea3931947d6f4b800976553db3d5b3d56467fa214a391a998a77abf88012'
-            '4ee0cf7e6eaba3ceb1887012a93a3e87f04b16e8a88c07de5d7242de872b03868a9780f283a93fea86c39c32b0da9108023b3e19fa056147922e0da1a9d0ccdb'
-            '105c632754bf9a8cffd3c90680d5d1eac4e597746df442df65033d1598d57ec250ce95637908e1e7af9fe6a46d5c0515494893678808a8247b9320f3f9a4fe77')
+sha512sums=('67cc3b1ea1fee86a775d51dd94fa1c69c5006f500da575778ac4cf1c168014efcdaa75adae1524a5f6535410c0e5d25cedd44e172212b4da255ff68f5fcbf2b9'
+            '914e9969f9d4fae19b763f5077559e32af6d5d795a02e022ca4eaf59cbd715a5b6570d3167561b3f9489e5bba4ae4257b6e86fa4b54395e07a9d69d70b944319'
+            '1ecbd7a28489ce68939a78eeeafd0a4b0064b26dd68cd8df661effa3729fa9c087211c1758db98289d3ec6f9f9071fea0f815ed57fa6188ef5fcca3f85ef6e9d'
+            'cc33f1db2b449e1e277100fd87e099a4addbfef69e8ba77f92f30b5e2273aee31d04a09c26a3175ad1d2b269764df57934107d55cc615f121529ed0a42c34524'
+            'f649ffc0c4ecdc0168aaa852751336209f4166976470a47f912550e64bbe0e0c128fc3ab7dc23d6f0fcdce56bcc2562d1e11826c5be866811eb58f5b15a5c1fd'
+            '61dddce21ae29042b952f145698f47ca6dce8a6d36e1a1a60efe01bb78d6defaaa9ba3cd69314519363d6e853a9de0ef8af5154c0b3af95789dbe6f0706bfc21'
+            '40b2139abe3f946c550e2b4c5e3d7360db8fecc9837defca13b445503c7a3eb05bd746dc4a11d516f575cfacb266548627feec1d29b8c21182871c20cf2f8b6e'
+            '164f33f8d7e9a55acd82c789d7204f41f0a32c9aaea2b77c8ce9d6aa0eac883c77d992fa72254fad7f53177d2240dccc0d3c8a999f94aa1eaef34ab3d410240a'
+            'd6cab26d1dff098696ef434859e39aa99b464e30ea89d6a64fc87fbee27e9887e869cf8fb4e1654ffa1acec8261a6c2abce8d2cf0dd60acf82dbae51b85050bf')

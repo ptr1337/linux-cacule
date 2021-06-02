@@ -54,7 +54,7 @@ pkgver=${_major}
 #_stable=${_major}.${_minor}
 #_stablerc=${_major}-${_rcver}
 _srcname=linux-${_major}
-pkgrel=3
+pkgrel=4
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -73,7 +73,7 @@ source=("https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/$_srcname.tar.xz"
         "${_patchsource}/wine-esync-patches/0001-v5.12-winesync.patch"
         "${_patchsource}/zen-patches-v2/0001-zen-patches.patch"
         "${_patchsource}/lqx-patches-v3/0001-zen-Allow-MSR-writes-by-default.patch"
-        "${_patchsource}/bfq-patches-v9/0001-bfq-patches.patch"
+        "${_patchsource}/bfq-patches-v11/0001-bfq-patches.patch"
         "${_patchsource}/block-patches-v3/0001-block-patches.patch"
         "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
         "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
