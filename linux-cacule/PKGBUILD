@@ -69,7 +69,7 @@ source=("https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/$_srcname.tar.xz"
         "${_patchsource}/cacule-patches/cacule-5.12.patch"
         "${_patchsource}/cpu-patches-v2/0001-cpu-patches.patch"
         "${_patchsource}/futex-patches-v2/0001-futex-resync-from-gitlab.collabora.com.patch"
-        "${_patchsource}/futex2-stable-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
+        "${_patchsource}/futex2-stable-patches-v6/0001-futex2-resync-from-gitlab.collabora.com.patch"
         "${_patchsource}/wine-esync-patches/0001-v5.12-winesync.patch"
         "${_patchsource}/zen-patches-v2/0001-zen-patches.patch"
         "${_patchsource}/lqx-patches-v3/0001-zen-Allow-MSR-writes-by-default.patch"
@@ -85,6 +85,7 @@ source=("https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/$_srcname.tar.xz"
         "${_patchsource}/ntfs3-patches-v2/0001-ntfs3-patches.patch"
         "${_patchsource}/zstd-dev-patches-v3/0001-zstd-dev-patches.patch"
         "${_patchsource}/clearlinux-patches-v3/0001-clearlinux-patches.patch"
+        "${_patchsource}/ksm-patches/0001-ksm-patches.patch"
         "${_patchsource}/initramfs-patches/0001-initramfs-patches.patch" )
 
 sha512sums=('8a5f1774bee223445ad147d2f83a7b3a2c19ea620d0f3964344bb33d003fec17d36279b522745c03467e361ebd61479a4f7122e5911bb6b817ff52ee55c736d9'
@@ -244,17 +245,17 @@ prepare() {
     		scripts/config --set-val CONFIG_KERNEL_ZSTD_LEVEL 19
     		scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
   ### Enabling ZSTD COMPRESSION ##
-  #      echo "Set module compression to ZSTD"
-  #      scripts/config --enable CONFIG_MODULE_COMPRESS
-  #      scripts/config --disable CONFIG_MODULE_COMPRESS_XZ
-  #      scripts/config --enable CONFIG_MODULE_COMPRESS_ZSTD
+        echo "Set module compression to ZSTD"
+       scripts/config --enable CONFIG_MODULE_COMPRESS
+        scripts/config --disable CONFIG_MODULE_COMPRESS_XZ
+        scripts/config --enable CONFIG_MODULE_COMPRESS_ZSTD
   #      scripts/config --set-val CONFIG_MODULE_COMPRESS_ZSTD_LEVEL 19
   #      scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
 
   ### Enabling Cacule-Config ##
       echo "Enable CacULE CPU scheduler..."
       scripts/config --enable CONFIG_CACULE_SCHED
-      scripts/config --disable CONFIG_FAIR_GROUP_SCHED
+      scripts/config --enable CONFIG_FAIR_GROUP_SCHED
       scripts/config --enable CONFIG_SCHED_AUTOGROUP
       scripts/config --disable CONFIG_EXPERT
       scripts/config --disable CONFIG_SCHED_DEBUG
@@ -272,6 +273,7 @@ prepare() {
       scripts/config --enable CONFIG_PREEMPT
       scripts/config --enable CONFIG_PREEMPT_COUNT
       scripts/config --enable CONFIG_PREEMPTION
+     scripts/config --enable CONFIG_PREEMPT_DYNAMIC
       echo "Enable NTFS3"
       scripts/config --module CONFIG_NTFS_FS
       scripts/config --enable CONFIG_NTFS_RW
@@ -294,10 +296,6 @@ prepare() {
       scripts/config --enable CONFIG_TCP_CONG_BBR2
       scripts/config --enable CONFIG_DEFAULT_BBR2
       scripts/config --set-str CONFIG_DEFAULT_TCP_CONG bbr2
-      echo "Enable CONFIG_VHBA"
-      scripts/config --module CONFIG_VHBA
-      scripts/config --disable CONFIG_BPF_PRELOAD
-      scripts/config --disable CONFIG_GCC_PLUGINS
 
       ### Optionally load needed modules for the make localmodconfig
        # See https://aur.archlinux.org/packages/modprobed-db
@@ -326,9 +324,11 @@ build() {
 _package() {
     pkgdesc="The $pkgdesc kernel and modules"
     depends=('coreutils' 'kmod' 'initramfs')
-    optdepends=('crda: to set the correct wireless channels of your country'
+     optdepends=('crda: to set the correct wireless channels of your country'
                 'linux-firmware: firmware images needed for some devices'
                 'modprobed-db: Keeps track of EVERY kernel module that has ever been probed - useful for those of us who make localmodconfig')
+    provides=(VIRTUALBOX-GUEST-MODULES WIREGUARD-MODULE linux-cacule)
+
 
   cd $_srcname
   local kernver="$(<version)"
