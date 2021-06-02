@@ -1,7 +1,7 @@
-From 6c3c80c9ac1da75591877e1dc673dcc2c955f9e6 Mon Sep 17 00:00:00 2001
+From 8dda9ee3c8fb11d6845c774796850bb2897856e2 Mon Sep 17 00:00:00 2001
 From: Chunguang Xu <brookxu@tencent.com>
 Date: Tue, 20 Apr 2021 11:20:23 +0000
-Subject: [PATCH 17/20] bfq: optimize the calculation of bfq_weight_to_ioprio()
+Subject: [PATCH 17/23] bfq: optimize the calculation of bfq_weight_to_ioprio()
 
 The value range of ioprio is [0, 7], but the result of
 bfq_weight_to_ioprio() may exceed this range, so simple
@@ -29,5 +29,5 @@ index 245d4d688..7e48ed5b7 100644
  
  static void bfq_get_entity(struct bfq_entity *entity)
 -- 
-2.31.1.305.gd1b10fc6d8
+2.31.1.527.g2d677e5b15
 

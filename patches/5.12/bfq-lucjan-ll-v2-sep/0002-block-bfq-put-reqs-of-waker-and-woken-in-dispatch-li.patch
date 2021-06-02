@@ -1,7 +1,7 @@
-From 097ecc55c2552e9011784c9dacca8a2cef466539 Mon Sep 17 00:00:00 2001
+From edfe50aa62a78b7601d3bd538f898189071fce53 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:23 +0000
-Subject: [PATCH 02/23] block, bfq: put reqs of waker and woken in dispatch
+Subject: [PATCH 02/21] block, bfq: put reqs of waker and woken in dispatch
  list
 
 Consider a new I/O request that arrives for a bfq_queue bfqq. If, when
@@ -75,5 +75,5 @@ index eb2497750..df840f378 100644
  			list_add(&rq->queuelist, &bfqd->dispatch);
  		else
 -- 
-2.31.1.272.g89b43f80a5
+2.31.1.362.g311531c9de
 

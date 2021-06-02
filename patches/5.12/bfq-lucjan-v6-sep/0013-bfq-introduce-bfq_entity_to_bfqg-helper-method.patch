@@ -1,7 +1,7 @@
-From 9554fd9e945a0ed0979e040269228cf059b7c693 Mon Sep 17 00:00:00 2001
+From ac634aba1061df9e31d2a643477b224b970b06b2 Mon Sep 17 00:00:00 2001
 From: Chunguang Xu <brookxu@tencent.com>
 Date: Tue, 20 Apr 2021 11:20:18 +0000
-Subject: [PATCH 13/21] bfq: introduce bfq_entity_to_bfqg helper method
+Subject: [PATCH 13/24] bfq: introduce bfq_entity_to_bfqg helper method
 
 Introduce bfq_entity_to_bfqg() to make it easier to obtain the
 bfq_group corresponding to the entity.
@@ -98,5 +98,5 @@ index f2e1522ee..fed81f57f 100644
  
  		if (!entity->in_groups_with_pending_reqs) {
 -- 
-2.31.1.305.gd1b10fc6d8
+2.31.1.527.g2d677e5b15
 

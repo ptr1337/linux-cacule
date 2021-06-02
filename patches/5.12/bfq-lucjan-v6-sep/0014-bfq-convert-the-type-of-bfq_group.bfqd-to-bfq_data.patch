@@ -1,7 +1,7 @@
-From 8d234142e4da64cda91ffb20c84337b436ad8048 Mon Sep 17 00:00:00 2001
+From f2c5964db420fe277652a9e02ac2c0c87a5a6759 Mon Sep 17 00:00:00 2001
 From: Chunguang Xu <brookxu@tencent.com>
 Date: Tue, 20 Apr 2021 11:20:19 +0000
-Subject: [PATCH 14/21] bfq: convert the type of bfq_group.bfqd to bfq_data*
+Subject: [PATCH 14/24] bfq: convert the type of bfq_group.bfqd to bfq_data*
 
 Setting bfq_group.bfqd to void* type does not seem to make much sense.
 This will cause unnecessary type conversion. Perhaps it would be better
@@ -72,5 +72,5 @@ index fed81f57f..772efec06 100644
  #endif
  
 -- 
-2.31.1.305.gd1b10fc6d8
+2.31.1.527.g2d677e5b15
 

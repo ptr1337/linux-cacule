@@ -1,7 +1,7 @@
-From 04fef7cfe7bff8d36d848aa053d12ad23252aa56 Mon Sep 17 00:00:00 2001
+From dbe9fb8cd3a5e603d739c15fcedf0e3e4f2c7585 Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:26 +0000
-Subject: [PATCH 05/20] block, bfq: keep shared queues out of the waker
+Subject: [PATCH 05/23] block, bfq: keep shared queues out of the waker
  mechanism
 
 Shared queues are likely to receive I/O at a high rate. This may
@@ -18,10 +18,10 @@ Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
  1 file changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 2a84294b0..a3f59d306 100644
+index e6c44b704..e20c29d89 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
-@@ -5860,7 +5860,17 @@ static void bfq_completed_request(struct bfq_queue *bfqq, struct bfq_data *bfqd)
+@@ -5859,7 +5859,17 @@ static void bfq_completed_request(struct bfq_queue *bfqq, struct bfq_data *bfqd)
  			1UL<<(BFQ_RATE_SHIFT - 10))
  		bfq_update_rate_reset(bfqd, NULL);
  	bfqd->last_completion = now_ns;
@@ -41,5 +41,5 @@ index 2a84294b0..a3f59d306 100644
  	/*
  	 * If we are waiting to discover whether the request pattern
 -- 
-2.31.1.305.gd1b10fc6d8
+2.31.1.527.g2d677e5b15
 

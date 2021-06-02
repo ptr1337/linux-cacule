@@ -1,7 +1,7 @@
-From 5b51274d50875b6abcb2f43021401fc08d965c0a Mon Sep 17 00:00:00 2001
+From 8ef9c7644c800b7c8396caae03264df6730efdc4 Mon Sep 17 00:00:00 2001
 From: Chunguang Xu <brookxu@tencent.com>
-Date: Thu, 25 Mar 2021 06:57:50 +0000
-Subject: [PATCH 14/25] bfq: keep the minimun bandwidth for CLASS_BE
+Date: Tue, 20 Apr 2021 11:20:21 +0000
+Subject: [PATCH 14/20] bfq: keep the minimun bandwidth for CLASS_BE
 
 CLASS_RT will preempt other classes, which may starve. At
 present, CLASS_IDLE has alleviated the starvation problem
@@ -16,10 +16,10 @@ Signed-off-by: Chunguang Xu <brookxu@tencent.com>
  3 files changed, 53 insertions(+), 23 deletions(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 55fd2eba0..4f1348b2c 100644
+index f28a281fe..246df8717 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
-@@ -6922,9 +6922,11 @@ static void bfq_init_root_group(struct bfq_group *root_group,
+@@ -6898,9 +6898,11 @@ static void bfq_init_root_group(struct bfq_group *root_group,
  	root_group->bfqd = bfqd;
  #endif
  	root_group->rq_pos_tree = RB_ROOT;
@@ -34,7 +34,7 @@ index 55fd2eba0..4f1348b2c 100644
  
  static int bfq_init_queue(struct request_queue *q, struct elevator_type *e)
 diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
-index 33b4ff2fb..f94c01833 100644
+index 5b47ac69c..9f5f379fe 100644
 --- a/block/bfq-iosched.h
 +++ b/block/bfq-iosched.h
 @@ -13,7 +13,7 @@
@@ -63,10 +63,10 @@ index 33b4ff2fb..f94c01833 100644
  
  /**
 diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
-index 8b19dc6c0..e24e48072 100644
+index 772efec06..245d4d688 100644
 --- a/block/bfq-wf2q.c
 +++ b/block/bfq-wf2q.c
-@@ -1188,6 +1188,7 @@ bool __bfq_deactivate_entity(struct bfq_entity *entity, bool ins_into_idle_tree)
+@@ -1168,6 +1168,7 @@ bool __bfq_deactivate_entity(struct bfq_entity *entity, bool ins_into_idle_tree)
  {
  	struct bfq_sched_data *sd = entity->sched_data;
  	struct bfq_service_tree *st;
@@ -74,7 +74,7 @@ index 8b19dc6c0..e24e48072 100644
  	bool is_in_service;
  
  	if (!entity->on_st_or_in_serv) /*
-@@ -1227,6 +1228,7 @@ bool __bfq_deactivate_entity(struct bfq_entity *entity, bool ins_into_idle_tree)
+@@ -1207,6 +1208,7 @@ bool __bfq_deactivate_entity(struct bfq_entity *entity, bool ins_into_idle_tree)
  	else
  		bfq_idle_insert(st, entity);
  
@@ -82,7 +82,7 @@ index 8b19dc6c0..e24e48072 100644
  	return true;
  }
  
-@@ -1455,6 +1457,45 @@ __bfq_lookup_next_entity(struct bfq_service_tree *st, bool in_service)
+@@ -1435,6 +1437,45 @@ __bfq_lookup_next_entity(struct bfq_service_tree *st, bool in_service)
  	return entity;
  }
  
@@ -128,7 +128,7 @@ index 8b19dc6c0..e24e48072 100644
  /**
   * bfq_lookup_next_entity - return the first eligible entity in @sd.
   * @sd: the sched_data.
-@@ -1468,24 +1509,8 @@ static struct bfq_entity *bfq_lookup_next_entity(struct bfq_sched_data *sd,
+@@ -1448,24 +1489,8 @@ static struct bfq_entity *bfq_lookup_next_entity(struct bfq_sched_data *sd,
  						 bool expiration)
  {
  	struct bfq_service_tree *st = sd->service_tree;
@@ -155,5 +155,5 @@ index 8b19dc6c0..e24e48072 100644
  	/*
  	 * Find the next entity to serve for the highest-priority
 -- 
-2.31.1.305.gd1b10fc6d8
+2.31.1.362.g311531c9de
 

@@ -1,7 +1,7 @@
-From 143f4623b4c72db42145f70226feee3c92c4d20b Mon Sep 17 00:00:00 2001
+From 862067b3cecf040536799822898d66970bb43e0e Mon Sep 17 00:00:00 2001
 From: Paolo Valente <paolo.valente () linaro ! org>
 Date: Thu, 4 Mar 2021 17:46:22 +0000
-Subject: [PATCH 01/23] block, bfq: always inject I/O of queues blocked by
+Subject: [PATCH 01/21] block, bfq: always inject I/O of queues blocked by
  wakers
 
 Suppose that I/O dispatch is plugged, to wait for new I/O for the
@@ -115,5 +115,5 @@ index 070e34a7f..7a462df71 100644
 +	}
  }
 -- 
-2.31.1.272.g89b43f80a5
+2.31.1.362.g311531c9de
 

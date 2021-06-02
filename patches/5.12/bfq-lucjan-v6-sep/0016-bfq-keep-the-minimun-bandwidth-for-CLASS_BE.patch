@@ -1,7 +1,7 @@
-From 606e0621ada4a58a75f5197efc7b57ac9131c452 Mon Sep 17 00:00:00 2001
+From 3d5aa7345fcdd0adb925d7ab74c628e349cc71f4 Mon Sep 17 00:00:00 2001
 From: Chunguang Xu <brookxu@tencent.com>
 Date: Tue, 20 Apr 2021 11:20:21 +0000
-Subject: [PATCH 16/21] bfq: keep the minimun bandwidth for CLASS_BE
+Subject: [PATCH 16/24] bfq: keep the minimun bandwidth for CLASS_BE
 
 CLASS_RT will preempt other classes, which may starve. At
 present, CLASS_IDLE has alleviated the starvation problem
@@ -16,10 +16,10 @@ Signed-off-by: Chunguang Xu <brookxu@tencent.com>
  3 files changed, 53 insertions(+), 23 deletions(-)
 
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index f28a281fe..246df8717 100644
+index 2bb7e713d..5c83b7f77 100644
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
-@@ -6898,9 +6898,11 @@ static void bfq_init_root_group(struct bfq_group *root_group,
+@@ -6897,9 +6897,11 @@ static void bfq_init_root_group(struct bfq_group *root_group,
  	root_group->bfqd = bfqd;
  #endif
  	root_group->rq_pos_tree = RB_ROOT;
@@ -155,5 +155,5 @@ index 772efec06..245d4d688 100644
  	/*
  	 * Find the next entity to serve for the highest-priority
 -- 
-2.31.1.305.gd1b10fc6d8
+2.31.1.527.g2d677e5b15
 
