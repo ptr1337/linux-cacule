@@ -52,7 +52,7 @@ _use_current=
 
 ### Do not edit below this line unless you know what you're doing
 
-pkgbase=linux-cacule-rt
+pkgbase=linux-cacule-rt-rdb-autogroup
 _major=5.10
 _minor=42
 #_rtver=39
@@ -61,7 +61,7 @@ pkgver=${_major}.${_minor}
 _pkgver=${_major}.${_minor}
 _srcname=linux-${_pkgver}
 pkgrel=1
-pkgdesc='Linux Cacule-RT'
+pkgdesc='Linux Cacule-RDB-RT with autogroup'
 arch=('x86_64')
 license=('GPL2')
 options=('!strip')
@@ -73,6 +73,7 @@ source=("https://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
         #"http://www.kernel.org/pub/linux/kernel/projects/rt/${_major}/patch-${_pkgver}-${_rtpatchver}.patch.xz"
         #"http://www.kernel.org/pub/linux/kernel/projects/rt/${_major}/patch-${_pkgver}-${_rtpatchver}.patch.sign"
         "${_patchsource}/cacule-patches/cacule-5.10-rt.patch"
+        "${_patchsource}/cacule-patches/rdb-autogroup-5.10-rt.patch"
         "${_patchsource}/bbr2-patches-v3/0001-bbr2-5.10-introduce-BBRv2.patch"
 #        "${_patchsource}/bfq-patches-v5/0001-bfq-patches.patch"
 #        "${_patchsource}/block-patches-v3/0001-block-patches.patch"
@@ -228,10 +229,11 @@ prepare() {
 ### Enabling Cacule-Config ##
     echo "Enable CacULE CPU scheduler..."
     scripts/config --enable CONFIG_CACULE_SCHED
-    scripts/config --enable CONFIG_FAIR_GROUP_SCHED
+    scripts/config --enable CONFIG_CACULE_RDB
+    scripts/config --disable CONFIG_FAIR_GROUP_SCHED
     scripts/config --enable CONFIG_SCHED_AUTOGROUP
     scripts/config --disable CONFIG_EXPERT
-    scripts/config --disable CONFIG_SCHED_DEBUG
+    scripts/config --enable CONFIG_SCHED_DEBUG
     scripts/config --disable CONFIG_SCHED_INFO
     scripts/config --disable CONFIG_SCHEDSTATS
     scripts/config --disable CONFIG_DEBUG_KERNEL
@@ -392,6 +394,7 @@ done
 
 sha512sums=('67cc3b1ea1fee86a775d51dd94fa1c69c5006f500da575778ac4cf1c168014efcdaa75adae1524a5f6535410c0e5d25cedd44e172212b4da255ff68f5fcbf2b9'
             '914e9969f9d4fae19b763f5077559e32af6d5d795a02e022ca4eaf59cbd715a5b6570d3167561b3f9489e5bba4ae4257b6e86fa4b54395e07a9d69d70b944319'
+            '7cdf231570b194afd6ff50775afad72c896579f660f4df7eb275459d492bb30dc440d36b25b1326cf73ad324fd3291647b65300fa3bfa33e05dbb363a0397127'
             '1ecbd7a28489ce68939a78eeeafd0a4b0064b26dd68cd8df661effa3729fa9c087211c1758db98289d3ec6f9f9071fea0f815ed57fa6188ef5fcca3f85ef6e9d'
             'cc33f1db2b449e1e277100fd87e099a4addbfef69e8ba77f92f30b5e2273aee31d04a09c26a3175ad1d2b269764df57934107d55cc615f121529ed0a42c34524'
             'f649ffc0c4ecdc0168aaa852751336209f4166976470a47f912550e64bbe0e0c128fc3ab7dc23d6f0fcdce56bcc2562d1e11826c5be866811eb58f5b15a5c1fd'

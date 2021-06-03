@@ -46,7 +46,7 @@ _localmodcfg=
 
 pkgbase=linux-cacule
 # pkgname=('linux-cacule' linux-cacule-headers)
-_major=5.12.8
+_major=5.12.9
 #_minor=1
 #_minorc=$((_minor+1))
 #_rcver=rc8
@@ -54,7 +54,7 @@ pkgver=${_major}
 #_stable=${_major}.${_minor}
 #_stablerc=${_major}-${_rcver}
 _srcname=linux-${_major}
-pkgrel=4
+pkgrel=1
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -73,8 +73,8 @@ source=("https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/$_srcname.tar.xz"
         "${_patchsource}/wine-esync-patches/0001-v5.12-winesync.patch"
         "${_patchsource}/zen-patches-v2/0001-zen-patches.patch"
         "${_patchsource}/lqx-patches-v3/0001-zen-Allow-MSR-writes-by-default.patch"
-        "${_patchsource}/bfq-patches-v11/0001-bfq-patches.patch"
-        "${_patchsource}/block-patches-v3/0001-block-patches.patch"
+        "${_patchsource}/bfq-patches-v12/0001-bfq-patches.patch"
+        "${_patchsource}/block-patches-v4/0001-block-patches.patch"
         "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
         "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
         "${_patchsource}/bbr2-patches-v2/0001-bbr2-5.12-introduce-BBRv2.patch"
@@ -88,8 +88,8 @@ source=("https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/$_srcname.tar.xz"
         "${_patchsource}/ksm-patches/0001-ksm-patches.patch"
         "${_patchsource}/initramfs-patches/0001-initramfs-patches.patch" )
 
-sha512sums=('8a5f1774bee223445ad147d2f83a7b3a2c19ea620d0f3964344bb33d003fec17d36279b522745c03467e361ebd61479a4f7122e5911bb6b817ff52ee55c736d9'
-            'af80ab59999b11c57a44b0e8adabe6f1bb489ee42a84d6e111260049c8915ad653c2162a25984473b66760d5ef75494db403dc02d45fd67e19b18075ef9cb7bc'
+sha512sums=('f97b025db8a469ff982d445356dac78765a4a5625fa442e0242598c807df49753eedd99517e3ca6d1713714f12b802d58e752b3b71259eb2540b86422a72e937'
+            'd2be2d406356dd629d8913be622eab80a25838565fdc008551cca86d127c71c824ef3023e6adb36268bfb0d5dc2b7f02cb745de04402a81811a80dd4083b59eb'
             '1908055c446f04ef0a0a5a19579836d2f5dc60d7989677f85f084a7186a6327b240291feed8d25e320e72efa114b243a325362e2dbfbf7f4f3fb89bbdd3819be'
             '367f5ec3ec03d41c4ae5c60ca70d2aa2a1fb200245f1fd7a3409c123c0b93e36338c944864cf473b3fa236cc97d715e86de4184362837af54ff8a6ade33e7d99'
             '60bda2070739a52af4f81816ebda8f3520a8d75ea5e00f65a903a3416ae31edba56fe151f6a9e02dc90ec3be7854e9a62e10e72120d7148fd3838806d8b9e986'
@@ -242,9 +242,6 @@ prepare() {
         	scripts/config --disable CONFIG_LRU_GEN_STATS
         fi
 
-        echo "Enabling standard ZSTD compression ratio..."
-    		scripts/config --set-val CONFIG_KERNEL_ZSTD_LEVEL 19
-    		scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
   ### Enabling ZSTD COMPRESSION ##
         echo "Set module compression to ZSTD"
        scripts/config --enable CONFIG_MODULE_COMPRESS
@@ -263,8 +260,13 @@ prepare() {
       scripts/config --disable CONFIG_SCHED_INFO
       scripts/config --disable CONFIG_SCHEDSTATS
       scripts/config --disable CONFIG_DEBUG_KERNEL
+      echo "Enabling Full Tickless"
+      scripts/config --disable CONFIG_HZ_PERIODIC
+      scripts/config --disable CONFIG_NO_HZ_IDLE
+      scripts/config --enable CONFIG_NO_HZ_FULL
       scripts/config --enable CONFIG_NO_HZ
       scripts/config --enable CONFIG_NO_HZ_COMMON
+      scripts/config --enable CONFIG_CONTEXT_TRACKING
       echo "Enabling KBUILD_CFLAGS -O3..."
       scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
       scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
@@ -274,7 +276,7 @@ prepare() {
       scripts/config --enable CONFIG_PREEMPT
       scripts/config --enable CONFIG_PREEMPT_COUNT
       scripts/config --enable CONFIG_PREEMPTION
-     scripts/config --enable CONFIG_PREEMPT_DYNAMIC
+      scripts/config --enable CONFIG_PREEMPT_DYNAMIC
       echo "Enable NTFS3"
       scripts/config --module CONFIG_NTFS_FS
       scripts/config --enable CONFIG_NTFS_RW
@@ -297,6 +299,9 @@ prepare() {
       scripts/config --enable CONFIG_TCP_CONG_BBR2
       scripts/config --enable CONFIG_DEFAULT_BBR2
       scripts/config --set-str CONFIG_DEFAULT_TCP_CONG bbr2
+      echo "Enable VHBA-Module"
+      scripts/config --module CONFIG_VHBA
+      scripts/config --disable CONFIG_GCC_PLUGINS
 
       ### Optionally load needed modules for the make localmodconfig
        # See https://aur.archlinux.org/packages/modprobed-db
