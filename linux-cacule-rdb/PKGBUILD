@@ -273,6 +273,7 @@ prepare() {
       scripts/config --enable CONFIG_NO_HZ
       scripts/config --enable CONFIG_NO_HZ_COMMON
       scripts/config --enable CONFIG_CONTEXT_TRACKING
+      scripts/config --disable CONFIG_CONTEXT_TRACKING
       echo "Enabling KBUILD_CFLAGS -O3..."
       scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
       scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
