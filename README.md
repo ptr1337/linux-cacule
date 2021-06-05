@@ -101,12 +101,6 @@ https://github.com/hamadmarri/cacule-cpu-scheduler
 - Increased the precision of lifetime normalize from x8 to x1024
 - Decoupled se.vruntime from cn.vruntime
 
-## RaspberryPi Cacule - Testing
-
-- Take a watch at this image-builder, he is providing a solid and stable image-builder and included now for testing purposes the cacule-scheduler
-
-- pyavitz  https://github.com/pyavitz/rpi-img-builder/tree/RIB-3.10
-
 # Credits
 
 Hamad Marri for his cacule scheduler https://github.com/hamadmarri
