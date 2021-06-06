@@ -53,7 +53,7 @@ pkgver=${_major}
 #_stable=${_major}.${_minor}
 #_stablerc=${_major}-${_rcver}
 _srcname=linux-${_major}
-pkgrel=2
+pkgrel=3
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -310,10 +310,6 @@ prepare() {
       scripts/config --module CONFIG_VHBA
       scripts/config --disable CONFIG_GCC_PLUGINS
       # General Setup
-      scripts/config --disable CONFIG_EXPERT
-      scripts/config --enable CONFIG_NO_HZ_FULL
-      scripts/config --enable CONFIG_PREEMPT
-      scripts/config --disable CONFIG_SCHED_AUTOGROUP
       scripts/config --disable CONFIG_BSD_PROCESS_ACCT
       scripts/config --disable CONFIG_TASK_XACCT
       scripts/config --disable CONFIG_PSI
@@ -406,7 +402,7 @@ _package() {
     optdepends=('crda: to set the correct wireless channels of your country'
                 'linux-firmware: firmware images needed for some devices'
                 'modprobed-db: Keeps track of EVERY kernel module that has ever been probed - useful for those of us who make localmodconfig')
-    provides=(VIRTUALBOX-GUEST-MODULES WIREGUARD-MODULE linux-cacule-rdb)
+    provides=(VIRTUALBOX-GUEST-MODULES WIREGUARD-MODULE)
     replaces=(virtualbox-guest-modules-arch wireguard-arch)
 
   cd $_srcname

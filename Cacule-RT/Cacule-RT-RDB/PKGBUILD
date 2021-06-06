@@ -1,6 +1,8 @@
 # Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Maintainer: Peter Jung (ptr1337) <admin@ptr1337.dev>
 
-pkgbase=linux-cacule-rdb-rt #change to whatever you want
+
+pkgbase=linux-cacule-rdb-rt
 _major=5.10
 _minor=42
 pkgver=${_major}.${_minor}
@@ -14,23 +16,39 @@ makedepends=(
   bc kmod libelf pahole cpio perl tar xz
   xmlto python-sphinx python-sphinx_rtd_theme graphviz imagemagick
   git
-)
+  )
 options=('!strip')
 _patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.10"
+_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
 source=(
   "https://www.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
   config         # the main kernel config file
-  "https://raw.githubusercontent.com/hamadmarri/cacule-cpu-scheduler/master/patches/CacULE/v5.10/cacule-5.10-rt.patch"
-  "https://raw.githubusercontent.com/hamadmarri/cacule-cpu-scheduler/master/patches/CacULE/v5.10/rdb-5.10-rt.patch"
+  "${_caculepatches}/v5.10/cacule-5.10-rt.patch"
+  "${_caculepatches}/v5.10/rdb-5.10-rt.patch"
+  "${_patchsource}/bbr2-patches-v3/0001-bbr2-5.10-introduce-BBRv2.patch"
+# ${_patchsource}/bfq-patches-v5/0001-bfq-patches.patch"
+# "${_patchsource}/block-patches-v3/0001-block-patches.patch"
   "${_patchsource}/cpu-patches-v2/0001-cpu-patches.patch"
+# "${_patchsource}/fixes-miscellaneous-v11/0001-fixes-miscellaneous.patch"
+  "${_patchsource}/mm-patches-v4/0001-mm-patches.patch"
+  "${_patchsource}/lqx-patches-v4/0001-lqx-patches.patch"
+  "${_patchsource}/zstd-upstream-patches/0001-zstd-upstream-patches.patch"
+# ${_patchsource}/clearlinux-patches/0001-clearlinux-patches.patch"
+  "${_patchsource}/futex-dev-patches/0001-futex-dev-patches.patch"
+# "${_patchsource}/futex2-trunk-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
 
 )
 
-sha256sums=('8ba027c73bd67b8ded2649a741d2f018db630c1cbc081700d8ffd07ab0d906e5'
-            'SKIP'
-            '75b9abc97b7b4a02d84ba357d99a5f789905178f4d99b91ed2f8f2d49e6829b1'
-            '8d522088923b830b112ddf43b36667151568ef9bfbac656037417dd0dd46ae61'
-            '152e251586eec29990fa4cc30c561b7e49acb765434b70634501b398e4c1fe2e')
+sha512sums=('c55fadf0a2b3cf43ef65fdd58768fe13cc3e4d8cd6876897a6feca75c414c4e5ecaed61b96128c16ccdeb184ea0044dd36eb02bcb09c58d9a8ee88946d88c0be'
+            'a578e9c04507b51d2f632df7e2dc03a73ac60008da9c377615fb969fe46904d17fa568292f65e7f4d270ad7cecf347b9ea7521fed50b2e014a03f8928ace99cd'
+            '65d8ac151edeec80facf82f729381ff48bd6a8f346d305b42e51c1fcaa3d9221b1f907c75547eb860732329ba167f09b64adbdedc00421f90c18e369e6c0569b'
+            '71725cc17f1d4d3ee0a6f040bad8be2775d85dda3b44733e9dc8cf76776d3d3acbb09bf3d252a0b48e7e3e773940af9f9ef31780cc454d7ff1a2f1e158acbe93'
+            '1ecbd7a28489ce68939a78eeeafd0a4b0064b26dd68cd8df661effa3729fa9c087211c1758db98289d3ec6f9f9071fea0f815ed57fa6188ef5fcca3f85ef6e9d'
+            'cc33f1db2b449e1e277100fd87e099a4addbfef69e8ba77f92f30b5e2273aee31d04a09c26a3175ad1d2b269764df57934107d55cc615f121529ed0a42c34524'
+            'f649ffc0c4ecdc0168aaa852751336209f4166976470a47f912550e64bbe0e0c128fc3ab7dc23d6f0fcdce56bcc2562d1e11826c5be866811eb58f5b15a5c1fd'
+            '61dddce21ae29042b952f145698f47ca6dce8a6d36e1a1a60efe01bb78d6defaaa9ba3cd69314519363d6e853a9de0ef8af5154c0b3af95789dbe6f0706bfc21'
+            '40b2139abe3f946c550e2b4c5e3d7360db8fecc9837defca13b445503c7a3eb05bd746dc4a11d516f575cfacb266548627feec1d29b8c21182871c20cf2f8b6e'
+            '164f33f8d7e9a55acd82c789d7204f41f0a32c9aaea2b77c8ce9d6aa0eac883c77d992fa72254fad7f53177d2240dccc0d3c8a999f94aa1eaef34ab3d410240a')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -65,6 +83,8 @@ prepare() {
     source "${startdir}"/configure
 
     cacule_config
+
+    cpu_arch
 
   make menuconfig
 
@@ -191,5 +211,3 @@ for _p in "${pkgname[@]}"; do
     _package${_p#$pkgbase}
   }"
 done
-
-# vim:set ts=8 sts=2 sw=2 et:
