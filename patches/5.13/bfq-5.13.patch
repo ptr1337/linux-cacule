@@ -483,10 +483,31 @@ index 4d97fb6dd226725bc732e07152047eec27741d33..1398b52a24b419cdfae5e93b9418501d
  
  bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
 diff --git a/block/blk-mq-sched.c b/block/blk-mq-sched.c
-index 996a4b2f73aa9c6a4422b12c853f05b10e25f5a8..bab6926ddc333e8e3f7bfae3afa90c2aa2edacb7 100644
+index 996a4b2f73aa9c6a4422b12c853f05b10e25f5a8..bf0a3dec82261d03d956cfe2e2f91eff5b994f1e 100644
 --- a/block/blk-mq-sched.c
 +++ b/block/blk-mq-sched.c
-@@ -390,9 +390,10 @@ bool __blk_mq_sched_bio_merge(struct request_queue *q, struct bio *bio,
+@@ -168,9 +168,19 @@ static int __blk_mq_do_dispatch_sched(struct blk_mq_hw_ctx *hctx)
+ 		 * in blk_mq_dispatch_rq_list().
+ 		 */
+ 		list_add_tail(&rq->queuelist, &rq_list);
++		count++;
+ 		if (rq->mq_hctx != hctx)
+ 			multi_hctxs = true;
+-	} while (++count < max_dispatch);
++
++		/*
++		 * If we cannot get tag for the request, stop dequeueing
++		 * requests from the IO scheduler. We are unlikely to be able
++		 * to submit them anyway and it creates false impression for
++		 * scheduling heuristics that the device can take more IO.
++		 */
++		if (!blk_mq_get_driver_tag(rq))
++			break;
++	} while (count < max_dispatch);
+ 
+ 	if (!count) {
+ 		if (run_queue)
+@@ -390,9 +400,10 @@ bool __blk_mq_sched_bio_merge(struct request_queue *q, struct bio *bio,
  	return ret;
  }
  
@@ -513,11 +534,33 @@ index 5b18ab915c652fad4774216481d07d0567b4d63c..8b70de4b8d23bdcaae66e8e60b22fbea
  void blk_mq_sched_mark_restart_hctx(struct blk_mq_hw_ctx *hctx);
  void blk_mq_sched_restart(struct blk_mq_hw_ctx *hctx);
  
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index c86c01bfecdbe51e67128bc952c2780c4a9eecab..bc2cf80d2c3bcd1c4b65d0c789fd1410573056d8 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -1100,7 +1100,7 @@ static bool __blk_mq_get_driver_tag(struct request *rq)
+ 	return true;
+ }
+ 
+-static bool blk_mq_get_driver_tag(struct request *rq)
++bool blk_mq_get_driver_tag(struct request *rq)
+ {
+ 	struct blk_mq_hw_ctx *hctx = rq->mq_hctx;
+ 
 diff --git a/block/blk-mq.h b/block/blk-mq.h
-index 9ce64bc4a6c8f2a38205aa20bc943108bd479141..2a0ed0260e0e78f10d3caae7fa76b617584192dd 100644
+index 9ce64bc4a6c8f2a38205aa20bc943108bd479141..20ef743a3ff60c8327d44d28e97ada5747847ae1 100644
 --- a/block/blk-mq.h
 +++ b/block/blk-mq.h
-@@ -299,6 +299,17 @@ static inline struct blk_plug *blk_mq_plug(struct request_queue *q,
+@@ -259,6 +259,8 @@ static inline void blk_mq_put_driver_tag(struct request *rq)
+ 	__blk_mq_put_driver_tag(rq->mq_hctx, rq);
+ }
+ 
++bool blk_mq_get_driver_tag(struct request *rq);
++
+ static inline void blk_mq_clear_mq_map(struct blk_mq_queue_map *qmap)
+ {
+ 	int cpu;
+@@ -299,6 +301,17 @@ static inline struct blk_plug *blk_mq_plug(struct request_queue *q,
  	return NULL;
  }
  

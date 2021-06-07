@@ -251,7 +251,7 @@ index bbdd9c44f14e3c199d74ccf6862464d19980115e..8dee1547d820257bf56c9167333d20f3
  obj-$(CONFIG_TCP_CONG_CDG) += tcp_cdg.o
  obj-$(CONFIG_TCP_CONG_CUBIC) += tcp_cubic.o
 diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
-index dff4f0eb96b0f22d076a1168c8225c3100b4cabd..257c5c82b4dd1ba390515ff2f254a4aff5ccc577 100644
+index 9e41eff4a68588e0cf869415dccddf9c6fd48a0c..f26b0fcbb9f52848a49f8e6732bf4e35692c0d24 100644
 --- a/net/ipv4/bpf_tcp_ca.c
 +++ b/net/ipv4/bpf_tcp_ca.c
 @@ -17,7 +17,7 @@ static u32 optional_ops[] = {

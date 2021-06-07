@@ -31,7 +31,7 @@ index 81bfe3c800ccffb2859dc93b2f899b7e75a3270c..2b5f551f3bf722f3fac29e9dad9ac36c
  =============================
  
 diff --git a/fs/proc/base.c b/fs/proc/base.c
-index 3851bfcdba56ef929411e99a70bb8895bc609e85..542fd084a4664f0a34d58520a20e71df5e25cf50 100644
+index 58bbf334265b733f23f3d652931ef8b0e30fc2cb..76d022ff16800c14497a06762eb52f56261de261 100644
 --- a/fs/proc/base.c
 +++ b/fs/proc/base.c
 @@ -95,6 +95,8 @@
@@ -43,7 +43,7 @@ index 3851bfcdba56ef929411e99a70bb8895bc609e85..542fd084a4664f0a34d58520a20e71df
  #include <trace/events/oom.h>
  #include "internal.h"
  #include "fd.h"
-@@ -3149,6 +3151,144 @@ static int proc_stack_depth(struct seq_file *m, struct pid_namespace *ns,
+@@ -3153,6 +3155,144 @@ static int proc_stack_depth(struct seq_file *m, struct pid_namespace *ns,
  }
  #endif /* CONFIG_STACKLEAK_METRICS */
  
@@ -188,7 +188,7 @@ index 3851bfcdba56ef929411e99a70bb8895bc609e85..542fd084a4664f0a34d58520a20e71df
  /*
   * Thread groups
   */
-@@ -3265,6 +3405,9 @@ static const struct pid_entry tgid_base_stuff[] = {
+@@ -3269,6 +3409,9 @@ static const struct pid_entry tgid_base_stuff[] = {
  #ifdef CONFIG_SECCOMP_CACHE_DEBUG
  	ONE("seccomp_cache", S_IRUSR, proc_pid_seccomp_cache),
  #endif

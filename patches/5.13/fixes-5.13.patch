@@ -12,7 +12,7 @@ index 5a97e4a02fa2a065621df43aae63618d1d02e3e1..699a5aac400b1a030ad698bfc319a472
  	return 0;
  }
 diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 038a9fd1af44de7dde4e0b0527a25a44588baaa9..d3b1e2a0412c071f2cf18201e0e2cc09af7294f5 100644
+index b2a042f825ff51870cd9ec08a21c79e800785014..90a7c4b6c68133044c04694cdd9f417d689d47db 100644
 --- a/drivers/net/ethernet/intel/igb/igb_main.c
 +++ b/drivers/net/ethernet/intel/igb/igb_main.c
 @@ -7976,12 +7976,16 @@ static void igb_ring_irq_enable(struct igb_q_vector *q_vector)
@@ -71,10 +71,10 @@ index 1d08dbbcfe32aba028a642e22ee5346c3b3da389..180da8f71205506b683b7ee363292c4a
  {
  	return &init_user_ns;
 diff --git a/init/Kconfig b/init/Kconfig
-index 127df1ae15dd506021cbc8b06c66fc5c8cadfd22..ac368bccc81fb5f505a0868d846fe97a7dd8b392 100644
+index 493fba4e834cb27fa7a30031eee11d26ffcb6f83..1d42b2c0668b1fe0840a4b99b9837ebcac214346 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1194,6 +1194,22 @@ config USER_NS
+@@ -1195,6 +1195,22 @@ config USER_NS
  
  	  If unsure, say N.
  
@@ -169,7 +169,7 @@ index 4a617d7312a4785454f001a0f2cc381cc58936d6..5aafaf4f43374eff9939629f9db43715
  /**
   * __handle_domain_irq - Invoke the handler for a HW irq belonging to a domain
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 14edf84cc571f5c19b8eec330719e3f36807f19a..8e98816a6bd834f1da988ded0a12e224c1245636 100644
+index d4a78e08f6d89c3d26207ae405f15018fdd442bf..0260dfe2daff6b58a7032b73176d476736514c91 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
 @@ -103,6 +103,9 @@
@@ -182,7 +182,7 @@ index 14edf84cc571f5c19b8eec330719e3f36807f19a..8e98816a6bd834f1da988ded0a12e224
  
  #if defined(CONFIG_SYSCTL)
  
-@@ -1876,6 +1879,15 @@ static struct ctl_table kern_table[] = {
+@@ -1896,6 +1899,15 @@ static struct ctl_table kern_table[] = {
  		.proc_handler	= proc_dointvec,
  	},
  #endif
