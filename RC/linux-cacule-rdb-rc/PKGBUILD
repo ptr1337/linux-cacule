@@ -83,7 +83,7 @@ source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
                      "${_patchsource2}/misc/2002-tune-vm-mm-and-vfs-settings.patch"
                      "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
                      "${_patchsource}/lru-gen/PATCH-v3-00-14-Multigenerational-LRU-Framework.patch"
-                     "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
+#                     "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
 )
 sha512sums=('73f72ae0e8608f8d6b2e3d699f210e03f5e77b67b72ed5256226c92c93517514029c7c98d486ebe6842adc6195cb8bb6da752cfda33e1e01c825e589438ec578'
             'a49537a61bd7ca80f456e0618f4c64630651efada8bcc68ee260461370e9638410b0a883e036a3e7777c841d585f91eea9a051e4c93d38b639ebebdff643cf4e'
@@ -100,8 +100,7 @@ sha512sums=('73f72ae0e8608f8d6b2e3d699f210e03f5e77b67b72ed5256226c92c93517514029
             'd8fbb667096a8d1d84db4d40c361bce5fc55e207c73fab266dba9033c6aff0cc0307c8a854c09fd2dabd99139ce640047bc87e0fd067d12ca1bd8f76f5d10ad3'
             'a5e9b9d6a08be2d6bc6b724176c207c052d2271b3b77885b8169ed02c608b89726ea8b3e9664c4bc4c85aab938e88c67fb15de42f9f9a649d54b466b473fcdc5'
             '47f265716ebd268e4296aaba1efe5098df00736b69ec7d0413cace6dbb5cb162c1c952f7527a2a41b246ed76e6e112514c5349e8dc52f4609def30257e18d7aa'
-            '341492bf6b899a8fb4a0ef375e5461ec6e49c96755c10dd85d36b3b35a62d4e15a8b2df14aecc6bcc13485a16ad21a360050a091cf69b5aa4fc84a74dee34020'
-            '47f265716ebd268e4296aaba1efe5098df00736b69ec7d0413cace6dbb5cb162c1c952f7527a2a41b246ed76e6e112514c5349e8dc52f4609def30257e18d7aa')
+            '341492bf6b899a8fb4a0ef375e5461ec6e49c96755c10dd85d36b3b35a62d4e15a8b2df14aecc6bcc13485a16ad21a360050a091cf69b5aa4fc84a74dee34020')
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
