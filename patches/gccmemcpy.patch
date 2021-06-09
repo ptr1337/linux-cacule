@@ -1,0 +1,120 @@
+commit a32452a5442cd05040af53787af0d8b537ac77a6
+Author: H.J. Lu <hjl.tools@intel.com>
+Date:   Thu Mar 11 16:56:26 2021 -0800
+
+    x86: Update memcpy/memset inline strategies for Skylake family CPUs
+
+    Simply memcpy and memset inline strategies to avoid branches for
+    Skylake family CPUs:
+
+    1. With MOVE_RATIO and CLEAR_RATIO == 17, GCC will use integer/vector
+       load and store for up to 16 * 16 (256) bytes when the data size is
+       fixed and known.
+    2. Inline only if data size is known to be <= 256.
+       a. Use "rep movsb/stosb" with simple code sequence if the data size
+          is a constant.
+       b. Use loop if data size is not a constant.
+    3. Use memcpy/memset libray function if data size is unknown or > 256.
+
+    On Cascadelake processor with -march=native -Ofast -flto,
+
+    1. Performance impacts of SPEC CPU 2017 rate are:
+
+    500.perlbench_r  0.17%
+    502.gcc_r       -0.36%
+    505.mcf_r        0.00%
+    520.omnetpp_r    0.08%
+    523.xalancbmk_r -0.62%
+    525.x264_r       1.04%
+    531.deepsjeng_r  0.11%
+    541.leela_r     -1.09%
+    548.exchange2_r -0.25%
+    557.xz_r         0.17%
+    Geomean         -0.08%
+
+    503.bwaves_r     0.00%
+    507.cactuBSSN_r  0.69%
+    508.namd_r      -0.07%
+    510.parest_r     1.12%
+    511.povray_r     1.82%
+    519.lbm_r        0.00%
+    521.wrf_r       -1.32%
+    526.blender_r   -0.47%
+    527.cam4_r       0.23%
+    538.imagick_r   -1.72%
+    544.nab_r       -0.56%
+    549.fotonik3d_r  0.12%
+    554.roms_r       0.43%
+    Geomean          0.02%
+
+    2. Significant impacts on eembc benchmarks are:
+
+    eembc/idctrn01   9.23%
+    eembc/nnet_test  29.26%
+
+    gcc/
+
+            * config/i386/x86-tune-costs.h (skylake_memcpy): Updated.
+            (skylake_memset): Likewise.
+            (skylake_cost): Change CLEAR_RATIO to 17.
+            * config/i386/x86-tune.def (X86_TUNE_PREFER_KNOWN_REP_MOVSB_STOSB):
+            Replace m_CANNONLAKE, m_ICELAKE_CLIENT, m_ICELAKE_SERVER,
+            m_TIGERLAKE and m_SAPPHIRERAPIDS with m_SKYLAKE and m_CORE_AVX512.
+
+    gcc/testsuite/
+
+            * gcc.target/i386/memcpy-strategy-9.c: New test.
+            * gcc.target/i386/memcpy-strategy-10.c: Likewise.
+            * gcc.target/i386/memcpy-strategy-11.c: Likewise.
+            * gcc.target/i386/memset-strategy-7.c: Likewise.
+            * gcc.target/i386/memset-strategy-8.c: Likewise.
+            * gcc.target/i386/memset-strategy-9.c: Likewise.
+
+diff --git a/gcc/config/i386/x86-tune-costs.h b/gcc/config/i386/x86-tune-costs.h
+index 0e00ff99df3..ffe810f2bcb 100644
+--- a/gcc/config/i386/x86-tune-costs.h
++++ b/gcc/config/i386/x86-tune-costs.h
+@@ -1822,17 +1822,24 @@ struct processor_costs znver3_cost = {
+
+ /* skylake_cost should produce code tuned for Skylake familly of CPUs.  */
+ static stringop_algs skylake_memcpy[2] =   {
+-  {libcall, {{1024, rep_prefix_4_byte, true}, {-1, libcall, false}}},
+-  {libcall, {{16, loop, false}, {512, unrolled_loop, false},
+-             {-1, libcall, false}}}};
++  {libcall,
++   {{256, rep_prefix_1_byte, true},
++    {256, loop, false},
++    {-1, libcall, false}}},
++  {libcall,
++   {{256, rep_prefix_1_byte, true},
++    {256, loop, false},
++    {-1, libcall, false}}}};
+
+ static stringop_algs skylake_memset[2] = {
+-  {libcall, {{6, loop_1_byte, true},
+-             {24, loop, true},
+-             {8192, rep_prefix_4_byte, true},
+-             {-1, libcall, false}}},
+-  {libcall, {{24, loop, true}, {512, unrolled_loop, false},
+-             {-1, libcall, false}}}};
++  {libcall,
++   {{256, rep_prefix_1_byte, true},
++    {256, loop, false},
++    {-1, libcall, false}}},
++  {libcall,
++   {{256, rep_prefix_1_byte, true},
++    {256, loop, false},
++    {-1, libcall, false}}}};
+
+ static const
+ struct processor_costs skylake_cost = {
+@@ -1889,7 +1896,7 @@ struct processor_costs skylake_cost = {
+   COSTS_N_INSNS (0),			/* cost of movzx */
+   8,					/* "large" insn */
+   17,					/* MOVE_RATIO */
+-  6,					/* CLEAR_RATIO */
++  17,					/* CLEAR_RATIO */
+   {4, 4, 4},				/* cost of loading integer registers
+ 					   in QImode, HImode and SImode.
+ 					   Relative to reg-reg move (2).  */
+

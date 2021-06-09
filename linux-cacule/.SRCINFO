@@ -1,5 +1,5 @@
 pkgbase = linux-cacule
-	pkgdesc = Linux-CacULE Kernel by Hamad Marri and with some other patchsets
+	pkgdesc = Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets
 	pkgver = 5.12.9
 	pkgrel = 4
 	url = https://github.com/hamadmarri/cacule-cpu-scheduler
@@ -20,6 +20,7 @@ pkgbase = linux-cacule
 	options = !strip
 	source = https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.12.tar.xz
 	source = https://cdn.kernel.org/pub/linux/kernel/v5.x/patch-5.12.9.xz
+	source = config
 	source = https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.12/arch-patches-v6/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch
 	source = https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE/v5.12/cacule-5.12.patch
 	source = https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.12/cpu-patches-v3/0001-cpu-patches.patch
@@ -45,6 +46,7 @@ pkgbase = linux-cacule
 	source = https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.12/initramfs-patches/0001-initramfs-patches.patch
 	sha256sums = 7d0df6f2bf2384d68d0bd8e1fe3e071d64364dcdc6002e7b5c87c92d48fac366
 	sha256sums = b844ec7be25f915578e322838b03c2780c4b1185fbab5e84a8d52db7341804e8
+	sha256sums = b4e1462213c93a485837a474358d9b85cfc51f058cef7d1133249fcb5fc8251b
 	sha256sums = b2139a29b0cabfb029e51c81f386c698ef209e43cbd93a3515892785662e4c74
 	sha256sums = a90ec03375bf97c06bf2ca3f1fd0224deee8408077f71447326b2796b53652a1
 	sha256sums = f9f8a53145ab1d048ca728a560e878303af7cbea425c50aa0e49afd67c9a465c
@@ -70,7 +72,7 @@ pkgbase = linux-cacule
 	sha256sums = 0b18daa836fd70dbabf68b1db85b01e585f8cad2f1a2ef5c2ced9db4e1f75d3a
 
 pkgname = linux-cacule
-	pkgdesc = The Linux-CacULE Kernel by Hamad Marri and with some other patchsets kernel and modules
+	pkgdesc = The Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets kernel and modules
 	depends = coreutils
 	depends = kmod
 	depends = initramfs
@@ -81,4 +83,4 @@ pkgname = linux-cacule
 	provides = WIREGUARD-MODULE
 
 pkgname = linux-cacule-headers
-	pkgdesc = Headers and scripts for building modules for the Linux-CacULE Kernel by Hamad Marri and with some other patchsets kernel
+	pkgdesc = Headers and scripts for building modules for the Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets kernel
