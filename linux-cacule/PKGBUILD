@@ -26,7 +26,7 @@ _2k_HZ_ticks=
 _1k_HZ_ticks=y
 _500_HZ_ticks=
 ### Enable protect file mappings under memory pressure
-_mm_protect=n
+_mm_protect=y
 ### Enable multigenerational LRU
 _lru_enable=y
 # Tweak kernel options prior to a build via nconfig
@@ -52,11 +52,11 @@ _use_current=
 ### IMPORTANT: Do no edit below this line unless you know what you're doing
 
 _major=5.12
-_minor=9
+_minor=10
 _srcname=linux-${_major}
 pkgbase=linux-cacule
 pkgver=${_major}.${_minor}
-pkgrel=4
+pkgrel=1
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -65,13 +65,13 @@ makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz')
 options=('!strip')
 _patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.12"
-_caculepaches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
+_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
 source=(
   "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${_major}.tar.xz"
   "https://cdn.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
   'config'
   "${_patchsource}/arch-patches-v6/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-  "${_caculepaches}/v5.12/cacule-5.12.patch"
+  "${_caculepatches}/v5.12/cacule-5.12.patch"
   "${_patchsource}/cpu-patches-v3/0001-cpu-patches.patch"
   "${_patchsource}/futex-patches-v2/0001-futex-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/futex2-stable-patches-v5/0001-futex2-resync-from-gitlab.collabora.com.patch"
@@ -80,7 +80,6 @@ source=(
   "${_patchsource}/lqx-patches-v3/0001-zen-Allow-MSR-writes-by-default.patch"
   "${_patchsource}/bfq-patches-v13/0001-bfq-patches.patch"
   "${_patchsource}/block-patches-v5/0001-block-patches.patch"
-  "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
   "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
   "${_patchsource}/bbr2-patches-v2/0001-bbr2-5.12-introduce-BBRv2.patch"
   "${_patchsource}/btrfs-patches-v11/0001-btrfs-patches.patch"
@@ -506,7 +505,7 @@ for _p in "${pkgname[@]}"; do
 done
 
 sha256sums=('7d0df6f2bf2384d68d0bd8e1fe3e071d64364dcdc6002e7b5c87c92d48fac366'
-            'b844ec7be25f915578e322838b03c2780c4b1185fbab5e84a8d52db7341804e8'
+            '034eb39ad49f3a26fc1b4ef799ef481ce35fe03e2b24131e9cd3d2805a99ad19'
             'b4e1462213c93a485837a474358d9b85cfc51f058cef7d1133249fcb5fc8251b'
             'b2139a29b0cabfb029e51c81f386c698ef209e43cbd93a3515892785662e4c74'
             'a90ec03375bf97c06bf2ca3f1fd0224deee8408077f71447326b2796b53652a1'
@@ -518,7 +517,6 @@ sha256sums=('7d0df6f2bf2384d68d0bd8e1fe3e071d64364dcdc6002e7b5c87c92d48fac366'
             '5587a2d535dcd7ff09080c27f32a02dc67a0d35145b0b49ae10e8520c906a153'
             '12b36059033201c99e54a0e863c3ded470faff1226d9b984bdb15bd3a8ec4a7c'
             '053a6611dd35293ba741838084818f4b69206e50da3fad13597d4fd2138c7ac0'
-            '947fa68285a060100d375548a8e8608271b5af18d0bb13139e3a691450f6b630'
             '7cdc6402f6ab8a8b99f7c7c4766a6cf82773ef399903abebf6208bfd2f8b2cf2'
             '59dc35df675221c9e54326e4a2ca57074c955387e1d4cb0b6543424bc84bdb11'
             'ed59edd4c65c24167f90b28fffd27000cbd58d236934e478e400999831768ee6'
