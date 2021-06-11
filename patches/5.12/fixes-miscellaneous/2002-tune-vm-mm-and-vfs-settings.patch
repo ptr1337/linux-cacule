@@ -1,0 +1,98 @@
+From e65de524e3361fc60cecdbb5866700a7541f7b9d Mon Sep 17 00:00:00 2001
+From: torvic9 <torvic9@mailbox.org>
+Date: Tue, 10 Nov 2020 10:43:24 +0100
+Subject: [PATCH] tune vm mm and vfs settings
+
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ fs/dcache.c             | 2 +-
+ include/linux/pagemap.h | 2 +-
+ mm/page-writeback.c     | 6 +++---
+ mm/vmscan.c             | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/fs/dcache.c b/fs/dcache.c
+index ea0485861..7c4036cae 100644
+--- a/fs/dcache.c
++++ b/fs/dcache.c
+@@ -70,9 +70,9 @@
+  *
+  * If no ancestor relationship:
+  * arbitrary, since it's serialized on rename_lock
+  */
+-int sysctl_vfs_cache_pressure __read_mostly = 100;
++int sysctl_vfs_cache_pressure __read_mostly = 80;
+ EXPORT_SYMBOL_GPL(sysctl_vfs_cache_pressure);
+ 
+ __cacheline_aligned_in_smp DEFINE_SEQLOCK(rename_lock);
+ 
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index e1e19c1f9..1c9295f1c 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -807,9 +807,9 @@ struct readahead_control {
+ 		.mapping = m,						\
+ 		._index = i,						\
+ 	}
+ 
+-#define VM_READAHEAD_PAGES	(SZ_128K / PAGE_SIZE)
++#define VM_READAHEAD_PAGES	(SZ_512K / PAGE_SIZE)
+ 
+ void page_cache_ra_unbounded(struct readahead_control *,
+ 		unsigned long nr_to_read, unsigned long lookahead_count);
+ void page_cache_sync_ra(struct readahead_control *, struct file_ra_state *,
+diff --git a/mm/page-writeback.c b/mm/page-writeback.c
+index 7709f0e22..391ea7557 100644
+--- a/mm/page-writeback.c
++++ b/mm/page-writeback.c
+@@ -70,9 +70,9 @@ static long ratelimit_pages = 32;
+ 
+ /*
+  * Start background writeback (via writeback threads) at this percentage
+  */
+-int dirty_background_ratio = 10;
++int dirty_background_ratio = 5;
+ 
+ /*
+  * dirty_background_bytes starts at 0 (disabled) so that it is a function of
+  * dirty_background_ratio * the amount of dirtyable memory
+@@ -87,9 +87,9 @@ int vm_highmem_is_dirtyable;
+ 
+ /*
+  * The generator of dirty data starts writeback at this percentage
+  */
+-int vm_dirty_ratio = 20;
++int vm_dirty_ratio = 15;
+ 
+ /*
+  * vm_dirty_bytes starts at 0 (disabled) so that it is a function of
+  * vm_dirty_ratio * the amount of dirtyable memory
+@@ -98,9 +98,9 @@ unsigned long vm_dirty_bytes;
+ 
+ /*
+  * The interval between `kupdate'-style writebacks
+  */
+-unsigned int dirty_writeback_interval = 5 * 100; /* centiseconds */
++unsigned int dirty_writeback_interval = 10 * 100; /* centiseconds */
+ 
+ EXPORT_SYMBOL_GPL(dirty_writeback_interval);
+ 
+ /*
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 1b8f0e059..6220a71d3 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -168,9 +168,9 @@ struct scan_control {
+ 
+ /*
+  * From 0 .. 200.  Higher means more swappy.
+  */
+-int vm_swappiness = 60;
++int vm_swappiness = 30;
+ 
+ static void set_task_reclaim_state(struct task_struct *task,
+ 				   struct reclaim_state *rs)
+ {
+-- 
+2.29.2
+
