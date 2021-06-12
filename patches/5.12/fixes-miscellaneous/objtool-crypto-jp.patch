@@ -1,0 +1,887 @@
+
+From a4bc1761a8d3a16d8458c7068b45015ed48cba77 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:14 -0600
+Subject: [PATCH] objtool: Support asm jump tables
+
+Objtool detection of asm jump tables would normally just work, except
+for the fact that asm retpolines use alternatives.  Objtool thinks the
+alternative code path (a jump to the retpoline) is a sibling call.
+
+Don't treat alternative indirect branches as sibling calls when the
+original instruction has a jump table.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/460cf4dc675d64e1124146562cabd2c05aa322e8.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ tools/objtool/check.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index a0f762a15..46621e8a8 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -108,6 +108,18 @@ static struct instruction *prev_insn_same_sym(struct objtool_file *file,
+ 	for (insn = next_insn_same_sec(file, insn); insn;		\
+ 	     insn = next_insn_same_sec(file, insn))
+
++static bool is_jump_table_jump(struct instruction *insn)
++{
++	struct alt_group *alt_group = insn->alt_group;
++
++	if (insn->jump_table)
++		return true;
++
++	/* Retpoline alternative for a jump table? */
++	return alt_group && alt_group->orig_group &&
++	       alt_group->orig_group->first_insn->jump_table;
++}
++
+ static bool is_sibling_call(struct instruction *insn)
+ {
+ 	/*
+@@ -120,7 +132,7 @@ static bool is_sibling_call(struct instruction *insn)
+
+ 	/* An indirect jump is either a sibling call or a jump to a table. */
+ 	if (insn->type == INSN_JUMP_DYNAMIC)
+-		return list_empty(&insn->alts);
++		return !is_jump_table_jump(insn);
+
+ 	/* add_jump_destinations() sets insn->call_dest for sibling calls. */
+ 	return (is_static_jump(insn) && insn->call_dest);
+--
+2.30.2
+
+From 0d9b15ce33b1a3d4d3029da8d857b75b8d483472 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:15 -0600
+Subject: [PATCH] x86/crypto/aesni-intel_avx: Remove unused macros
+
+These macros are no longer used; remove them.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/53f7136ea93ebdbca399959e6d2991ecb46e733e.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/aesni-intel_avx-x86_64.S | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/arch/x86/crypto/aesni-intel_avx-x86_64.S b/arch/x86/crypto/aesni-intel_avx-x86_64.S
+index 2cf8e94d9..4fdf38e92 100644
+--- a/arch/x86/crypto/aesni-intel_avx-x86_64.S
++++ b/arch/x86/crypto/aesni-intel_avx-x86_64.S
+@@ -212,10 +212,6 @@ HashKey_8_k    = 16*21   # store XOR of HashKey^8 <<1 mod poly here (for Karatsu
+ #define arg4 %rcx
+ #define arg5 %r8
+ #define arg6 %r9
+-#define arg7 STACK_OFFSET+8*1(%r14)
+-#define arg8 STACK_OFFSET+8*2(%r14)
+-#define arg9 STACK_OFFSET+8*3(%r14)
+-#define arg10 STACK_OFFSET+8*4(%r14)
+ #define keysize 2*15*16(arg1)
+
+ i = 0
+@@ -237,9 +233,6 @@ define_reg j %j
+ .noaltmacro
+ .endm
+
+-# need to push 4 registers into stack to maintain
+-STACK_OFFSET = 8*4
+-
+ TMP1 =   16*0    # Temporary storage for AAD
+ TMP2 =   16*1    # Temporary storage for AES State 2 (State 1 is stored in an XMM register)
+ TMP3 =   16*2    # Temporary storage for AES State 3
+@@ -256,7 +249,6 @@ VARIABLE_OFFSET = 16*8
+ ################################
+
+ .macro FUNC_SAVE
+-        #the number of pushes must equal STACK_OFFSET
+         push    %r12
+         push    %r13
+         push    %r14
+--
+2.30.2
+
+From e5d19ccaaf87403c17d057639d8702ec79d851a6 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:16 -0600
+Subject: [PATCH] x86/crypto/aesni-intel_avx: Fix register usage comments
+
+Fix register usage comments to match reality.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/8655d4513a0ed1eddec609165064153973010aa2.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/aesni-intel_avx-x86_64.S | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/crypto/aesni-intel_avx-x86_64.S b/arch/x86/crypto/aesni-intel_avx-x86_64.S
+index 4fdf38e92..188f1848a 100644
+--- a/arch/x86/crypto/aesni-intel_avx-x86_64.S
++++ b/arch/x86/crypto/aesni-intel_avx-x86_64.S
+@@ -286,7 +286,7 @@ VARIABLE_OFFSET = 16*8
+
+ # combined for GCM encrypt and decrypt functions
+ # clobbering all xmm registers
+-# clobbering r10, r11, r12, r13, r14, r15
++# clobbering r10, r11, r12, r13, r15, rax
+ .macro  GCM_ENC_DEC INITIAL_BLOCKS GHASH_8_ENCRYPT_8_PARALLEL GHASH_LAST_8 GHASH_MUL ENC_DEC REP
+         vmovdqu AadHash(arg2), %xmm8
+         vmovdqu  HashKey(arg2), %xmm13      # xmm13 = HashKey
+@@ -988,7 +988,7 @@ _partial_block_done_\@:
+ ## num_initial_blocks = b mod 4#
+ ## encrypt the initial num_initial_blocks blocks and apply ghash on the ciphertext
+ ## r10, r11, r12, rax are clobbered
+-## arg1, arg3, arg4, r14 are used as a pointer only, not modified
++## arg1, arg2, arg3, arg4 are used as pointers only, not modified
+
+ .macro INITIAL_BLOCKS_AVX REP num_initial_blocks T1 T2 T3 T4 T5 CTR XMM1 XMM2 XMM3 XMM4 XMM5 XMM6 XMM7 XMM8 T6 T_key ENC_DEC
+ 	i = (8-\num_initial_blocks)
+@@ -1223,7 +1223,7 @@ _initial_blocks_done\@:
+
+ # encrypt 8 blocks at a time
+ # ghash the 8 previously encrypted ciphertext blocks
+-# arg1, arg3, arg4 are used as pointers only, not modified
++# arg1, arg2, arg3, arg4 are used as pointers only, not modified
+ # r11 is the data offset value
+ .macro GHASH_8_ENCRYPT_8_PARALLEL_AVX REP T1 T2 T3 T4 T5 T6 CTR XMM1 XMM2 XMM3 XMM4 XMM5 XMM6 XMM7 XMM8 T7 loop_idx ENC_DEC
+
+@@ -1936,7 +1936,7 @@ SYM_FUNC_END(aesni_gcm_finalize_avx_gen2)
+ ## num_initial_blocks = b mod 4#
+ ## encrypt the initial num_initial_blocks blocks and apply ghash on the ciphertext
+ ## r10, r11, r12, rax are clobbered
+-## arg1, arg3, arg4, r14 are used as a pointer only, not modified
++## arg1, arg2, arg3, arg4 are used as pointers only, not modified
+
+ .macro INITIAL_BLOCKS_AVX2 REP num_initial_blocks T1 T2 T3 T4 T5 CTR XMM1 XMM2 XMM3 XMM4 XMM5 XMM6 XMM7 XMM8 T6 T_key ENC_DEC VER
+ 	i = (8-\num_initial_blocks)
+@@ -2178,7 +2178,7 @@ _initial_blocks_done\@:
+
+ # encrypt 8 blocks at a time
+ # ghash the 8 previously encrypted ciphertext blocks
+-# arg1, arg3, arg4 are used as pointers only, not modified
++# arg1, arg2, arg3, arg4 are used as pointers only, not modified
+ # r11 is the data offset value
+ .macro GHASH_8_ENCRYPT_8_PARALLEL_AVX2 REP T1 T2 T3 T4 T5 T6 CTR XMM1 XMM2 XMM3 XMM4 XMM5 XMM6 XMM7 XMM8 T7 loop_idx ENC_DEC
+
+--
+2.30.2
+
+From 2852c0b8e908bd2ec2c646c5713d8e7cc93e0a6a Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:17 -0600
+Subject: [PATCH] x86/crypto/aesni-intel_avx: Standardize stack alignment
+ prologue
+
+Use RBP instead of R14 for saving the old stack pointer before
+realignment.  This resembles what compilers normally do.
+
+This enables ORC unwinding by allowing objtool to understand the stack
+realignment.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/02d00a0903a0959f4787e186e2a07d271e1f63d4.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/aesni-intel_avx-x86_64.S | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/crypto/aesni-intel_avx-x86_64.S b/arch/x86/crypto/aesni-intel_avx-x86_64.S
+index 188f1848a..98e3552b6 100644
+--- a/arch/x86/crypto/aesni-intel_avx-x86_64.S
++++ b/arch/x86/crypto/aesni-intel_avx-x86_64.S
+@@ -251,22 +251,20 @@ VARIABLE_OFFSET = 16*8
+ .macro FUNC_SAVE
+         push    %r12
+         push    %r13
+-        push    %r14
+         push    %r15
+
+-        mov     %rsp, %r14
+-
+-
++	push	%rbp
++	mov	%rsp, %rbp
+
+         sub     $VARIABLE_OFFSET, %rsp
+         and     $~63, %rsp                    # align rsp to 64 bytes
+ .endm
+
+ .macro FUNC_RESTORE
+-        mov     %r14, %rsp
++        mov     %rbp, %rsp
++	pop	%rbp
+
+         pop     %r15
+-        pop     %r14
+         pop     %r13
+         pop     %r12
+ .endm
+--
+2.30.2
+
+From bf90c63cc7d247f66127408005087324d7515c96 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:18 -0600
+Subject: [PATCH] x86/crypto/camellia-aesni-avx2: Unconditionally allocate
+ stack buffer
+
+A conditional stack allocation violates traditional unwinding
+requirements when a single instruction can have differing stack layouts.
+
+There's no benefit in allocating the stack buffer conditionally.  Just
+do it unconditionally.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/85ac96613ee5784b6239c18d3f68b1f3c509caa3.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/camellia-aesni-avx2-asm_64.S | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
+index 782e9712a..706f70829 100644
+--- a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
++++ b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
+@@ -990,6 +990,7 @@ SYM_FUNC_START(camellia_cbc_dec_32way)
+ 	 *	%rdx: src (32 blocks)
+ 	 */
+ 	FRAME_BEGIN
++	subq $(16 * 32), %rsp;
+
+ 	vzeroupper;
+
+@@ -1002,7 +1003,6 @@ SYM_FUNC_START(camellia_cbc_dec_32way)
+ 		     %ymm8, %ymm9, %ymm10, %ymm11, %ymm12, %ymm13, %ymm14,
+ 		     %ymm15, %rdx, (key_table)(CTX, %r8, 8));
+
+-	movq %rsp, %r10;
+ 	cmpq %rsi, %rdx;
+ 	je .Lcbc_dec_use_stack;
+
+@@ -1015,7 +1015,6 @@ SYM_FUNC_START(camellia_cbc_dec_32way)
+ 	 * dst still in-use (because dst == src), so use stack for temporary
+ 	 * storage.
+ 	 */
+-	subq $(16 * 32), %rsp;
+ 	movq %rsp, %rax;
+
+ .Lcbc_dec_continue:
+@@ -1025,7 +1024,6 @@ SYM_FUNC_START(camellia_cbc_dec_32way)
+ 	vpxor %ymm7, %ymm7, %ymm7;
+ 	vinserti128 $1, (%rdx), %ymm7, %ymm7;
+ 	vpxor (%rax), %ymm7, %ymm7;
+-	movq %r10, %rsp;
+ 	vpxor (0 * 32 + 16)(%rdx), %ymm6, %ymm6;
+ 	vpxor (1 * 32 + 16)(%rdx), %ymm5, %ymm5;
+ 	vpxor (2 * 32 + 16)(%rdx), %ymm4, %ymm4;
+@@ -1047,6 +1045,7 @@ SYM_FUNC_START(camellia_cbc_dec_32way)
+
+ 	vzeroupper;
+
++	addq $(16 * 32), %rsp;
+ 	FRAME_END
+ 	ret;
+ SYM_FUNC_END(camellia_cbc_dec_32way)
+--
+2.30.2
+
+From f9d98f9d9040f6b6c57411c55e577cf8b7215c5c Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:19 -0600
+Subject: [PATCH] x86/crypto/crc32c-pcl-intel: Standardize jump table
+
+Simplify the jump table code so that it resembles a compiler-generated
+table.
+
+This enables ORC unwinding by allowing objtool to follow all the
+potential code paths.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/5357a039def90b8ef6b5874ef12cda008ecf18ba.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/crc32c-pcl-intel-asm_64.S | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
+index 884dc767b..ac1f303ee 100644
+--- a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
++++ b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
+@@ -53,7 +53,7 @@
+ .endm
+
+ .macro JMPTBL_ENTRY i
+-.word crc_\i - crc_array
++.quad crc_\i
+ .endm
+
+ .macro JNC_LESS_THAN j
+@@ -168,10 +168,7 @@ continue_block:
+ 	xor     crc2, crc2
+
+ 	## branch into array
+-	lea	jump_table(%rip), %bufp
+-	movzwq  (%bufp, %rax, 2), len
+-	lea	crc_array(%rip), %bufp
+-	lea     (%bufp, len, 1), %bufp
++	mov	jump_table(,%rax,8), %bufp
+ 	JMP_NOSPEC bufp
+
+ 	################################################################
+--
+2.30.2
+
+From d78d10a1d771543e93bb3f998451b574672e2e60 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:20 -0600
+Subject: [PATCH] x86/crypto/sha_ni: Standardize stack alignment prologue
+
+Use a more standard prologue for saving the stack pointer before
+realigning the stack.
+
+This enables ORC unwinding by allowing objtool to understand the stack
+realignment.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/5033e1a79867dff1b18e1b4d0783c38897d3f223.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/sha1_ni_asm.S | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/crypto/sha1_ni_asm.S b/arch/x86/crypto/sha1_ni_asm.S
+index 11efe3a45..5d8415f48 100644
+--- a/arch/x86/crypto/sha1_ni_asm.S
++++ b/arch/x86/crypto/sha1_ni_asm.S
+@@ -59,8 +59,6 @@
+ #define DATA_PTR	%rsi	/* 2nd arg */
+ #define NUM_BLKS	%rdx	/* 3rd arg */
+
+-#define RSPSAVE		%rax
+-
+ /* gcc conversion */
+ #define FRAME_SIZE	32	/* space for 2x16 bytes */
+
+@@ -96,7 +94,8 @@
+ .text
+ .align 32
+ SYM_FUNC_START(sha1_ni_transform)
+-	mov		%rsp, RSPSAVE
++	push		%rbp
++	mov		%rsp, %rbp
+ 	sub		$FRAME_SIZE, %rsp
+ 	and		$~0xF, %rsp
+
+@@ -288,7 +287,8 @@ SYM_FUNC_START(sha1_ni_transform)
+ 	pextrd		$3, E0, 1*16(DIGEST_PTR)
+
+ .Ldone_hash:
+-	mov		RSPSAVE, %rsp
++	mov		%rbp, %rsp
++	pop		%rbp
+
+ 	ret
+ SYM_FUNC_END(sha1_ni_transform)
+--
+2.30.2
+
+From d83c6656bf8a73e80eb5a896fd042dc77d947e25 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:21 -0600
+Subject: [PATCH] x86/crypto/sha1_avx2: Standardize stack alignment prologue
+
+Use a more standard prologue for saving the stack pointer before
+realigning the stack.
+
+This enables ORC unwinding by allowing objtool to understand the stack
+realignment.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/fdaaf8670ed1f52f55ba9a6bbac98c1afddc1af6.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/sha1_avx2_x86_64_asm.S | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/crypto/sha1_avx2_x86_64_asm.S b/arch/x86/crypto/sha1_avx2_x86_64_asm.S
+index 1e594d60a..5eed620f4 100644
+--- a/arch/x86/crypto/sha1_avx2_x86_64_asm.S
++++ b/arch/x86/crypto/sha1_avx2_x86_64_asm.S
+@@ -645,9 +645,9 @@ _loop3:
+ 	RESERVE_STACK  = (W_SIZE*4 + 8+24)
+
+ 	/* Align stack */
+-	mov	%rsp, %rbx
++	push	%rbp
++	mov	%rsp, %rbp
+ 	and	$~(0x20-1), %rsp
+-	push	%rbx
+ 	sub	$RESERVE_STACK, %rsp
+
+ 	avx2_zeroupper
+@@ -665,8 +665,8 @@ _loop3:
+
+ 	avx2_zeroupper
+
+-	add	$RESERVE_STACK, %rsp
+-	pop	%rsp
++	mov	%rbp, %rsp
++	pop	%rbp
+
+ 	pop	%r15
+ 	pop	%r14
+--
+2.30.2
+
+From e259c60d997c4e2c127d4e9e5a57792a77fa6bfb Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:22 -0600
+Subject: [PATCH] x86/crypto/sha256-avx2: Standardize stack alignment prologue
+
+Use a more standard prologue for saving the stack pointer before
+realigning the stack.
+
+This enables ORC unwinding by allowing objtool to understand the stack
+realignment.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/8048e7444c49a8137f05265262b83dc50f8fb7f3.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/sha256-avx2-asm.S | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/crypto/sha256-avx2-asm.S b/arch/x86/crypto/sha256-avx2-asm.S
+index 11ff60c29..4087f7432 100644
+--- a/arch/x86/crypto/sha256-avx2-asm.S
++++ b/arch/x86/crypto/sha256-avx2-asm.S
+@@ -117,15 +117,13 @@ _XMM_SAVE_SIZE	= 0
+ _INP_END_SIZE	= 8
+ _INP_SIZE	= 8
+ _CTX_SIZE	= 8
+-_RSP_SIZE	= 8
+
+ _XFER		= 0
+ _XMM_SAVE	= _XFER     + _XFER_SIZE
+ _INP_END	= _XMM_SAVE + _XMM_SAVE_SIZE
+ _INP		= _INP_END  + _INP_END_SIZE
+ _CTX		= _INP      + _INP_SIZE
+-_RSP		= _CTX      + _CTX_SIZE
+-STACK_SIZE	= _RSP      + _RSP_SIZE
++STACK_SIZE	= _CTX      + _CTX_SIZE
+
+ # rotate_Xs
+ # Rotate values of symbols X0...X3
+@@ -533,11 +531,11 @@ SYM_FUNC_START(sha256_transform_rorx)
+ 	pushq	%r14
+ 	pushq	%r15
+
+-	mov	%rsp, %rax
++	push	%rbp
++	mov	%rsp, %rbp
++
+ 	subq	$STACK_SIZE, %rsp
+ 	and	$-32, %rsp	# align rsp to 32 byte boundary
+-	mov	%rax, _RSP(%rsp)
+-
+
+ 	shl	$6, NUM_BLKS	# convert to bytes
+ 	jz	done_hash
+@@ -704,7 +702,8 @@ only_one_block:
+
+ done_hash:
+
+-	mov	_RSP(%rsp), %rsp
++	mov	%rbp, %rsp
++	pop	%rbp
+
+ 	popq	%r15
+ 	popq	%r14
+--
+2.30.2
+
+From 36b7e2e059b77f942b9fd22ebc0606b2da0833b1 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:23 -0600
+Subject: [PATCH] x86/crypto/sha512-avx: Standardize stack alignment prologue
+
+Use a more standard prologue for saving the stack pointer before
+realigning the stack.
+
+This enables ORC unwinding by allowing objtool to understand the stack
+realignment.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/d36e9ea1c819d87fa89b3df3fa83e2a1ede18146.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/sha512-avx-asm.S | 41 +++++++++++++++-----------------
+ 1 file changed, 19 insertions(+), 22 deletions(-)
+
+diff --git a/arch/x86/crypto/sha512-avx-asm.S b/arch/x86/crypto/sha512-avx-asm.S
+index 684d58c8b..3d8f0fd4e 100644
+--- a/arch/x86/crypto/sha512-avx-asm.S
++++ b/arch/x86/crypto/sha512-avx-asm.S
+@@ -76,14 +76,10 @@ tmp0	= %rax
+ W_SIZE = 80*8
+ # W[t] + K[t] | W[t+1] + K[t+1]
+ WK_SIZE = 2*8
+-RSPSAVE_SIZE = 1*8
+-GPRSAVE_SIZE = 5*8
+
+ frame_W = 0
+ frame_WK = frame_W + W_SIZE
+-frame_RSPSAVE = frame_WK + WK_SIZE
+-frame_GPRSAVE = frame_RSPSAVE + RSPSAVE_SIZE
+-frame_size = frame_GPRSAVE + GPRSAVE_SIZE
++frame_size = frame_WK + WK_SIZE
+
+ # Useful QWORD "arrays" for simpler memory references
+ # MSG, DIGEST, K_t, W_t are arrays
+@@ -281,18 +277,18 @@ SYM_FUNC_START(sha512_transform_avx)
+ 	test msglen, msglen
+ 	je nowork
+
++	# Save GPRs
++	push	%rbx
++	push	%r12
++	push	%r13
++	push	%r14
++	push	%r15
++
+ 	# Allocate Stack Space
+-	mov	%rsp, %rax
++	push	%rbp
++	mov	%rsp, %rbp
+ 	sub     $frame_size, %rsp
+ 	and	$~(0x20 - 1), %rsp
+-	mov	%rax, frame_RSPSAVE(%rsp)
+-
+-	# Save GPRs
+-	mov     %rbx, frame_GPRSAVE(%rsp)
+-	mov     %r12, frame_GPRSAVE +8*1(%rsp)
+-	mov     %r13, frame_GPRSAVE +8*2(%rsp)
+-	mov     %r14, frame_GPRSAVE +8*3(%rsp)
+-	mov     %r15, frame_GPRSAVE +8*4(%rsp)
+
+ updateblock:
+
+@@ -353,15 +349,16 @@ updateblock:
+ 	dec     msglen
+ 	jnz     updateblock
+
+-	# Restore GPRs
+-	mov     frame_GPRSAVE(%rsp),      %rbx
+-	mov     frame_GPRSAVE +8*1(%rsp), %r12
+-	mov     frame_GPRSAVE +8*2(%rsp), %r13
+-	mov     frame_GPRSAVE +8*3(%rsp), %r14
+-	mov     frame_GPRSAVE +8*4(%rsp), %r15
+-
+ 	# Restore Stack Pointer
+-	mov	frame_RSPSAVE(%rsp), %rsp
++	mov	%rbp, %rsp
++	pop	%rbp
++
++	# Restore GPRs
++	pop	%r15
++	pop	%r14
++	pop	%r13
++	pop	%r12
++	pop	%rbx
+
+ nowork:
+ 	ret
+--
+2.30.2
+
+From 30de4d903913f8f756d94014460eaefbc4ba4b76 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:24 -0600
+Subject: [PATCH] x86/crypto/sha512-avx2: Standardize stack alignment prologue
+
+Use a more standard prologue for saving the stack pointer before
+realigning the stack.
+
+This enables ORC unwinding by allowing objtool to understand the stack
+realignment.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/b1a7b29fcfc65d60a3b6e77ef75f4762a5b8488d.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/sha512-avx2-asm.S | 42 +++++++++++++++----------------
+ 1 file changed, 20 insertions(+), 22 deletions(-)
+
+diff --git a/arch/x86/crypto/sha512-avx2-asm.S b/arch/x86/crypto/sha512-avx2-asm.S
+index 3a44bdcfd..072cb0f0d 100644
+--- a/arch/x86/crypto/sha512-avx2-asm.S
++++ b/arch/x86/crypto/sha512-avx2-asm.S
+@@ -102,17 +102,13 @@ SRND_SIZE = 1*8
+ INP_SIZE = 1*8
+ INPEND_SIZE = 1*8
+ CTX_SIZE = 1*8
+-RSPSAVE_SIZE = 1*8
+-GPRSAVE_SIZE = 5*8
+
+ frame_XFER = 0
+ frame_SRND = frame_XFER + XFER_SIZE
+ frame_INP = frame_SRND + SRND_SIZE
+ frame_INPEND = frame_INP + INP_SIZE
+ frame_CTX = frame_INPEND + INPEND_SIZE
+-frame_RSPSAVE = frame_CTX + CTX_SIZE
+-frame_GPRSAVE = frame_RSPSAVE + RSPSAVE_SIZE
+-frame_size = frame_GPRSAVE + GPRSAVE_SIZE
++frame_size = frame_CTX + CTX_SIZE
+
+ ## assume buffers not aligned
+ #define	VMOVDQ vmovdqu
+@@ -570,18 +566,18 @@ frame_size = frame_GPRSAVE + GPRSAVE_SIZE
+ # "blocks" is the message length in SHA512 blocks
+ ########################################################################
+ SYM_FUNC_START(sha512_transform_rorx)
++	# Save GPRs
++	push	%rbx
++	push	%r12
++	push	%r13
++	push	%r14
++	push	%r15
++
+ 	# Allocate Stack Space
+-	mov	%rsp, %rax
++	push	%rbp
++	mov	%rsp, %rbp
+ 	sub	$frame_size, %rsp
+ 	and	$~(0x20 - 1), %rsp
+-	mov	%rax, frame_RSPSAVE(%rsp)
+-
+-	# Save GPRs
+-	mov	%rbx, 8*0+frame_GPRSAVE(%rsp)
+-	mov	%r12, 8*1+frame_GPRSAVE(%rsp)
+-	mov	%r13, 8*2+frame_GPRSAVE(%rsp)
+-	mov	%r14, 8*3+frame_GPRSAVE(%rsp)
+-	mov	%r15, 8*4+frame_GPRSAVE(%rsp)
+
+ 	shl	$7, NUM_BLKS	# convert to bytes
+ 	jz	done_hash
+@@ -672,15 +668,17 @@ loop2:
+
+ done_hash:
+
+-# Restore GPRs
+-	mov	8*0+frame_GPRSAVE(%rsp), %rbx
+-	mov	8*1+frame_GPRSAVE(%rsp), %r12
+-	mov	8*2+frame_GPRSAVE(%rsp), %r13
+-	mov	8*3+frame_GPRSAVE(%rsp), %r14
+-	mov	8*4+frame_GPRSAVE(%rsp), %r15
+-
+ 	# Restore Stack Pointer
+-	mov	frame_RSPSAVE(%rsp), %rsp
++	mov	%rbp, %rsp
++	pop	%rbp
++
++	# Restore GPRs
++	pop	%r15
++	pop	%r14
++	pop	%r13
++	pop	%r12
++	pop	%rbx
++
+ 	ret
+ SYM_FUNC_END(sha512_transform_rorx)
+
+--
+2.30.2
+
+From e924f3c4410d72695a5f452fd9931fb2ebfd7e67 Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:25 -0600
+Subject: [PATCH] x86/crypto/sha512-ssse3: Standardize stack alignment prologue
+
+Use a more standard prologue for saving the stack pointer before
+realigning the stack.
+
+This enables ORC unwinding by allowing objtool to understand the stack
+realignment.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/6ecaaac9f3828fbb903513bf90c34a08380a8e35.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/sha512-ssse3-asm.S | 41 ++++++++++++++----------------
+ 1 file changed, 19 insertions(+), 22 deletions(-)
+
+diff --git a/arch/x86/crypto/sha512-ssse3-asm.S b/arch/x86/crypto/sha512-ssse3-asm.S
+index 50812af0b..bd51c9070 100644
+--- a/arch/x86/crypto/sha512-ssse3-asm.S
++++ b/arch/x86/crypto/sha512-ssse3-asm.S
+@@ -74,14 +74,10 @@ tmp0 =		%rax
+
+ W_SIZE = 80*8
+ WK_SIZE = 2*8
+-RSPSAVE_SIZE = 1*8
+-GPRSAVE_SIZE = 5*8
+
+ frame_W = 0
+ frame_WK = frame_W + W_SIZE
+-frame_RSPSAVE = frame_WK + WK_SIZE
+-frame_GPRSAVE = frame_RSPSAVE + RSPSAVE_SIZE
+-frame_size = frame_GPRSAVE + GPRSAVE_SIZE
++frame_size = frame_WK + WK_SIZE
+
+ # Useful QWORD "arrays" for simpler memory references
+ # MSG, DIGEST, K_t, W_t are arrays
+@@ -283,18 +279,18 @@ SYM_FUNC_START(sha512_transform_ssse3)
+ 	test msglen, msglen
+ 	je nowork
+
++	# Save GPRs
++	push	%rbx
++	push	%r12
++	push	%r13
++	push	%r14
++	push	%r15
++
+ 	# Allocate Stack Space
+-	mov	%rsp, %rax
++	push	%rbp
++	mov	%rsp, %rbp
+ 	sub	$frame_size, %rsp
+ 	and	$~(0x20 - 1), %rsp
+-	mov	%rax, frame_RSPSAVE(%rsp)
+-
+-	# Save GPRs
+-	mov	%rbx, frame_GPRSAVE(%rsp)
+-	mov	%r12, frame_GPRSAVE +8*1(%rsp)
+-	mov	%r13, frame_GPRSAVE +8*2(%rsp)
+-	mov	%r14, frame_GPRSAVE +8*3(%rsp)
+-	mov	%r15, frame_GPRSAVE +8*4(%rsp)
+
+ updateblock:
+
+@@ -355,15 +351,16 @@ updateblock:
+ 	dec	msglen
+ 	jnz	updateblock
+
+-	# Restore GPRs
+-	mov	frame_GPRSAVE(%rsp),      %rbx
+-	mov	frame_GPRSAVE +8*1(%rsp), %r12
+-	mov	frame_GPRSAVE +8*2(%rsp), %r13
+-	mov	frame_GPRSAVE +8*3(%rsp), %r14
+-	mov	frame_GPRSAVE +8*4(%rsp), %r15
+-
+ 	# Restore Stack Pointer
+-	mov	frame_RSPSAVE(%rsp), %rsp
++	mov	%rbp, %rsp
++	pop	%rbp
++
++	# Restore GPRs
++	pop	%r15
++	pop	%r14
++	pop	%r13
++	pop	%r12
++	pop	%rbx
+
+ nowork:
+ 	ret
+--
+2.30.2
+
+From 9bfc9205825567cfa98e2b84de9cba563c3b6a6f Mon Sep 17 00:00:00 2001
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Wed, 24 Feb 2021 10:29:26 -0600
+Subject: [PATCH] x86/crypto: Enable objtool in crypto code
+
+Now that all the stack alignment prologues have been cleaned up in the
+crypto code, enable objtool.  Among other benefits, this will allow ORC
+unwinding to work.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/fc2a1918c50e33e46ef0e9a5de02743f2f6e3639.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: torvic9 <torvic9@mailbox.org>
+---
+ arch/x86/crypto/Makefile | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
+index b28e36b7c..d0959e7b8 100644
+--- a/arch/x86/crypto/Makefile
++++ b/arch/x86/crypto/Makefile
+@@ -2,8 +2,6 @@
+ #
+ # x86 crypto algorithms
+
+-OBJECT_FILES_NON_STANDARD := y
+-
+ obj-$(CONFIG_CRYPTO_TWOFISH_586) += twofish-i586.o
+ twofish-i586-y := twofish-i586-asm_32.o twofish_glue.o
+ obj-$(CONFIG_CRYPTO_TWOFISH_X86_64) += twofish-x86_64.o
+--
+2.30.2
