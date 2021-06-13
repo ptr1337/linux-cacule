@@ -51,7 +51,7 @@ pkgbase=linux-cacule-rc
 _major=5.13
 #_minor=1
 #_minorc=$((_minor+1))
-_rcver=rc5
+_rcver=rc6
 pkgver=${_major}.${_rcver}
 #_stable=${_major}.${_minor}
 _stablerc=${_major}-${_rcver}
@@ -71,6 +71,7 @@ source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
     #    "${_patchsource}/arch-patches-v3/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
         "${_patchsource2}/cacule-patches/cacule-5.13.patch"
         "${_patchsource2}/bbr2-5.13.patch"
+        "${_patchsource2}/clearlinux.patch"
         "${_patchsource2}/bfq-5.13.patch"
         "${_patchsource2}/ksm-5.13.patch"
         "${_patchsource2}/cpu-5.13.patch"
@@ -79,6 +80,7 @@ source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "${_patchsource2}/ntfs3-5.13.patch"
         "${_patchsource2}/v4l2loopback-5.13.patch"
         "${_patchsource2}/futex/1001-futex-513-wait_multiple.patch"
+        "${_patchsource2}/misc/0009-rcu-fixes-next.patch"
         "${_patchsource2}/misc/2002-tune-vm-mm-and-vfs-settings.patch"
         "${_patchsource}/ll-patches/0005-Disable-CPU_FREQ_GOV_SCHEDUTIL.patch"
         "${_patchsource}/lru-gen/PATCH-v3-00-14-Multigenerational-LRU-Framework.patch"
