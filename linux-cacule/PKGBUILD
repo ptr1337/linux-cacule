@@ -52,11 +52,11 @@ _use_current=
 ### IMPORTANT: Do no edit below this line unless you know what you're doing
 
 _major=5.12
-_minor=10
+_minor=11
 _srcname=linux-${_major}
 pkgbase=linux-cacule
 pkgver=${_major}.${_minor}
-pkgrel=3
+pkgrel=1
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -74,7 +74,7 @@ source=(
   "${_caculepatches}/v5.12/cacule-5.12.patch"
   "${_patchsource}/cpu-patches-v4/0001-cpu-patches.patch"
   "${_patchsource}/futex-patches-v2/0001-futex-resync-from-gitlab.collabora.com.patch"
-  "${_patchsource}/futex2-stable-patches-v5/0001-futex2-resync-from-gitlab.collabora.com.patch"
+  "${_patchsource}/futex2-stable-patches-v6/0001-futex2-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/wine-esync-patches/0001-v5.12-winesync.patch"
   "${_patchsource}/zen-patches-v2/0001-zen-patches.patch"
   "${_patchsource}/lqx-patches-v3/0001-zen-Allow-MSR-writes-by-default.patch"
@@ -86,7 +86,7 @@ source=(
 #  "${_patchsource}/fixes-miscellaneous/lrng/lrng-40.patch"
 #  "${_patchsource}/fixes-miscellaneous/lrng/1004-lrng-update-20210607.patch"
   "${_patchsource}/bbr2-patches-v2/0001-bbr2-5.12-introduce-BBRv2.patch"
-  "${_patchsource}/btrfs-patches-v12/0001-btrfs-patches.patch"
+  "${_patchsource}/btrfs-patches-v13/0001-btrfs-patches.patch"
   "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
   "${_patchsource}/pf-patches-v3/0001-pf-patches.patch"
 #  "${_patchsource}/lru-patches-v4/0001-lru-patches.patch"
