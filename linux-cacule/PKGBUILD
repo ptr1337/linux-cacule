@@ -56,7 +56,7 @@ _minor=12
 _srcname=linux-${_major}
 pkgbase=linux-cacule
 pkgver=${_major}.${_minor}
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -79,7 +79,7 @@ source=(
   "${_patchsource}/zen-patches-v2/0001-zen-patches.patch"
   "${_patchsource}/lqx-patches-v3/0001-zen-Allow-MSR-writes-by-default.patch"
   "${_patchsource}/bfq-patches-v13/0001-bfq-patches.patch"
-  "${_patchsource}/block-patches-v5/0001-block-patches.patch"
+  "${_patchsource}/block-patches-v6/0001-block-patches.patch"
   "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
   "${_patchsource}/fixes-miscellaneous/2002-tune-vm-mm-and-vfs-settings.patch"
   "${_patchsource}/fixes-miscellaneous/objtool-crypto-jp.patch"
@@ -259,8 +259,8 @@ prepare() {
           scripts/config --enable CONFIG_CONTEXT_TRACKING
           scripts/config --disable CONFIG_CONTEXT_TRACKING_FORCE
           echo "Enabling KBUILD_CFLAGS -O3..."
-          scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
-          scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
+          scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
+          scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
           echo "Enable PREEMPT"
           scripts/config --disable CONFIG_PREEMPT_NONE
           scripts/config --disable CONFIG_PREEMPT_VOLUNTARY
