@@ -1,5 +1,5 @@
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f01fd68d10 100644
+index 814fe0d349b01d80ab3b80f69b00026098beb22b..ac30a581a4fd4605024a5435ebc445fae54fbb26 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -157,7 +157,7 @@ config MPENTIUM4
@@ -111,7 +111,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
 +
 +config MZEN3
 +	bool "AMD Zen 3"
-+	depends on GCC_VERSION > 100300
++	depends on ( CC_IS_GCC && GCC_VERSION >= 100300 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	help
 +	  Select this for AMD Family 19h Zen 3 processors.
 +
@@ -270,7 +270,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
 +
 +config MCOOPERLAKE
 +	bool "Intel Cooper Lake"
-+	depends on GCC_VERSION > 100100
++	depends on ( CC_IS_GCC && GCC_VERSION > 100100 ) || ( CC_IS_CLANG && CLANG_VERSION >= 100000 )
 +	select X86_P6_NOP
 +	help
 +
@@ -280,7 +280,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
 +
 +config MTIGERLAKE
 +	bool "Intel Tiger Lake"
-+	depends on GCC_VERSION > 100100
++	depends on  ( CC_IS_GCC && GCC_VERSION > 100100 ) || ( CC_IS_CLANG && CLANG_VERSION >= 100000 )
 +	select X86_P6_NOP
 +	help
 +
@@ -290,7 +290,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
 +
 +config MSAPPHIRERAPIDS
 +	bool "Intel Sapphire Rapids"
-+	depends on GCC_VERSION > 110000
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	select X86_P6_NOP
 +	help
 +
@@ -300,7 +300,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
 +
 +config MROCKETLAKE
 +	bool "Intel Rocket Lake"
-+	depends on GCC_VERSION > 110000
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	select X86_P6_NOP
 +	help
 +
@@ -310,7 +310,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
 +
 +config MALDERLAKE
 +	bool "Intel Alder Lake"
-+	depends on GCC_VERSION > 110000
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	select X86_P6_NOP
 +	help
 +
@@ -327,7 +327,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
  
 +config GENERIC_CPU2
 +	bool "Generic-x86-64-v2"
-+	depends on GCC_VERSION > 110000
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && LANG_VERSION >= 120000 )
 +	depends on X86_64
 +	help
 +	  Generic x86-64 CPU.
@@ -335,7 +335,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
 +
 +config GENERIC_CPU3
 +	bool "Generic-x86-64-v3"
-+	depends on GCC_VERSION > 110000
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && LANG_VERSION >= 120000 )
 +	depends on X86_64
 +	help
 +	  Generic x86-64-v3 CPU with v3 instructions.
@@ -343,27 +343,27 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
 +
 +config GENERIC_CPU4
 +	bool "Generic-x86-64-v4"
-+	depends on GCC_VERSION > 110000
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && LANG_VERSION >= 120000 )
 +	depends on X86_64
 +	help
 +	  Generic x86-64 CPU with v4 instructions.
 +	  Run equally well on all x86-64 CPUs with min support of x86-64-v4.
 +
 +config MNATIVE_INTEL
-+	bool "Intel-Native optimizations autodetected by GCC"
++	bool "Intel-Native optimizations autodetected by the compiler"
 +	help
 +
-+	  GCC 4.2 and above support -march=native, which automatically detects
++	  Clang 3.8, GCC 4.2 and above support -march=native, which automatically detects
 +	  the optimum settings to use based on your processor. Do NOT use this
 +	  for AMD CPUs.  Intel Only!
 +
 +	  Enables -march=native
 +
 +config MNATIVE_AMD
-+	bool "AMD-Native optimizations autodetected by GCC"
++	bool "AMD-Native optimizations autodetected by the compiler"
 +	help
 +
-+	  GCC 4.2 and above support -march=native, which automatically detects
++	  Clang 3.8, GCC 4.2 and above support -march=native, which automatically detects
 +	  the optimum settings to use based on your processor. Do NOT use this
 +	  for Intel CPUs.  AMD Only!
 +
@@ -428,7 +428,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..872b9cf598e3d8f9b3d14bc6070f71f0
  	default "4"
  
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 307529417021a77bcb5d7f80d774967edf7f1b2c..0d43d51c5128f90aa953059aa3fa82e9c505ef05 100644
+index cb5e8d39cac156421b32fbd37e8a7c437e0c8e26..0f32409b20998bd65d54e89519485c485ec8fd88 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
 @@ -122,11 +122,48 @@ else
@@ -570,10 +570,10 @@ index 75884d2cdec375f1bfc8ba93e461fa810be1ba26..4e6a08d4c7e5365a52ed9d6a5fb72dee
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
 diff --git a/init/Kconfig b/init/Kconfig
-index 1ea12c64e4c9f3662bc8b76bd8760295ec735dc8..127df1ae15dd506021cbc8b06c66fc5c8cadfd22 100644
+index a61c92066c2e41aaadaed9df78c8a9be35dace32..493fba4e834cb27fa7a30031eee11d26ffcb6f83 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1333,7 +1333,6 @@ config CC_OPTIMIZE_FOR_PERFORMANCE
+@@ -1334,7 +1334,6 @@ config CC_OPTIMIZE_FOR_PERFORMANCE
  
  config CC_OPTIMIZE_FOR_PERFORMANCE_O3
  	bool "Optimize more for performance (-O3)"
