@@ -52,7 +52,7 @@ You can tune the scheduler with following commands:
             kernel.interactivity_threshold=1000
             #  kernel.sched_harsh_mode_enabled=0
             ## CacULE-Testing ##
-            kernel.sched_nr_fork_threshold=(set your thread number -1; example: 6 Cores 12 Threds + 1 = 11 ## default value is "0"
+            kernel.sched_nr_fork_threshold=(set your thread number -1; example: 6 Cores 12 Threds - 1 = 11 ## default value is "0"
             kernel.sched_fake_interactive_win_time_ms=1000
             ## You can disable the Interactivity mechanism when setting ernel.sched_nr_fork_threshold to 100000
 
