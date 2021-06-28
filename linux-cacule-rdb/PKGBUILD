@@ -72,6 +72,7 @@ source=(
   "config"
   "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
   "${_caculepatches}/v5.13/cacule-5.13.patch"
+  "${_caculepatches}/v5.13/cacule-5.13.patch"
   "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
 #  "${_patchsource}/futex-patches-v2/0001-futex-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/futex2-trunk-patches/0001-futex2-resync-from-gitlab.collabora.com.patch"
@@ -80,7 +81,7 @@ source=(
   "${_patchsource}/lqx-patches/0001-zen-Allow-MSR-writes-by-default.patch"
   "${_patchsource}/bfq-patches/0001-bfq-patches.patch"
   "${_patchsource}/block-patches/0001-block-patches.patch"
-#  "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
+  "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
 #  "${_patchsource}/fixes-miscellaneous/2002-tune-vm-mm-and-vfs-settings.patch"
 #  "${_patchsource}/fixes-miscellaneous/lrng/lrng-40.patch"
 #  "${_patchsource}/fixes-miscellaneous/lrng/1004-lrng-update-20210607.patch"
@@ -521,7 +522,7 @@ for _p in "${pkgname[@]}"; do
   }"
 done
 
-sha256sums=('7d0df6f2bf2384d68d0bd8e1fe3e071d64364dcdc6002e7b5c87c92d48fac366'
+md5sums=(   '7d0df6f2bf2384d68d0bd8e1fe3e071d64364dcdc6002e7b5c87c92d48fac366'
             '84a39f8cbcca15af34bf431d6eb14d241bb4d1f0455da96ee0cbe1a22d44a39d'
             '075693810fd85c0733b0f551f861b928c8383922076818801de04f962afd3cff'
             'dd89db0483301a62cef23ba797fee1fb9804f570f952df87fe418ee22e353227'
