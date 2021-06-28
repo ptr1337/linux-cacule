@@ -72,7 +72,7 @@ source=(
   "config"
   "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
   "${_caculepatches}/v5.13/cacule-5.13.patch"
-  "${_caculepatches}/v5.13/cacule-5.13.patch"
+  "${_caculepatches}/v5.13/rdb-5.13.patch"
   "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
 #  "${_patchsource}/futex-patches-v2/0001-futex-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/futex2-trunk-patches/0001-futex2-resync-from-gitlab.collabora.com.patch"
@@ -526,7 +526,7 @@ md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
          'db27e837fe0e94c39ee8d0e663a33c3d'
          '9bb46b8ce45259c238c5233b8394d70b'
          '8fab6f0acf86d138a283c4dd044198ed'
-         '8fab6f0acf86d138a283c4dd044198ed'
+         'efb4f07f10058ec12933ba3ea12aa983'
          '7640a753a7803248543675a6edc75e08'
          '4aab396abd9852cb7519a19e3d96469b'
          '9573b92353399343db8a691c9b208300'
