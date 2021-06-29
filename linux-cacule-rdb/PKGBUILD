@@ -242,7 +242,7 @@ prepare() {
           scripts/config --disable CONFIG_SCHED_INFO
           scripts/config --disable CONFIG_SCHEDSTATS
           scripts/config --disable CONFIG_DEBUG_KERNEL
-          scripts/config --disable CONFIG_RT_GROUP_SCHED
+  #        scripts/config --disable CONFIG_RT_GROUP_SCHED
           echo "Enabling Full Tickless"
           scripts/config --disable CONFIG_HZ_PERIODIC
           scripts/config --disable CONFIG_NO_HZ_IDLE
@@ -300,7 +300,6 @@ prepare() {
       scripts/config --disable CONFIG_PROFILING
 
       # Processor type and features
-      scripts/config --disable CONFIG_RETPOLINE
       scripts/config --disable CONFIG_X86_5LEVEL
       scripts/config --disable CONFIG_KEXEC
       scripts/config --disable CONFIG_KEXEC_FILE
@@ -346,16 +345,6 @@ prepare() {
       scripts/config --disable CONFIG_KGDB
       scripts/config --disable CONFIG_EARLY_PRINTK
       scripts/config --disable CONFIG_DOUBLEFAULT
-
-    # General setup
-    scripts/config --enable IKCONFIG \
-                   --enable-after IKCONFIG IKCONFIG_PROC \
-                   --undefine RT_GROUP_SCHED
-
-    # Power management and ACPI options
-    scripts/config --enable ACPI_REV_OVERRIDE_POSSIBLE \
-                   --enable ACPI_TABLE_UPGRADE
-
 
 
     ### Optionally use running kernel's config
