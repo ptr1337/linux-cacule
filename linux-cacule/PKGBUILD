@@ -74,7 +74,6 @@ source=(
   "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
   "${_caculepatches}/v5.13/cacule-5.13.patch"
   "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
-#  "${_patchsource}/futex-patches-v2/0001-futex-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/futex2/0007-v5.13-futex2_interface.patch"
   "${_patchsource}/winesync/5.13-winesync.patch"
@@ -83,16 +82,10 @@ source=(
   "${_patchsource}/bfq-patches/0001-bfq-patches.patch"
   "${_patchsource}/block-patches/0001-block-patches.patch"
   "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
-#  "${_patchsource}/fixes-miscellaneous/2002-tune-vm-mm-and-vfs-settings.patch"
-#  "${_patchsource}/fixes-miscellaneous/lrng/lrng-40.patch"
-#  "${_patchsource}/fixes-miscellaneous/lrng/1004-lrng-update-20210607.patch"
   "${_patchsource}/bbr2-patches/0001-bbr2-5.13-introduce-BBRv2.patch"
   "${_patchsource}/btrfs-patches/0001-btrfs-patches.patch"
   "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
   "${_patchsource}/pf-patches-v2/0001-pf-patches.patch"
-#  "${_patchsource}/lru-patches-v4/0001-lru-patches.patch"
-#  "${_patchsource}/lru-gen/lru_5.12.patch"
-#  "${_patchsource}/le9db_patches/le9db1-5.10.patch"
   "${_patchsource}/lru-patches/0001-lru-patches.patch"
 #  "${_patchsource}/mm-patches/0001-mm-5.13-protect-file-mappings-under-memory-pressure.patch"
   "${_patchsource}/ntfs3-patches/0001-ntfs3-patches.patch"
@@ -101,7 +94,6 @@ source=(
   "${_patchsource}/ksm-patches/0001-ksm-patches.patch"
   "${_patchsource}/v4l2loopback-patches/0001-v4l2loopback-patches.patch"
 #  "${_patchsource}/initramfs-patches/0001-initramfs-patches.patch"
-#  "${_patchsource}/compaction-patches/0001-compaction-patches.patch"
 )
 
 export KBUILD_BUILD_HOST=archlinux
@@ -217,13 +209,6 @@ prepare() {
           	scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
           	scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
           fi
-### Enable protect file mappings under memory pressure
-  #        if [ -n "$_mm_protect" ]; then
-  #        	echo "Enabling protect file mappings under memory pressure..."
-  #        	scripts/config --enable CONFIG_UNEVICTABLE_FILE
-  #          scripts/config --set-val CONFIG_CLEAN_LOW_KBYTES 150000
-  #        	scripts/config --set-val CONFIG_CLEAN_MIN_KBYTES 0
-  #        fi
 
               ### Enable multigenerational LRU
           if [ -n "$_lru_enable" ]; then
@@ -309,59 +294,59 @@ prepare() {
           scripts/config --disable CONFIG_SLAB_MERGE_DEFAULT
           scripts/config --disable CONFIG_SLAB_FREELIST_HARDENED
           scripts/config --disable CONFIG_SLUB_CPU_PARTIAL
-          scripts/config --disable CONFIG_PROFILING
+scripts/config --disable CONFIG_PROFILING
 
-      # Processor type and features
-      scripts/config --disable CONFIG_RETPOLINE
-      scripts/config --disable CONFIG_X86_5LEVEL
-      scripts/config --disable CONFIG_KEXEC
-      scripts/config --disable CONFIG_KEXEC_FILE
-      scripts/config --disable CONFIG_CRASH_DUMPs
-      scripts/config --disable CONFIG_KPROBES
-      # Kernel hacking
-      scripts/config --disable CONFIG_FTRACE
-      scripts/config --disable CONFIG_DEBUG_KERNEL
-      scripts/config --disable CONFIG_PAGE_EXTENSION
-      scripts/config --set-val CONFIG_RCU_CPU_STALL_TIMEOUT 4
-      scripts/config --disable CONFIG_PRINTK_TIME
-      scripts/config --disable CONFIG_DEBUG_INFO
-      scripts/config --disable CONFIG_ENABLE_MUST_CHECK
-      scripts/config --disable CONFIG_STRIP_ASM_SYMS
-      scripts/config --disable CONFIG_UNUSED_SYMBOLS
-      scripts/config --disable CONFIG_DEBUG_FS
-      scripts/config --disable CONFIG_OPTIMIZE_INLINING
-      scripts/config --disable CONFIG_DEBUG_SECTION_MISMATCH
-      scripts/config --disable CONFIG_SECTION_MISMATCH_WARN_ONLY
-      scripts/config --disable CONFIG_STACK_VALIDATION
-      scripts/config --disable CONFIG_DEBUG_FORCE_WEAK_PER_CPU
-      scripts/config --disable CONFIG_MAGIC_SYSRQ
-      scripts/config --disable CONFIG_MAGIC_SYSRQ_SERIAL
-      scripts/config --disable CONFIG_PAGE_EXTENSION
-      scripts/config --disable CONFIG_DEBUG_PAGEALLOC
-      scripts/config --disable CONFIG_PAGE_OWNER
-      scripts/config --disable CONFIG_DEBUG_MEMORY_INIT
-      scripts/config --disable CONFIG_HARDLOCKUP_DETECTOR
-      scripts/config --disable CONFIG_SOFTLOCKUP_DETECTOR
-      scripts/config --disable CONFIG_DETECT_HUNG_TASK
-      scripts/config --disable CONFIG_WQ_WATCHDOG
-      scripts/config --set-val CONFIG_PANIC_TIMEOUT 10
-      scripts/config --disable CONFIG_SCHEDSTATS
-      scripts/config --disable CONFIG_SCHED_STACK_END_CHECK
-      scripts/config --disable CONFIG_STACKTRACE
-      scripts/config --disable CONFIG_DEBUG_BUGVERBOSE
-      scripts/config --disable CONFIG_RCU_TRACE
-      scripts/config --disable CONFIG_FAULT_INJECTION
-      scripts/config --disable CONFIG_LATENCYTOP
-      scripts/config --disable CONFIG_PROVIDE_OHCI1394_DMA_INIT
-      scripts/config --disable RUNTIME_TESTING_MENU
-      scripts/config --disable CONFIG_MEMTEST
-      scripts/config --disable CONFIG_KGDB
-      scripts/config --disable CONFIG_EARLY_PRINTK
-      scripts/config --disable CONFIG_DOUBLEFAULT
+          # Processor type and features
+          scripts/config --disable CONFIG_RETPOLINE
+          scripts/config --disable CONFIG_X86_5LEVEL
+          scripts/config --disable CONFIG_KEXEC
+          scripts/config --disable CONFIG_KEXEC_FILE
+          scripts/config --disable CONFIG_CRASH_DUMPs
+          scripts/config --disable CONFIG_KPROBES
+          # Kernel hacking
+          scripts/config --disable CONFIG_FTRACE
+          scripts/config --disable CONFIG_DEBUG_KERNEL
+          scripts/config --disable CONFIG_PAGE_EXTENSION
+          scripts/config --set-val CONFIG_RCU_CPU_STALL_TIMEOUT 4
+          scripts/config --disable CONFIG_PRINTK_TIME
+          scripts/config --disable CONFIG_DEBUG_INFO
+          scripts/config --disable CONFIG_ENABLE_MUST_CHECK
+          scripts/config --disable CONFIG_STRIP_ASM_SYMS
+          scripts/config --disable CONFIG_UNUSED_SYMBOLS
+          scripts/config --disable CONFIG_DEBUG_FS
+          scripts/config --disable CONFIG_OPTIMIZE_INLINING
+          scripts/config --disable CONFIG_DEBUG_SECTION_MISMATCH
+          scripts/config --disable CONFIG_SECTION_MISMATCH_WARN_ONLY
+          scripts/config --disable CONFIG_STACK_VALIDATION
+          scripts/config --disable CONFIG_DEBUG_FORCE_WEAK_PER_CPU
+          scripts/config --disable CONFIG_MAGIC_SYSRQ
+          scripts/config --disable CONFIG_MAGIC_SYSRQ_SERIAL
+          scripts/config --disable CONFIG_PAGE_EXTENSION
+          scripts/config --disable CONFIG_DEBUG_PAGEALLOC
+          scripts/config --disable CONFIG_PAGE_OWNER
+          scripts/config --disable CONFIG_DEBUG_MEMORY_INIT
+          scripts/config --disable CONFIG_HARDLOCKUP_DETECTOR
+          scripts/config --disable CONFIG_SOFTLOCKUP_DETECTOR
+          scripts/config --disable CONFIG_DETECT_HUNG_TASK
+          scripts/config --disable CONFIG_WQ_WATCHDOG
+          scripts/config --set-val CONFIG_PANIC_TIMEOUT 10
+          scripts/config --disable CONFIG_SCHEDSTATS
+          scripts/config --disable CONFIG_SCHED_STACK_END_CHECK
+          scripts/config --disable CONFIG_STACKTRACE
+          scripts/config --disable CONFIG_DEBUG_BUGVERBOSE
+          scripts/config --disable CONFIG_RCU_TRACE
+          scripts/config --disable CONFIG_FAULT_INJECTION
+          scripts/config --disable CONFIG_LATENCYTOP
+          scripts/config --disable CONFIG_PROVIDE_OHCI1394_DMA_INIT
+          scripts/config --disable RUNTIME_TESTING_MENU
+          scripts/config --disable CONFIG_MEMTEST
+          scripts/config --disable CONFIG_KGDB
+          scripts/config --disable CONFIG_EARLY_PRINTK
+          scripts/config --disable CONFIG_DOUBLEFAULT
 
     # General setup
     scripts/config --enable IKCONFIG \
-                   --enable-after IKCONFIG IKCONFIG_PROC \
+                 --enable-after IKCONFIG IKCONFIG_PROC \
                    --undefine RT_GROUP_SCHED
 
     # Power management and ACPI options
@@ -523,11 +508,12 @@ for _p in "${pkgname[@]}"; do
 done
 
 md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
-         'db27e837fe0e94c39ee8d0e663a33c3d'
+         'b102915fcd613be6598260eaa33bd7a4'
          '9bb46b8ce45259c238c5233b8394d70b'
          '8fab6f0acf86d138a283c4dd044198ed'
          '7640a753a7803248543675a6edc75e08'
-         '4aab396abd9852cb7519a19e3d96469b'
+         '85f4be6562ee033b83814353a12b61bd'
+         '004c2b38dfc71a279e625a7daeb4fa84'
          '9573b92353399343db8a691c9b208300'
          '1217799f33d6ba822152a0e2fb6f2e34'
          '09a9e83b7b828fae46fd1a4f4cc23c28'
@@ -537,7 +523,7 @@ md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
          '12cdc30bc3e2a17825b23b63bd6a5e7a'
          '63078800040b2a9a9f19c59c4ebf5b23'
          '81f27f12e20971c7d7fc3a53ffb6842c'
-         '7255aedc800c417592ce7160585770b9'
+         'ed551763bd8112d087bcd21782d68325'
          '3f302dbaceea020abd40f6e9f23b75df'
          '86825a0c5716a1d9c6a39f9d3886b1bf'
          '9e5114dba6da65e8d444aa225b109a21'
