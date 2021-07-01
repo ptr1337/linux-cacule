@@ -90,6 +90,8 @@ source=(
   "${_patchsource}/ntfs3-patches/0001-ntfs3-patches.patch"
   "${_patchsource}/security-2/hardened-patches.patch"
   "${_patchsource}/security-2/lrng-v41.patch"
+  "${_patchsource}/security-patches/0001-security-patches.patch"
+  "${_patchsource}/misc/nohzfull-next.patch"
   "${_patchsource}/zstd-upstream-patches/0001-zstd-upstream-patches.patch"
   "${_patchsource}/clearlinux-patches/0001-clearlinux-patches.patch"
   "${_patchsource}/ksm-patches/0001-ksm-patches.patch"

@@ -11,6 +11,7 @@
 _NUMAdisable=y
 # Enable fsync
 _fsync=y
+_futex2=y
 ### Set performance governor as default
 _per_gov=y
 ### Running with a 2000 HZ, 1000HZ or 500HZ tick rate
@@ -42,7 +43,7 @@ _use_current=
 
 pkgbase=linux-cacule-rdb-rt
 _major=5.10
-_minor=46
+_minor=47
 _srcname=linux-${_major}.${_minor}
 pkgver=${_major}.${_minor}
 pkgrel=1
@@ -73,6 +74,7 @@ source=(
 # ${_patchsource}/clearlinux-patches/0001-clearlinux-patches.patch"
   "${_patchsource}/futex-dev-patches/0001-futex-dev-patches.patch"
 # "${_patchsource}/futex2-trunk-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
+  "${_patchsource}/futex2/futex2-5.10.patch"
 )
 
 export KBUILD_BUILD_HOST=archlinux
@@ -103,9 +105,7 @@ prepare() {
       make olddefconfig
     ### CPU_ARCH SCRIPT ##
       source "${startdir}"/configure
-
       cacule_config
-
       cpu_arch
       ### Optionally set tickrate to 2000HZ
         if [ -n "$_2k_HZ_ticks" ]; then
@@ -142,6 +142,10 @@ prepare() {
           echo "Enable Fsync support"
           scripts/config --enable CONFIG_FUTEX
           scripts/config --enable CONFIG_FUTEX_PI
+        fi
+        if [ -n "$_futex2" ]; then
+          echo "Enable Futex2 support"
+          scripts/config --enable CONFIG_FUTEX2
         fi
 
     ### Set performance governor
@@ -318,7 +322,7 @@ for _p in "${pkgname[@]}"; do
   }"
 done
 
-sha512sums=('f9dd7e507952bd16a7e20bf5f7c99a2bf921e041834d12a7297910902dee5336f3170e43bc81b632b1d34926ea941f60a3e8e5e679f5ad9bb329d02ddae449a8'
+md5sums=('f9dd7e507952bd16a7e20bf5f7c99a2bf921e041834d12a7297910902dee5336f3170e43bc81b632b1d34926ea941f60a3e8e5e679f5ad9bb329d02ddae449a8'
             'f03ee73b667c09ad558dc2bb795c5ce6cb7bd07cda584b2691b210dce1835d3332d557297f5c54d4d9dd67b1fbb92c49d00dc61cceed2b9a95f179d83a698809'
             'bd82dfd2efea454c42951650b7d454d74d8197262dd8bbabe4cf25b46972fb669e6098c2ad4947f739407369cfb9806d3b95249a258b73221d66a5e7b17093f3'
             'e3933bc737a8b432014897799aa92c9b5225ca9f7d5b6ebb7c58fec3aa248d2859e912437c580c983a5faf78a73dbaeea1d3e26fc8375cfe58c9512098111ca9'
