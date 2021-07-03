@@ -8,19 +8,19 @@
 
 ### amd64 /  x86_64
 
-    # Linux 5.12.y
+    # Linux 5.13.y
         - linux-cacule                         https://aur.archlinux.org/packages/linux-cacule/
         - linux-cacule-rdb                     https://aur.archlinux.org/packages/linux-cacule-rdb/
-    # Linux 5.11.y
+    # Linux 5.12.y
         - linux-hardened-cacule                https://aur.archlinux.org/packages/linux-hardened-cacule/
-    # Linux 5.13-rc
+    # Linux 5.14-rc
         - linux-cacule-rc                      https://aur.archlinux.org/packages/linux-cacule-rc/
         - linux-cacule-rdb-rc                  https://aur.archlinux.org/packages/linux-cacule-rdb-rc/
 
  ---
  ### RT-KERNELS
 
-    ä linux-xanmod-cacule-rt 5.11.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt/
+    ä linux-xanmod-cacule-rt 5.11.y             https://aur.archlinux.org/packages/linux-cacule-rt/
     # linux-xanmod-cacule-rt 5.10.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt-stable/
 
 
@@ -49,12 +49,7 @@ You can tune the scheduler with following commands:
              ## Cacule-Settings - these are default values ##
             kernel.sched_interactivity_factor=32768
             kernel.sched_max_lifetime_ms=22000
-            kernel.interactivity_threshold=1000
-            #  kernel.sched_harsh_mode_enabled=0
-            ## CacULE-Testing ##
-            kernel.sched_nr_fork_threshold=(set your thread number -1; example: 6 Cores 12 Threds - 1 = 11 ## default value is "0"
-            kernel.sched_fake_interactive_win_time_ms=1000
-            ## You can disable the Interactivity mechanism when setting ernel.sched_nr_fork_threshold to 100000
+            kernel.interactivity_threshold=10000
 
            ### Some general Network-Settings ##
 
