@@ -74,7 +74,7 @@ source=(
   "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
   "${_caculepatches}/v5.13/cacule-5.13-rt.patch"
   "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
-  "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
+#  "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/futex2/0007-v5.13-futex2_interface.patch"
   "${_patchsource}/winesync/5.13-winesync.patch"
   "${_patchsource}/zen-patches/0001-zen-patches.patch"
@@ -93,7 +93,7 @@ source=(
   "${_patchsource}/misc/1000-tune-vm-mm-and-vfs-settings.patch"
   "${_patchsource}/misc/rcu-fixes-next.patch"
   "${_patchsource}/zstd-upstream-patches/0001-zstd-upstream-patches.patch"
-  "${_patchsource}/ksm-patches/0001-ksm-patches.patch"
+#  "${_patchsource}/ksm-patches/0001-ksm-patches.patch"
   "${_patchsource}/v4l2loopback-patches/0001-v4l2loopback-patches.patch"
 )
 
@@ -501,9 +501,8 @@ md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
          'e1d6115db8aa6afc106494e940c5cdc0'
          '9c1c2857450057a9f375327eab104688'
          '9bb46b8ce45259c238c5233b8394d70b'
-         '8fab6f0acf86d138a283c4dd044198ed'
+         '26e9b72135ebafdf269c8b90014d87e1'
          '7640a753a7803248543675a6edc75e08'
-         '85f4be6562ee033b83814353a12b61bd'
          '2c0375b3cc9690a0f0f3d3e49df54d10'
          '9573b92353399343db8a691c9b208300'
          '1217799f33d6ba822152a0e2fb6f2e34'
@@ -522,5 +521,4 @@ md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
          '0632f49f076c90b6d6098cad7b5a88ac'
          'eff4bb43a8defb7ed08b9c1e403291ea'
          '9e5114dba6da65e8d444aa225b109a21'
-         'ce9beff503ee9e6ce6fd983c1bbbdd9e'
          'ef7748efcae55f7db8961227cbae3677')
