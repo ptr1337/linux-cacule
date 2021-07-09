@@ -58,7 +58,7 @@ pkgbase=linux-cacule-rt
 pkgver=${_major}.${_minor}
 #pkgver=${_major}
 pkgrel=1
-pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
+pkgdesc='Linux-CacULE-RT Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64' 'x86_64_v3')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
 license=('GPL2')
@@ -72,8 +72,7 @@ source=(
   "https://cdn.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
   "config"
   "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-  "${_patchsource}/RT/5.13-rt1.patch"
-  "${_caculepatches}/v5.13/cacule-5.13.patch"
+  "${_caculepatches}/v5.13/cacule-5.13-rt.patch"
   "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
   "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/futex2/0007-v5.13-futex2_interface.patch"
@@ -500,7 +499,7 @@ done
 
 md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
          'e1d6115db8aa6afc106494e940c5cdc0'
-         '2ec080047599485c19b50300c9d07aa8'
+         '9c1c2857450057a9f375327eab104688'
          '9bb46b8ce45259c238c5233b8394d70b'
          '8fab6f0acf86d138a283c4dd044198ed'
          '7640a753a7803248543675a6edc75e08'
@@ -508,10 +507,8 @@ md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
          '2c0375b3cc9690a0f0f3d3e49df54d10'
          '9573b92353399343db8a691c9b208300'
          '1217799f33d6ba822152a0e2fb6f2e34'
-         '09a9e83b7b828fae46fd1a4f4cc23c28'
          'e16eb528e701193bc8cb1facc6b27231'
          '396c84c4a6557db27f9c3bbfa656ac3e'
-         '9bbbd88f0303ccd59064648eaaf80edd'
          '1bd37d8e71b2a7aae8ebd2853a08f445'
          '63078800040b2a9a9f19c59c4ebf5b23'
          '81f27f12e20971c7d7fc3a53ffb6842c'
@@ -525,6 +522,5 @@ md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
          '0632f49f076c90b6d6098cad7b5a88ac'
          'eff4bb43a8defb7ed08b9c1e403291ea'
          '9e5114dba6da65e8d444aa225b109a21'
-         'c360b8c17d778f98a54fa7cddf348566'
          'ce9beff503ee9e6ce6fd983c1bbbdd9e'
          'ef7748efcae55f7db8961227cbae3677')
