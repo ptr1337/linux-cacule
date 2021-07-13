@@ -93,6 +93,7 @@ source=(
 #  "${_patchsource}/security-2/hardened-patches.patch"
 #  "${_patchsource}/security-2/lrng-v41.patch"
 #  "${_patchsource}/security-patches/0001-security-patches.patch"
+  "${_patchsource}/alsa-patches/0001-alsa-patches.patch"
   "${_patchsource}/misc/nohzfull.patch"
   "${_patchsource}/misc/1000-tune-vm-mm-and-vfs-settings.patch"
   "${_patchsource}/misc/rcu-fixes-next.patch"
