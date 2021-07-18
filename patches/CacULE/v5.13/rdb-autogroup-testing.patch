@@ -62,7 +62,7 @@ index bdedde199504..3daf861380b5 100644
  
  	wait_bit_init();
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 411ff758c07f..a1a9944b5704 100644
+index 411ff758c07f..48eeb5b78652 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
 @@ -786,6 +786,10 @@ static void __dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *_se)
@@ -374,7 +374,23 @@ index 411ff758c07f..a1a9944b5704 100644
  		}
  
  		if (time_after(next_balance, rq->next_balance)) {
-@@ -11058,6 +11121,144 @@ static inline bool nohz_idle_balance(struct rq *this_rq, enum cpu_idle_type idle
+@@ -10979,6 +11042,7 @@ static void _nohz_idle_balance(struct rq *this_rq, unsigned int flags,
+ 		WRITE_ONCE(nohz.has_blocked, 1);
+ }
+ 
++#if !defined(CONFIG_CACULE_RDB)
+ /*
+  * In CONFIG_NO_HZ_COMMON case, the idle balance kickee will do the
+  * rebalancing for all the cpus for whom scheduler ticks are stopped.
+@@ -10999,6 +11063,7 @@ static bool nohz_idle_balance(struct rq *this_rq, enum cpu_idle_type idle)
+ 
+ 	return true;
+ }
++#endif
+ 
+ /*
+  * Check if we need to run the ILB for updating blocked load before entering
+@@ -11058,6 +11123,144 @@ static inline bool nohz_idle_balance(struct rq *this_rq, enum cpu_idle_type idle
  static inline void nohz_newidle_balance(struct rq *this_rq) { }
  #endif /* CONFIG_NO_HZ_COMMON */
  
@@ -519,7 +535,7 @@ index 411ff758c07f..a1a9944b5704 100644
  /*
   * newidle_balance is called by schedule() if this_cpu is about to become
   * idle. Attempts to pull tasks from other CPUs.
-@@ -11068,6 +11269,107 @@ static inline void nohz_newidle_balance(struct rq *this_rq) { }
+@@ -11068,6 +11271,107 @@ static inline void nohz_newidle_balance(struct rq *this_rq) { }
   *   > 0 - success, new (fair) tasks present
   */
  static int newidle_balance(struct rq *this_rq, struct rq_flags *rf)
@@ -627,7 +643,7 @@ index 411ff758c07f..a1a9944b5704 100644
  {
  	unsigned long next_balance = jiffies + HZ;
  	int this_cpu = this_rq->cpu;
-@@ -11224,6 +11526,217 @@ void trigger_load_balance(struct rq *rq)
+@@ -11224,6 +11528,217 @@ void trigger_load_balance(struct rq *rq)
  
  	nohz_balancer_kick(rq);
  }
@@ -845,7 +861,7 @@ index 411ff758c07f..a1a9944b5704 100644
  
  static void rq_online_fair(struct rq *rq)
  {
-@@ -11864,7 +12377,9 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
+@@ -11864,7 +12379,9 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
  __init void init_sched_fair_class(void)
  {
  #ifdef CONFIG_SMP
