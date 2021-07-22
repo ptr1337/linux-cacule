@@ -1,7 +1,7 @@
 pkgbase=linux-cacule-llvm
 pkgname=("${pkgbase}" "${pkgbase}-headers")
-pkgver=5.13.3
-pkgrel=2
+pkgver=5.13.4
+pkgrel=1
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux Kernel with cacule scheduler and lto compiled'
 _gittag=v${pkgver%.*}-${pkgver##*.}
@@ -13,17 +13,38 @@ makedepends=(
   graphviz imagemagick git
 )
 _patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.13"
+_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
 source=(
   "https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver}.tar"{.xz,.sign}
   'config' # kernel config file
   '0001-compiler-march-kernel-5.8+.patch'
   '0002-x86-fpu-2021-07-07.patch'
   '0003-clang.patch'
-  '0004-cacule-5.13.patch'
-  "${_patchsource}/lru-patches-v3/0001-lru-patches.patch"
-  "${_patchsource}/clearlinux-patches-v2/0001-clearlinux-patches.patch"
+  "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
+  "${_caculepatches}/v5.13/cacule-5.13.patch"
+  "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
+  "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/futex2/0007-v5.13-futex2_interface.patch"
+  "${_patchsource}/winesync/5.13-winesync.patch"
+  "${_patchsource}/zen-patches/0001-zen-patches.patch"
+  "${_patchsource}/lqx-patches/0001-zen-Allow-MSR-writes-by-default.patch"
   "${_patchsource}/bfq-patches-v3/0001-bfq-patches.patch"
+  "${_patchsource}/block-patches-v2/0001-block-patches.patch"
+  "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
+  "${_patchsource}/bbr2-patches-v2/0001-bbr2-patches.patch"
+  "${_patchsource}/btrfs-patches-v2/0001-btrfs-patches.patch"
+  "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
+  "${_patchsource}/pf-patches-v5/0001-pf-patches.patch"
+  "${_patchsource}/lru-patches-v5/0001-lru-patches.patch"
+#  "${_patchsource}/lru-patches/lru_5.13.patch"
+#  "${_patchsource}/lru-patches/le9db_patches/le9db1-5.10.patch"
+  "${_patchsource}/ntfs3-patches/0001-ntfs3-patches.patch"
+  "${_patchsource}/misc/nohzfull.patch"
+  "${_patchsource}/alsa-patches/0001-alsa-patches.patch"
+  "${_patchsource}/zstd-upstream-patches/0001-zstd-upstream-patches.patch"
+  "${_patchsource}/clearlinux-patches-v2/0001-clearlinux-patches.patch"
+  "${_patchsource}/v4l2loopback-patches/0001-v4l2loopback-patches.patch"
+)
 )
 BUILD_FLAGS=(
       LLVM=1
@@ -72,13 +93,15 @@ prepare() {
     echo "-$pkgrel" > localversion.10-pkgrel
     echo "${pkgbase#linux}" > localversion.20-pkgname
 
-  patch -Np1 <"${srcdir:?}/0001-compiler-march-kernel-5.8+.patch"
-  patch -Np1 <"${srcdir:?}/0002-x86-fpu-2021-07-07.patch"
-  patch -Np1 <"${srcdir:?}/0003-clang.patch"
-  patch -Np1 <"${srcdir:?}/0004-cacule-5.13.patch"
-  patch -Np1 <"${srcdir:?}/0001-lru-patches.patch"
-  patch -Np1 <"${srcdir:?}/0007-v5.13-futex2_interface.patch"
-  patch -Np1 <"${srcdir:?}/0001-bfq-patches.patch"
+    local src
+        for src in "${source[@]}"; do
+        src="${src%%::*}"
+        src="${src##*/}"
+        [[ $src = *.patch ]] || continue
+        echo "Applying patch $src..."
+        patch -Np1 < "../$src"
+    done
+"
   echo "Setting config..."
   cp ../config .config
 

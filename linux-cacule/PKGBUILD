@@ -28,7 +28,7 @@ _mm_protect=y
 ### Enable multigenerational LRU
 _lru_enable=y
 ### Enable Linux Random Number Generator
-_lrng_enable=y
+_lrng_enable=
 ### Enable SECURITY_FORK_BRUTE
 # WARNING Not recommended.
 # An experimental solution, still in testing phase.
@@ -92,7 +92,7 @@ source=(
   "${_patchsource}/btrfs-patches-v2/0001-btrfs-patches.patch"
   "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
   "${_patchsource}/pf-patches-v5/0001-pf-patches.patch"
-  "${_patchsource}/lru-patches-v4/0001-lru-patches.patch"
+  "${_patchsource}/lru-patches-v5/0001-lru-patches.patch"
 #  "${_patchsource}/lru-patches/lru_5.13.patch"
 #  "${_patchsource}/lru-patches/le9db_patches/le9db1-5.10.patch"
   "${_patchsource}/ntfs3-patches/0001-ntfs3-patches.patch"
