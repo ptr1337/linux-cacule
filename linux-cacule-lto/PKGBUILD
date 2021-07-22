@@ -1,0 +1,226 @@
+pkgbase=linux-cacule-llvm
+pkgname=("${pkgbase}" "${pkgbase}-headers")
+pkgver=5.13.3
+pkgrel=2
+arch=(x86_64 x86_64_v3)
+pkgdesc='Linux Kernel with cacule scheduler and lto compiled'
+_gittag=v${pkgver%.*}-${pkgver##*.}
+url="https://kernel.org/"
+license=(GPL2)
+makedepends=(
+  bc kmod libelf pahole cpio perl tar xz
+  xmlto python-sphinx python-sphinx_rtd_theme
+  graphviz imagemagick git
+)
+_patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.13"
+source=(
+  "https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver}.tar"{.xz,.sign}
+  'config' # kernel config file
+  '0001-compiler-march-kernel-5.8+.patch'
+  '0002-x86-fpu-2021-07-07.patch'
+  '0003-clang.patch'
+  '0004-cacule-5.13.patch'
+  "${_patchsource}/lru-patches-v3/0001-lru-patches.patch"
+  "${_patchsource}/clearlinux-patches-v2/0001-clearlinux-patches.patch"
+  "${_patchsource}/futex2/0007-v5.13-futex2_interface.patch"
+  "${_patchsource}/bfq-patches-v3/0001-bfq-patches.patch"
+)
+BUILD_FLAGS=(
+      LLVM=1
+      LLVM_IAS=1
+      CC=clang
+      CXX=clang++
+      LD=ld.lld
+      AR=llvm-ar
+      NM=llvm-nm
+      STRIP=llvm-strip
+      READELF=llvm-readelf
+      HOSTCC=clang
+      HOSTCXX=clang++
+      HOSTAR=llvm-ar
+      HOSTLD=ld.lld
+      OBJCOPY=llvm-objcopy
+      OBJDUMP=objdump
+    )
+sha256sums=('78ea6e25137dc4c9d9203acca9c74299ca9cd56e1d47edcda67aa6002c0728c7'
+            'SKIP'
+            '8342cbda2e7b7919eb0177dd0a8bfdcfe6ab8438d6da488941095206678fd555'
+            'fa6cee9527d8e963d3398085d1862edc509a52e4540baec463edb8a9dd95bee0'
+            'af2f2bdac87f888f1cf363b1962f6ea83479c4e09e240f1745d344b89f8e383a'
+            'f1e6b22b0d98c512b23dba9126d86bc4112c8b8a2958252d80ea2bd36a7e9cf2'
+            '7acb2cbcbf82833842c1835828e3e9404d7e6b461657dbd0e51421e7cd106c96'
+            'b51e2d5a812631d714395faa14ed925ba511c00f4a5597038546365078085b20'
+            '04205c627cd3dcb737bd7b432cd7172d30f4ca0114b003bc3ac0dc8dadfa3c01'
+            '9ec679871cba674cf876ba836cde969296ae5034bcc10e1ec39b372e6e07aab0'
+            'c5501f058a8accf538fdb9cc541bd08419cd4d597e2c5bc31365d70c68bba5b3')
+options=('!strip')
+
+export KBUILD_BUILD_HOST=archlinux
+export KBUILD_BUILD_USER="${pkgbase}"
+export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
+
+prepare() {
+
+  cd "${srcdir:?}/linux-${pkgver}" || (
+    echo -e "\E[1;31mCan't cd to ${srcdir:?}/linux-${pkgver} directory! Prepare failed! \E[0m"
+    exit 1
+  )
+
+    ### Setting version
+    echo "Setting version..."
+    scripts/setlocalversion --save-scmversion
+    echo "-$pkgrel" > localversion.10-pkgrel
+    echo "${pkgbase#linux}" > localversion.20-pkgname
+
+  patch -Np1 <"${srcdir:?}/0001-compiler-march-kernel-5.8+.patch"
+  patch -Np1 <"${srcdir:?}/0002-x86-fpu-2021-07-07.patch"
+  patch -Np1 <"${srcdir:?}/0003-clang.patch"
+  patch -Np1 <"${srcdir:?}/0004-cacule-5.13.patch"
+  patch -Np1 <"${srcdir:?}/0001-lru-patches.patch"
+  patch -Np1 <"${srcdir:?}/0007-v5.13-futex2_interface.patch"
+  patch -Np1 <"${srcdir:?}/0001-bfq-patches.patch"
+  echo "Setting config..."
+  cp ../config .config
+
+#  if [[ "${CFLAGS=}" =~ znver2 ]]; then
+#    sed -i -e 's/CONFIG_GENERIC_CPU3/CONFIG_MZEN2/g' .config
+#  fi
+
+  make olddefconfig
+
+  make -s kernelrelease >version
+  echo "Prepared ${pkgbase} version $(<version)"
+
+}
+
+build() {
+
+  cd "${srcdir:?}/linux-${pkgver}" || (
+    echo -e "\E[1;31mCan't cd to ${srcdir:?}/linux-${pkgver} directory! Build failed! \E[0m"
+    exit 1
+  )
+
+ make ${BUILD_FLAGS[*]} all
+
+}
+
+package_linux-cacule-llvm() {
+
+  pkgdesc="The ${pkgdesc} and modules"
+  depends=(coreutils kmod initramfs)
+  optdepends=('crda: to set the correct wireless channels of your country'
+    'linux-firmware: firmware images needed for some devices')
+  provides=(VIRTUALBOX-GUEST-MODULES WIREGUARD-MODULE)
+  replaces=(virtualbox-guest-modules-arch wireguard-arch)
+
+  cd "${srcdir:?}/linux-${pkgver}" || (
+    echo -e "\E[1;31mCan't cd to ${srcdir:?}/linux-${pkgver} directory! Package linux kernel failed! \E[0m"
+    exit 1
+  )
+
+  local kernver="$(<version)"
+  local modulesdir="${pkgdir:?}/usr/lib/modules/$kernver"
+
+  echo "Installing boot image..."
+  # systemd expects to find the kernel here to allow hibernation
+  # https://github.com/systemd/systemd/commit/edda44605f06a41fb86b7ab8128dcf99161d2344
+  install -Dm644 "$(make -s image_name)" "${modulesdir}/vmlinuz"
+
+  # Used by mkinitcpio to name the kernel
+  echo "${pkgbase}" | install -Dm644 /dev/stdin "${modulesdir}/pkgbase"
+
+  echo "Installing modules..."
+  make INSTALL_MOD_PATH="${pkgdir:?}/usr" INSTALL_MOD_STRIP=1 modules_install
+
+  # remove build and source links
+  rm "${modulesdir}/"{source,build}
+
+}
+
+package_linux-cacule-llvm-headers() {
+
+  pkgdesc="Headers and scripts for building modules for the ${pkgdesc}"
+  depends=("linux-cacule-llvm=${pkgver}" pahole)
+
+  cd "${srcdir:?}/linux-${pkgver}" || (
+    echo -e "\E[1;31mCan't cd to ${srcdir:?}/linux-${pkgver} directory! Package linux headers failed! \E[0m"
+    exit 1
+  )
+
+  local builddir="${pkgdir:?}/usr/lib/modules/$(<version)/build"
+
+  echo "Installing build files..."
+  install -Dt "${builddir}" -m644 .config Makefile Module.symvers System.map \
+    localversion.* version vmlinux
+  install -Dt "${builddir}/kernel" -m644 kernel/Makefile
+  install -Dt "${builddir}/arch/x86" -m644 arch/x86/Makefile
+  cp -t "${builddir}" -a scripts
+
+  # add objtool for external module building and enabled VALIDATION_STACK option
+  install -Dt "${builddir}/tools/objtool" tools/objtool/objtool
+
+  # add xfs and shmem for aufs building
+  mkdir -p "${builddir}"/{fs/xfs,mm}
+
+  echo "Installing headers..."
+  cp -t "${builddir}" -a include
+  cp -t "${builddir}/arch/x86" -a arch/x86/include
+  install -Dt "${builddir}/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+
+  install -Dt "${builddir}/drivers/md" -m644 drivers/md/*.h
+  install -Dt "${builddir}/net/mac80211" -m644 net/mac80211/*.h
+
+  # https://bugs.archlinux.org/task/13146
+  install -Dt "${builddir}/drivers/media/i2c" -m644 drivers/media/i2c/msp3400-driver.h
+
+  # https://bugs.archlinux.org/task/20402
+  install -Dt "${builddir}/drivers/media/usb/dvb-usb" -m644 drivers/media/usb/dvb-usb/*.h
+  install -Dt "${builddir}/drivers/media/dvb-frontends" -m644 drivers/media/dvb-frontends/*.h
+  install -Dt "${builddir}/drivers/media/tuners" -m644 drivers/media/tuners/*.h
+
+  # https://bugs.archlinux.org/task/71392
+  install -Dt "${builddir}/drivers/iio/common/hid-sensors" -m644 drivers/iio/common/hid-sensors/*.h
+
+  echo "Installing KConfig files..."
+  find . -name 'Kconfig*' -exec install -Dm644 {} "${builddir}/{}" \;
+
+  echo "Removing unneeded architectures..."
+  local arch
+  for arch in "${builddir}"/arch/*/; do
+    [[ $arch = */x86/ ]] && continue
+    echo "Removing $(basename "$arch")"
+    rm -r "$arch"
+  done
+
+  echo "Removing documentation..."
+  rm -r "${builddir}/Documentation"
+
+  echo "Removing broken symlinks..."
+  find -L "${builddir}" -type l -printf 'Removing %P\n' -delete
+
+  echo "Removing loose objects..."
+  find "${builddir}" -type f -name '*.o' -printf 'Removing %P\n' -delete
+
+  echo "Stripping build tools..."
+  local file
+  while read -rd '' file; do
+    case "$(file -bi "$file")" in
+    application/x-sharedlib\;*) # Libraries (.so)
+      strip -v "${STRIP_SHARED}" "$file" ;;
+    application/x-archive\;*) # Libraries (.a)
+      strip -v "${STRIP_STATIC}" "$file" ;;
+    application/x-executable\;*) # Binaries
+      strip -v "${STRIP_BINARIES}" "$file" ;;
+    application/x-pie-executable\;*) # Relocatable binaries
+      strip -v "${STRIP_SHARED}" "$file" ;;
+    esac
+  done < <(find "${builddir}" -type f -perm -u+x ! -name vmlinux -print0)
+
+  echo "Stripping vmlinux..."
+  strip -v "${STRIP_STATIC}" "${builddir}/vmlinux"
+
+  echo "Adding symlink..."
+  mkdir -p "${pkgdir:?}/usr/src"
+  ln -sr "${builddir}" "${pkgdir:?}/usr/src/${pkgbase}"
+
+}
