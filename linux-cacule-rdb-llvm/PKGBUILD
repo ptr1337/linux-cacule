@@ -59,7 +59,7 @@ _use_current=
 
 pkgbase=linux-cacule-rdb-llvm
 pkgname=("${pkgbase}" "${pkgbase}-headers")
-pkgver=5.13.5
+pkgver=5.13.6
 pkgrel=1
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux Kernel with cacule scheduler and lto compiled'

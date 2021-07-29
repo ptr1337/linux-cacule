@@ -58,7 +58,7 @@ _use_current=
 ### IMPORTANT: Do no edit below this line unless you know what you're doing
 
 _major=5.13
-_minor=5
+_minor=6
 _srcname=linux-${_major}
 pkgbase=linux-cacule-rdb
 pkgver=${_major}.${_minor}
