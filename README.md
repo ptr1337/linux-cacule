@@ -76,6 +76,11 @@ You can tune the scheduler with following commands:
 Im providing a fileserver where i upload my builded kernels - Skylake and Generic and v3 ones.
 https://build.cachyos.org
 
+More informations youll find here: 
+https://github.com/CachyOS
+or
+at our Discord:
+https://discord.gg/k39qfrxPNa
 
 ##  more explained Informations for the cacule scheduler
 
@@ -83,13 +88,7 @@ Here you find the repo from the creator of the scheduler:
 
 https://github.com/hamadmarri/cacule-cpu-scheduler
 
-## CacULE revision 2 - testing Changes:
 
-- Added 2000HZ as an option
-- Added Responsive wakup/new task to be placed in a CPU with least Interactive score (to balance out interactive tasks among cpus)
-- Added Interactivity levels mechanism
-- Increased the precision of lifetime normalize from x8 to x1024
-- Decoupled se.vruntime from cn.vruntime
 
 # Credits
 
