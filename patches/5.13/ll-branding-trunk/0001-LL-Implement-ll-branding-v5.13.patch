@@ -1,4 +1,4 @@
-From 097b36d6bb5c62e0e12aa45cfca16b16bc3674b9 Mon Sep 17 00:00:00 2001
+From f72d13dd587d55982cfbbdb99de4441c094cfd38 Mon Sep 17 00:00:00 2001
 From: Piotr Gorski <lucjan.lucjanov@gmail.com>
 Date: Mon, 28 Jun 2021 15:05:01 +0100
 Subject: [PATCH] LL: Implement ll-branding v5.13
@@ -73,7 +73,7 @@ index 0f1b34dbf..305adbded 100644
  void page_cache_ra_unbounded(struct readahead_control *,
  		unsigned long nr_to_read, unsigned long lookahead_count);
 diff --git a/init/Kconfig b/init/Kconfig
-index 105b5f6ab..5402b372e 100644
+index cfa1ff224..cb9e30f67 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -104,6 +104,10 @@ config THREAD_INFO_IN_TASK
@@ -88,10 +88,10 @@ index 105b5f6ab..5402b372e 100644
  	bool
  
 diff --git a/kernel/sched/alt_core.c b/kernel/sched/alt_core.c
-index fc5348e75..f9e0b3ac1 100644
+index 8b682823b..c44bd5478 100644
 --- a/kernel/sched/alt_core.c
 +++ b/kernel/sched/alt_core.c
-@@ -100,7 +100,11 @@ early_param("sched_timeslice", sched_timeslice);
+@@ -111,7 +111,11 @@ early_param("sched_timeslice", sched_timeslice);
   * 1: Deboost and requeue task. (default)
   * 2: Set rq skip task.
   */
@@ -104,7 +104,7 @@ index fc5348e75..f9e0b3ac1 100644
  #ifdef CONFIG_SMP
  static cpumask_t sched_rq_pending_mask ____cacheline_aligned_in_smp;
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index d13b8d29c..82c8924e9 100644
+index 6f21530c9..09235cf7d 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -74,7 +74,11 @@ __read_mostly int sysctl_resched_latency_warn_once = 1;
@@ -132,7 +132,7 @@ index d13b8d29c..82c8924e9 100644
  
  /*
 diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 6d2a0119f..e6d866552 100644
+index b464788b2..875bf1959 100644
 --- a/mm/huge_memory.c
 +++ b/mm/huge_memory.c
 @@ -54,7 +54,11 @@ unsigned long transparent_hugepage_flags __read_mostly =
@@ -148,7 +148,7 @@ index 6d2a0119f..e6d866552 100644
  	(1<<TRANSPARENT_HUGEPAGE_USE_ZERO_PAGE_FLAG);
  
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 0062d5c57..a843ef9b2 100644
+index 736d9e996..fe1c9dfde 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -71,7 +71,11 @@ static long ratelimit_pages = 32;
@@ -176,10 +176,10 @@ index 0062d5c57..a843ef9b2 100644
  /*
   * vm_dirty_bytes starts at 0 (disabled) so that it is a function of
 diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 465b93106..d77ef176d 100644
+index 941a2e129..99cbcad9d 100644
 --- a/mm/vmscan.c
 +++ b/mm/vmscan.c
-@@ -180,7 +180,11 @@ extern unsigned long sysctl_unevictable_file_kbytes_min;
+@@ -198,7 +198,11 @@ extern unsigned long sysctl_unevictable_anon_kbytes_min;
  /*
   * From 0 .. 200.  Higher means more swappy.
   */
@@ -192,5 +192,5 @@ index 465b93106..d77ef176d 100644
  static void set_task_reclaim_state(struct task_struct *task,
  				   struct reclaim_state *rs)
 -- 
-2.32.0.93.g670b81a890
+2.32.0.264.g75ae10bc75
 

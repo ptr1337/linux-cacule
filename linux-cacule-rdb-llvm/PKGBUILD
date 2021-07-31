@@ -59,8 +59,8 @@ _use_current=
 
 pkgbase=linux-cacule-rdb-llvm
 pkgname=("${pkgbase}" "${pkgbase}-headers")
-pkgver=5.13.6
-pkgrel=2
+pkgver=5.13.7
+pkgrel=1
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux Kernel with cacule scheduler and lto compiled'
 _gittag=v${pkgver%.*}-${pkgver##*.}
@@ -86,7 +86,7 @@ source=(
 "${_patchsource}/futex2/0007-v5.13-futex2_interface.patch"
 "${_patchsource}/winesync/5.13-winesync.patch"
 "${_patchsource}/zen-patches/0001-zen-patches.patch"
-"${_patchsource}/lqx-patches-v2/0001-lqx-patches.patch"
+"${_patchsource}/lqx-patches-v3/0001-lqx-patches.patch"
 "${_patchsource}/bfq-patches-v3/0001-bfq-patches.patch"
 "${_patchsource}/block-patches-v2/0001-block-patches.patch"
 "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
@@ -96,7 +96,7 @@ source=(
 "${_patchsource}/pf-patches-v7/0001-pf-patches.patch"
 "${_patchsource}/lru-patches-v5/0001-lru-patches.patch"
 "${_patchsource}/ntfs3-patches-v2/0001-ntfs3-patches.patch"
-"${_patchsource}/lrng-patches/0001-lrng-patches.patch"
+"${_patchsource}/lrng-patches/0001-lrng-patches-v2.patch"
 "${_patchsource}/security-patches/0001-security-patches.patch"
 "${_patchsource}/alsa-patches/0001-alsa-patches.patch"
 "${_patchsource}/zstd-upstream-patches/0001-zstd-upstream-patches.patch"
