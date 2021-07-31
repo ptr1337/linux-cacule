@@ -46,11 +46,6 @@
 
 You can tune the scheduler with following commands:
 
-             ## Cacule-Settings - these are default values ##
-            kernel.sched_interactivity_factor=32768
-            kernel.sched_max_lifetime_ms=22000
-            kernel.interactivity_threshold=10000
-
            ### Some general Network-Settings ##
 
             net.core.netdev_max_backlog = 16384
@@ -78,9 +73,9 @@ You can tune the scheduler with following commands:
 
 ## prebuilt Kernels
 
-Im providing a fileserver where i upload my builded kernels - Skylake and Generic ones.
+Im providing a fileserver where i upload my builded kernels - Skylake and Generic and v3 ones.
+https://build.cachyos.org
 
-https://ptr1337.dev
 
 ##  more explained Informations for the cacule scheduler
 
@@ -100,11 +95,7 @@ https://github.com/hamadmarri/cacule-cpu-scheduler
 
 Hamad Marri for his cacule scheduler https://github.com/hamadmarri
 
-Alexandre Frade - XanMod https://github.com/xanmod
-
 SirLucjan (Piotr Gorski) for his patches https://github.com/sirlucjan/kernel-patches
-
-vd (torvic9) - thanks for your tips! https://github.com/torvic9
 
 Archlinux
 
