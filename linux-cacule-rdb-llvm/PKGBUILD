@@ -60,7 +60,7 @@ _use_current=
 pkgbase=linux-cacule-rdb-llvm
 pkgname=("${pkgbase}" "${pkgbase}-headers")
 pkgver=5.13.7
-pkgrel=1
+pkgrel=2
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux Kernel with cacule scheduler and lto compiled'
 _gittag=v${pkgver%.*}-${pkgver##*.}
@@ -69,7 +69,7 @@ license=(GPL2)
 makedepends=(
   bc kmod libelf pahole cpio perl tar xz
   xmlto python-sphinx python-sphinx_rtd_theme
-  graphviz imagemagick git llvm clang
+  graphviz imagemagick git llvm clang lld
 )
 _patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.13"
 _caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
@@ -311,8 +311,8 @@ prepare() {
        scripts/config --enable CONFIG_MODULE_COMPRESS
         scripts/config --disable CONFIG_MODULE_COMPRESS_XZ
         scripts/config --enable CONFIG_MODULE_COMPRESS_ZSTD
-  #      scripts/config --set-val CONFIG_MODULE_COMPRESS_ZSTD_LEVEL 19
-  #      scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
+        scripts/config --set-val CONFIG_MODULE_COMPRESS_ZSTD_LEVEL 19
+        scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
 
   ### Enabling Cacule-Config ##
       echo "Enable CacULE CPU scheduler..."
@@ -331,10 +331,10 @@ prepare() {
       echo "Enabling Full Tickless"
       scripts/config --disable CONFIG_HZ_PERIODIC
       scripts/config --disable CONFIG_NO_HZ_IDLE
-      scripts/config --enable CONFIG_NO_HZ_FULL
+      scripts/config --disable CONFIG_NO_HZ_FULL
       scripts/config --enable CONFIG_NO_HZ
       scripts/config --enable CONFIG_NO_HZ_COMMON
-      scripts/config --enable CONFIG_CONTEXT_TRACKING
+      scripts/config --disable CONFIG_CONTEXT_TRACKING
       scripts/config --disable CONFIG_CONTEXT_TRACKING_FORCE
       echo "Enabling KBUILD_CFLAGS -O3..."
       scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE

@@ -28,7 +28,7 @@ _mm_protect=y
 ### Enable multigenerational LRU
 _lru_enable=y
 ### Enable Linux Random Number Generator
-_lrng_enable=
+_lrng_enable=y
 ### Enable SECURITY_FORK_BRUTE
 # WARNING Not recommended.
 # An experimental solution, still in testing phase.
@@ -36,7 +36,7 @@ _lrng_enable=
 # Leave it unselected.
 _fork_brute=
 # Tweak kernel options prior to a build via nconfig
-_makenconfig=
+_makenconfig=y
 
 # Only compile active modules to VASTLY reduce the number of modules built and
 # the build time.
@@ -63,7 +63,7 @@ _srcname=linux-${_major}
 pkgbase=linux-cacule-rdb-autogroup
 pkgver=${_major}.${_minor}
 #pkgver=${_major}
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64' 'x86_64_v3')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -78,7 +78,7 @@ source=(
   "https://cdn.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
   "config"
   "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-  "${_caculepatches}/v5.13/cacule-5.13.patch"
+  "${_caculepatches}/experimental/cacule-5.13-mfs.patch"
   "${_caculepatches}/v5.13/rdb-autogroup-testing.patch"
   "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
   "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
@@ -107,7 +107,23 @@ source=(
 #  "${_patchsource}/ksm-patches/0001-ksm-patches.patch"
   "${_patchsource}/v4l2loopback-patches/0001-v4l2loopback-patches.patch"
 )
-
+BUILD_FLAGS=(
+      LLVM=1
+      LLVM_IAS=1
+      CC=clang
+      CXX=clang++
+      LD=ld.lld
+      AR=llvm-ar
+      NM=llvm-nm
+      STRIP=llvm-strip
+      READELF=llvm-readelf
+      HOSTCC=clang
+      HOSTCXX=clang++
+      HOSTAR=llvm-ar
+      HOSTLD=ld.lld
+      OBJCOPY=llvm-objcopy
+      OBJDUMP=objdump
+    )
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
 export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
@@ -288,7 +304,7 @@ prepare() {
           echo "Enabling Full Tickless"
           scripts/config --disable CONFIG_HZ_PERIODIC
           scripts/config --disable CONFIG_NO_HZ_IDLE
-          scripts/config --enable CONFIG_NO_HZ_FULL
+          scripts/config --disable CONFIG_NO_HZ_FULL
           scripts/config --enable CONFIG_NO_HZ
           scripts/config --enable CONFIG_NO_HZ_COMMON
           scripts/config --enable CONFIG_CONTEXT_TRACKING
@@ -327,7 +343,6 @@ prepare() {
           scripts/config --set-str CONFIG_DEFAULT_TCP_CONG bbr2
           echo "Enable VHBA-Module"
           scripts/config --module CONFIG_VHBA
-          scripts/config --disable CONFIG_GCC_PLUGINS
           # General Setup
       scripts/config --disable CONFIG_BSD_PROCESS_ACCT
       scripts/config --disable CONFIG_TASK_XACCT
@@ -416,7 +431,7 @@ prepare() {
         fi
     fi
 
-    make -s kernelrelease > version
+    make ${BUILD_FLAGS[*]} -s kernelrelease > version
     echo "Prepared $pkgbase version $(<version)"
 
     [[ -z "$_makenconfig" ]] || make nconfig
@@ -427,7 +442,7 @@ prepare() {
 
 build() {
     cd $_srcname
-    make all
+    make ${BUILD_FLAGS[*]} all
 }
 
 _package() {
@@ -446,7 +461,7 @@ _package() {
     echo "Installing boot image..."
     # systemd expects to find the kernel here to allow hibernation
     # https://github.com/systemd/systemd/commit/edda44605f06a41fb86b7ab8128dcf99161d2344
-    install -Dm644 "$(make -s image_name)" "$modulesdir/vmlinuz"
+    install -Dm644 "$(make ${BUILD_FLAGS[*]} -s image_name)" "$modulesdir/vmlinuz"
 
     # Used by mkinitcpio to name the kernel
     echo "$pkgbase" | install -Dm644 /dev/stdin "$modulesdir/pkgbase"
