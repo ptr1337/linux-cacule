@@ -17,12 +17,6 @@
         - linux-cacule-rc                      https://aur.archlinux.org/packages/linux-cacule-rc/
         - linux-cacule-rdb-rc                  https://aur.archlinux.org/packages/linux-cacule-rdb-rc/
 
- ---
- ### RT-KERNELS
-
-    ä linux-xanmod-cacule-rt 5.11.y             https://aur.archlinux.org/packages/linux-cacule-rt/
-    # linux-xanmod-cacule-rt 5.10.y             https://aur.archlinux.org/packages/linux-xanmod-cacule-rt-stable/
-
 
 - When building the kernel, you can edit the PKGBUILD to your prefences regarding the user specific wishes
 - Also at building the kernel, you will be asked for some things like your cpu architecture, disabling debug settings for better performance, ...
@@ -30,9 +24,8 @@
 ### aarch64/armv7h
 
     # Linux 5.11.y
-        - linux-raspberrypi4-cacule-stable      https://aur.archlinux.org/packages/linux-raspberrypi4-cacule-stable/
-    # Linux 5.10.y
-        - linux-raspberrypi4-cacule             https://aur.archlinux.org/packages/linux-raspberrypi4-cacule/
+        - linux-raspberrypi4-cacule-stable      
+        - linux-raspberrypi4-cacule             
 
 
 #### Some infos for building  arm devices:
@@ -76,7 +69,7 @@ You can tune the scheduler with following commands:
 Im providing a fileserver where i upload my builded kernels - Skylake and Generic and v3 ones.
 https://build.cachyos.org
 
-More informations youll find here: 
+More informations youll find here:
 https://github.com/CachyOS
 or
 at our Discord:
