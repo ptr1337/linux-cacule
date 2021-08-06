@@ -49,7 +49,7 @@ index 7ad46f45df396..3a799de8ad526 100644
 cgit 1.2.3-1.el7
 
 
-From ca855b58c2dfe3f5c7c0a38adf980edced9e3314 Mon Sep 17 00:00:00 2001
+From 6fa88580a54a758ae4b9d833970337cb0fb21c46 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 6 Dec 2020 22:22:48 -0500
 Subject: mm: Introduce struct folio
@@ -88,7 +88,7 @@ index a42f9baddfbf8..2a94e6164f80f 100644
     :internal:
  .. kernel-doc:: include/linux/mmzone.h
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 8dd65290bac0d..c5f88f886af35 100644
+index 8dd65290bac0d..6f89ac0b923f0 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -949,6 +949,20 @@ static inline unsigned int compound_order(struct page *page)
@@ -120,9 +120,9 @@ index 8dd65290bac0d..c5f88f886af35 100644
 + * folio_nr_pages - The number of pages in the folio.
 + * @folio: The folio.
 + *
-+ * Return: A number which is a power of two.
++ * Return: A number which is a non-negative power of two.
 + */
-+static inline unsigned long folio_nr_pages(struct folio *folio)
++static inline long folio_nr_pages(struct folio *folio)
 +{
 +	return compound_nr(&folio->page);
 +}
@@ -301,7 +301,7 @@ index 5922031ffab6e..70ede83455386 100644
 cgit 1.2.3-1.el7
 
 
-From 6b474ab1d9c8cc969b57147b9a9e87f69502ecdc Mon Sep 17 00:00:00 2001
+From de5942590c9e7b84bab1e0e952ea0da3bae14930 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 18 Jan 2021 07:40:36 -0500
 Subject: mm: Add folio_pgdat(), folio_zone() and folio_zonenum()
@@ -324,7 +324,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 15 insertions(+)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index c5f88f886af35..6fdebffb44502 100644
+index 6f89ac0b923f0..32954b8dc5407 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1144,6 +1144,11 @@ static inline enum zone_type page_zonenum(const struct page *page)
@@ -360,7 +360,7 @@ index c5f88f886af35..6fdebffb44502 100644
 cgit 1.2.3-1.el7
 
 
-From 5865040721643c7340df8976b1631a05f3678065 Mon Sep 17 00:00:00 2001
+From fd2289fc1fbc1ce04e06fb4a04458b9983ee172c Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 18 Jan 2021 08:14:00 -0500
 Subject: mm/vmstat: Add functions to account folio statistics
@@ -517,7 +517,7 @@ index d6a6cf53b1278..241bd0f53fb97 100644
 cgit 1.2.3-1.el7
 
 
-From 3c68c9bb347823808e0a52e3c363c47a504bb063 Mon Sep 17 00:00:00 2001
+From 976088cad56e2fe94f0fb43e5233adfafd1ce53d Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 15 Jan 2021 10:52:37 -0500
 Subject: mm/debug: Add VM_BUG_ON_FOLIO() and VM_WARN_ON_ONCE_FOLIO()
@@ -592,7 +592,7 @@ index 1935d4c72d104..d7285f8148a3b 100644
 cgit 1.2.3-1.el7
 
 
-From 25f5b0e994d9a90994a28377a426c5c8d0373a66 Mon Sep 17 00:00:00 2001
+From da060a75ba0940d81fae6914238b4241d176d90e Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 31 Mar 2021 10:39:55 -0400
 Subject: mm: Add folio reference count functions
@@ -818,7 +818,7 @@ index 3a799de8ad526..717d53c9ddf1e 100644
 cgit 1.2.3-1.el7
 
 
-From 532e83a85797b2efde486eed9c8d6c4cf9df59d2 Mon Sep 17 00:00:00 2001
+From b63da4667e07bb694f33dae5a4c536d5938771bb Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 6 Dec 2020 23:04:57 -0500
 Subject: mm: Add folio_put()
@@ -846,7 +846,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 28 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 6fdebffb44502..6e25e8d5b98e5 100644
+index 32954b8dc5407..890752d3b0d5f 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -749,6 +749,11 @@ static inline int put_page_testzero(struct page *page)
@@ -912,7 +912,7 @@ index 6fdebffb44502..6e25e8d5b98e5 100644
 cgit 1.2.3-1.el7
 
 
-From 43a839dc66bf4d46d7c0721b37006603b3d1c15a Mon Sep 17 00:00:00 2001
+From b8cf9094d2bb70df03d76425811e9b7ede0eb456 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 6 Dec 2020 23:04:57 -0500
 Subject: mm: Add folio_get()
@@ -935,7 +935,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 17 insertions(+), 9 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 6e25e8d5b98e5..ea15bd7ae55ef 100644
+index 890752d3b0d5f..372cb7e0d43c6 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1223,18 +1223,26 @@ static inline bool is_pci_p2pdma_page(const struct page *page)
@@ -978,7 +978,7 @@ index 6e25e8d5b98e5..ea15bd7ae55ef 100644
 cgit 1.2.3-1.el7
 
 
-From 3f6e3c58f2acfd58ecf244c26e820b7d1f8abe0e Mon Sep 17 00:00:00 2001
+From 9f1dc04d02e634d087f1817b07656ec8128bcf18 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 10 May 2021 16:33:22 -0400
 Subject: mm: Add folio_try_get_rcu()
@@ -1221,7 +1221,7 @@ index d1458ecf2f51e..e7ce8bb137e05 100644
 cgit 1.2.3-1.el7
 
 
-From 8c02d1a1387610edb84cd5f5fcbc78adcd0591cf Mon Sep 17 00:00:00 2001
+From 6021dd5023479d3f63a1f1dd9704dfaf4be1536d Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 7 Dec 2020 15:42:09 -0500
 Subject: mm: Add folio flag manipulation functions
@@ -1669,7 +1669,7 @@ index 70ede83455386..ddb6606880860 100644
 cgit 1.2.3-1.el7
 
 
-From 63984049e50aeeb18fce18f579fb14a1b2a137f6 Mon Sep 17 00:00:00 2001
+From e726266f2dfc5bfe34c8aa1bf29d73d5f02c3579 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 25 Feb 2021 09:47:41 -0500
 Subject: mm/lru: Add folio LRU functions
@@ -1689,9 +1689,9 @@ Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
  Documentation/core-api/mm-api.rst |   1 +
- include/linux/mm_inline.h         | 101 +++++++++++++++++++++++++-------------
+ include/linux/mm_inline.h         | 103 +++++++++++++++++++++++++-------------
  include/trace/events/pagemap.h    |   2 +-
- 3 files changed, 68 insertions(+), 36 deletions(-)
+ 3 files changed, 69 insertions(+), 37 deletions(-)
 
 diff --git a/Documentation/core-api/mm-api.rst b/Documentation/core-api/mm-api.rst
 index 5c459ee2accee..971149f5d2416 100644
@@ -1706,10 +1706,10 @@ index 5c459ee2accee..971149f5d2416 100644
  .. kernel-doc:: include/linux/mm.h
     :internal:
 diff --git a/include/linux/mm_inline.h b/include/linux/mm_inline.h
-index 355ea1ee32bd7..d39537c5471b9 100644
+index 355ea1ee32bd7..e2ec68b0515c5 100644
 --- a/include/linux/mm_inline.h
 +++ b/include/linux/mm_inline.h
-@@ -6,22 +6,28 @@
+@@ -6,27 +6,33 @@
  #include <linux/swap.h>
  
  /**
@@ -1748,6 +1748,12 @@ index 355ea1ee32bd7..d39537c5471b9 100644
  }
  
  static __always_inline void update_lru_size(struct lruvec *lruvec,
+ 				enum lru_list lru, enum zone_type zid,
+-				int nr_pages)
++				long nr_pages)
+ {
+ 	struct pglist_data *pgdat = lruvec_pgdat(lruvec);
+ 
 @@ -39,69 +45,94 @@ static __always_inline void update_lru_size(struct lruvec *lruvec,
  }
  
@@ -1885,7 +1891,7 @@ index 1d28431e85bdc..92ad176210ff5 100644
 cgit 1.2.3-1.el7
 
 
-From f1f9854412318729f0875709b52d369316e6b9ee Mon Sep 17 00:00:00 2001
+From 3f2e4a339f28adfe26d0130dd8f9bc9b0db17d6f Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 11 Jan 2021 10:04:40 -0500
 Subject: mm: Handle per-folio private data
@@ -2029,7 +2035,7 @@ index db1726b1bc1c1..3279c731ee047 100644
 cgit 1.2.3-1.el7
 
 
-From 67431f80c18a45d74097d8a0bc0f3268c94e7113 Mon Sep 17 00:00:00 2001
+From 7d5e7a9eae05dc67c26082a8167e55f08a42884d Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 15 Jan 2021 23:39:21 -0500
 Subject: mm/filemap: Add folio_index(), folio_file_page() and folio_contains()
@@ -2123,7 +2129,7 @@ index 3279c731ee047..f7c165b5991f0 100644
 cgit 1.2.3-1.el7
 
 
-From b7cf2ff5130937c9702862044ada5c4412f0f972 Mon Sep 17 00:00:00 2001
+From 83648c6697d60ad6be2bfc2c33de3dbe76a0cc3f Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 21 Mar 2021 16:24:31 -0400
 Subject: mm/filemap: Add folio_next_index()
@@ -2171,7 +2177,7 @@ index f7c165b5991f0..bd0e7e91bfd40 100644
 cgit 1.2.3-1.el7
 
 
-From b12454fd08e2d788792ee805852a0d68e30efb3c Mon Sep 17 00:00:00 2001
+From 09cbc6d75502926c0267be6f38ec60cc5a0fc4f0 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 24 Dec 2020 07:25:19 -0500
 Subject: mm/filemap: Add folio_pos() and folio_file_pos()
@@ -2226,7 +2232,7 @@ index bd0e7e91bfd40..aa71fa82d6bef 100644
 cgit 1.2.3-1.el7
 
 
-From 4480cfeb324694ab640a9e51d0bb2c06713134a5 Mon Sep 17 00:00:00 2001
+From 4b3adce5c856345cc4fc81571722cd1f72751b99 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 10 Dec 2020 10:55:05 -0500
 Subject: mm/util: Add folio_mapping() and folio_file_mapping()
@@ -2291,7 +2297,7 @@ index 971149f5d2416..395835f9289f1 100644
 +.. kernel-doc:: mm/util.c
 +   :functions: folio_mapping
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index ea15bd7ae55ef..cc8c2e09a34bf 100644
+index 372cb7e0d43c6..78655d6c33ea7 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1754,19 +1754,6 @@ void page_address_init(void);
@@ -2502,7 +2508,7 @@ index 9043d03750a73..1cde6218d6d14 100644
 cgit 1.2.3-1.el7
 
 
-From 0235f13bc03d178b948bc529cdca69daf0d67739 Mon Sep 17 00:00:00 2001
+From 13d967e764c4bd8c9c7061870ec5d58a9e801c53 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 7 Dec 2020 15:44:35 -0500
 Subject: mm/filemap: Add folio_unlock()
@@ -2605,7 +2611,7 @@ index 5e107aa30a623..91b3d00a92f74 100644
 cgit 1.2.3-1.el7
 
 
-From 2896ce5ea108e681462dae13512e640a3c59aa79 Mon Sep 17 00:00:00 2001
+From 45b5c2d62d2981d1ce48f08b660fb3713ed56b4b Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 1 Mar 2021 19:38:25 -0500
 Subject: mm/filemap: Add folio_lock()
@@ -2773,7 +2779,7 @@ index f936dd963331e..0c8b5a043e200 100644
 cgit 1.2.3-1.el7
 
 
-From a7a9dbf5c6586f6ca0df57f57538cce1e4e77e2e Mon Sep 17 00:00:00 2001
+From 5efb2512f9562f91fa1a1d9febb121f715de8398 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 8 Dec 2020 00:07:31 -0500
 Subject: mm/filemap: Add folio_lock_killable()
@@ -2900,7 +2906,7 @@ index 0c8b5a043e200..45983e98cf236 100644
 cgit 1.2.3-1.el7
 
 
-From e3700f8b6abeca88e6fb6bb7d6d9482d35554822 Mon Sep 17 00:00:00 2001
+From f78e1939136cb4fed1f4f62aad70383bc17b4f85 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 30 Dec 2020 17:58:40 -0500
 Subject: mm/filemap: Add __folio_lock_async()
@@ -3060,7 +3066,7 @@ index 45983e98cf236..554c6150eda06 100644
 cgit 1.2.3-1.el7
 
 
-From 35e305eee20d02172fc24acd382ab52c93490dd4 Mon Sep 17 00:00:00 2001
+From b2190f136783039e3328f63040616da24d904773 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 4 Mar 2021 10:21:02 -0500
 Subject: mm/filemap: Add folio_wait_locked()
@@ -3149,7 +3155,7 @@ index 554c6150eda06..50f901f25d82c 100644
 cgit 1.2.3-1.el7
 
 
-From d42e083e5eff0141ab954dee7fd4e39169eb85db Mon Sep 17 00:00:00 2001
+From 751c756b43042d554c84fa13c508a27e79b9ba42 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 18 Mar 2021 21:39:45 -0400
 Subject: mm/filemap: Add __folio_lock_or_retry()
@@ -3311,7 +3317,7 @@ index 747a01d495f2c..2f111f9b3dbc6 100644
 cgit 1.2.3-1.el7
 
 
-From 6ac258a39fe42ccd8442770b2a74d165093aa6af Mon Sep 17 00:00:00 2001
+From 9dff87f861afe7f33d50e10f08f0dea6a1208c17 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 8 Dec 2020 01:25:39 -0500
 Subject: mm/swap: Add folio_rotate_reclaimable()
@@ -3459,7 +3465,7 @@ index 19600430e536b..095a5ec6f986c 100644
 cgit 1.2.3-1.el7
 
 
-From 545c0f03d3dd47480a5f52afda98c904df499221 Mon Sep 17 00:00:00 2001
+From 4e7027c97dc8979e8056a574a9afed441db3457e Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 3 Mar 2021 15:21:55 -0500
 Subject: mm/filemap: Add folio_end_writeback()
@@ -3595,7 +3601,7 @@ index 91b3d00a92f74..526843d03d582 100644
 cgit 1.2.3-1.el7
 
 
-From ec086dcf8229d4fa257dc941dd1dcb9886889059 Mon Sep 17 00:00:00 2001
+From 00545fc51220f52076c7cb0a8358f226e37b5cd5 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 4 Mar 2021 11:09:17 -0500
 Subject: mm/writeback: Add folio_wait_writeback()
@@ -3761,7 +3767,7 @@ index 9f63548f247c3..c2c00e1533ad9 100644
 cgit 1.2.3-1.el7
 
 
-From f9b3e3eb6c9e8090a27d2d46349f674022308195 Mon Sep 17 00:00:00 2001
+From 48bca94f1da789629e914e9c41d587a88c54c331 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 4 Mar 2021 11:25:25 -0500
 Subject: mm/writeback: Add folio_wait_stable()
@@ -3885,7 +3891,7 @@ index c2c00e1533ad9..a078e9786cc4e 100644
 cgit 1.2.3-1.el7
 
 
-From ee44f674fd1cb531e7908a2cfa02579f34f5a19d Mon Sep 17 00:00:00 2001
+From 84a3d81cf9a596bcdf0dcad8298a1e721d013684 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 4 Mar 2021 12:02:54 -0500
 Subject: mm/filemap: Add folio_wait_bit()
@@ -4188,7 +4194,7 @@ index a078e9786cc4e..b34278d05395f 100644
 cgit 1.2.3-1.el7
 
 
-From 3e638af9e1da9fa5fa2dc4f2bdab14f2be863987 Mon Sep 17 00:00:00 2001
+From b64ec32fec5b429d99ff6c82ee3c49069db8e7b0 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 15 Jan 2021 17:14:48 -0500
 Subject: mm/filemap: Add folio_wake_bit()
@@ -4279,7 +4285,7 @@ index 4b0288cfc1655..3d504bf235346 100644
 cgit 1.2.3-1.el7
 
 
-From 9ee05b20d86bc0ab655f183cc5a02100895eec83 Mon Sep 17 00:00:00 2001
+From e0cb7cce5b0e65fc79be5ddd38fb2e90c1a784f4 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 16 Jan 2021 11:22:14 -0500
 Subject: mm/filemap: Convert page wait queues to be folios
@@ -4518,7 +4524,7 @@ index 3d504bf235346..ac8c9253cfedd 100644
 cgit 1.2.3-1.el7
 
 
-From d5cf6cb1a46515eb2c4a02b6f4b51386fd53dfca Mon Sep 17 00:00:00 2001
+From 560ce168a62978ee1f17c0ea1a298f293bc0ccf2 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 22 Apr 2021 22:58:32 -0400
 Subject: mm/filemap: Add folio private_2 functions
@@ -4682,7 +4688,7 @@ index ac8c9253cfedd..1ef737cf63fa0 100644
 cgit 1.2.3-1.el7
 
 
-From 7a4ae325b7467b321957e70251165885ba1c58e4 Mon Sep 17 00:00:00 2001
+From 3206101a2a222bdf1565f0f2cf13ada5b672a6fe Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 14:24:30 -0400
 Subject: fs/netfs: Add folio fscache functions
@@ -4865,7 +4871,7 @@ index edf58a581bce6..08f40e004d97e 100644
 cgit 1.2.3-1.el7
 
 
-From 043656facf6e5abd2f0578c94c503f7472361987 Mon Sep 17 00:00:00 2001
+From 2d49561ed02cdce999b59f696d320f89ac46b584 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 12 Apr 2021 16:45:17 -0400
 Subject: mm: Add folio_mapped()
@@ -4891,7 +4897,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  4 files changed, 29 insertions(+), 13 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index cc8c2e09a34bf..8b0c7ed84f683 100644
+index 78655d6c33ea7..d0cb0cb2a42b6 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1768,6 +1768,7 @@ static inline pgoff_t page_index(struct page *page)
@@ -4934,7 +4940,7 @@ index 3c83f03b80d7f..7044fcc8a8aa8 100644
 +}
 +EXPORT_SYMBOL(page_mapped);
 diff --git a/mm/util.c b/mm/util.c
-index 1cde6218d6d14..e8c12350b3ebb 100644
+index 1cde6218d6d14..8f139c2cf0008 100644
 --- a/mm/util.c
 +++ b/mm/util.c
 @@ -652,28 +652,31 @@ void *page_rmapping(struct page *page)
@@ -4954,7 +4960,7 @@ index 1cde6218d6d14..e8c12350b3ebb 100644
 +bool folio_mapped(struct folio *folio)
  {
 -	int i;
-+	int i, nr;
++	long i, nr;
  
 -	if (likely(!PageCompound(page)))
 -		return atomic_read(&page->_mapcount) >= 0;
@@ -4986,7 +4992,7 @@ index 1cde6218d6d14..e8c12350b3ebb 100644
 cgit 1.2.3-1.el7
 
 
-From e004ebf606763a60dc930279e4a40f9a707c2220 Mon Sep 17 00:00:00 2001
+From 201055ccf75b88d628f65c117aa1c084337b1ae6 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 25 Jun 2021 09:27:29 -0400
 Subject: mm: Add folio_nid()
@@ -5001,7 +5007,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 5 insertions(+)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 8b0c7ed84f683..797dd44344429 100644
+index d0cb0cb2a42b6..36f439b44de3f 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1428,6 +1428,11 @@ static inline int page_to_nid(const struct page *page)
@@ -5020,7 +5026,7 @@ index 8b0c7ed84f683..797dd44344429 100644
 cgit 1.2.3-1.el7
 
 
-From 69d2395ca8efee4799216940ceffec1217aef314 Mon Sep 17 00:00:00 2001
+From 53353b44aa729f1090b5d6bb89e752b52d78a48d Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 13:40:11 -0400
 Subject: mm/memcg: Remove 'page' parameter to mem_cgroup_charge_statistics()
@@ -5092,7 +5098,7 @@ index ae1f5d0cb5810..ee892daecb8bc 100644
 cgit 1.2.3-1.el7
 
 
-From 8dcfca3ceccad061046a76c43dbace3087755685 Mon Sep 17 00:00:00 2001
+From a2425dadae0e8979d7130ec7558e3c6759052d98 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 14:51:26 -0400
 Subject: mm/memcg: Use the node id in mem_cgroup_update_tree()
@@ -5180,7 +5186,7 @@ index ee892daecb8bc..d57ff5c5d330a 100644
 cgit 1.2.3-1.el7
 
 
-From afb628cd888cf2e6eb8ecabfa992fa2518caee2c Mon Sep 17 00:00:00 2001
+From 908d3cb2a2320f742c0dd30ec9df935e89c1c32a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 25 Jun 2021 08:57:02 -0400
 Subject: mm/memcg: Remove soft_limit_tree_node()
@@ -5243,7 +5249,7 @@ index d57ff5c5d330a..f70e33d691aa6 100644
 cgit 1.2.3-1.el7
 
 
-From 5eafda8b0c4d0623fa7cfd4e69bfc12b183bd208 Mon Sep 17 00:00:00 2001
+From a72691968dffa12d78015e0b46f24427d4fe63ff Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 25 Jun 2021 09:05:47 -0400
 Subject: mm/memcg: Convert memcg_check_events to take a node ID
@@ -5363,7 +5369,7 @@ index f70e33d691aa6..1a049bfa0e0a8 100644
 cgit 1.2.3-1.el7
 
 
-From 61374127431a56bc938d505de1bb831f63177374 Mon Sep 17 00:00:00 2001
+From 696fc978c9c3ec3a86641052e388feb2af4928a1 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 28 Jun 2021 14:59:26 -0400
 Subject: mm/memcg: Add folio_memcg() and related functions
@@ -5656,7 +5662,7 @@ index 1a049bfa0e0a8..f0f781dde37a9 100644
 cgit 1.2.3-1.el7
 
 
-From e02e05b0daa51607e69456f6afebb72a3ce637a5 Mon Sep 17 00:00:00 2001
+From 9ad8c1fbc5bdad6e393a920ed26db1b116e9b5e5 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 14:07:12 -0400
 Subject: mm/memcg: Convert commit_charge() to take a folio
@@ -5672,7 +5678,7 @@ Acked-by: Michal Hocko <mhocko@suse.com>
  1 file changed, 13 insertions(+), 14 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index f0f781dde37a9..c2ffad021e091 100644
+index f0f781dde37a9..91e3f69b5e0bb 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -2769,9 +2769,9 @@ static void cancel_charge(struct mem_cgroup *memcg, unsigned int nr_pages)
@@ -5702,7 +5708,7 @@ index f0f781dde37a9..c2ffad021e091 100644
  {
 -	unsigned int nr_pages = thp_nr_pages(page);
 +	struct folio *folio = page_folio(page);
-+	unsigned int nr_pages = folio_nr_pages(folio);
++	long nr_pages = folio_nr_pages(folio);
  	int ret;
  
  	ret = try_charge(memcg, gfp, nr_pages);
@@ -5722,7 +5728,7 @@ index f0f781dde37a9..c2ffad021e091 100644
 +	struct folio *newfolio = page_folio(newpage);
  	struct mem_cgroup *memcg;
 -	unsigned int nr_pages;
-+	unsigned int nr_pages = folio_nr_pages(newfolio);
++	long nr_pages = folio_nr_pages(newfolio);
  	unsigned long flags;
  
  	VM_BUG_ON_PAGE(!PageLocked(oldpage), oldpage);
@@ -5765,7 +5771,7 @@ index f0f781dde37a9..c2ffad021e091 100644
 cgit 1.2.3-1.el7
 
 
-From 881060885e5c3903476a5e1b40a2a1ef50c26d01 Mon Sep 17 00:00:00 2001
+From 39deecdc620a2435ac2e4b0064411797d517daa3 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 25 Jun 2021 09:27:04 -0400
 Subject: mm/memcg: Convert mem_cgroup_charge() to take a folio
@@ -5891,7 +5897,7 @@ index 3fa9bc8a67cf6..23d36b59f9975 100644
  		new_page = NULL;
  	}
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index c2ffad021e091..ff8014fba1259 100644
+index 91e3f69b5e0bb..922c704f71dba 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -6681,10 +6681,9 @@ void mem_cgroup_calculate_protection(struct mem_cgroup *root,
@@ -5904,7 +5910,7 @@ index c2ffad021e091..ff8014fba1259 100644
 +			gfp_t gfp)
  {
 -	struct folio *folio = page_folio(page);
- 	unsigned int nr_pages = folio_nr_pages(folio);
+ 	long nr_pages = folio_nr_pages(folio);
  	int ret;
  
 @@ -6697,27 +6696,27 @@ static int __mem_cgroup_charge(struct page *page, struct mem_cgroup *memcg,
@@ -6055,7 +6061,7 @@ index 0e2132834bc7d..5d0f55f3c0ede 100644
 cgit 1.2.3-1.el7
 
 
-From 6ce4de45bae2fd86e497f8f8dac8f08ffafb333b Mon Sep 17 00:00:00 2001
+From 737dcfb992f6d50761b950146d134ca90a86e650 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 29 Jun 2021 21:47:12 -0400
 Subject: mm/memcg: Convert uncharge_page() to uncharge_folio()
@@ -6066,11 +6072,11 @@ base or head pages, and not tail pages.
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- mm/memcontrol.c | 29 ++++++++++++++---------------
- 1 file changed, 14 insertions(+), 15 deletions(-)
+ mm/memcontrol.c | 31 +++++++++++++++----------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index ff8014fba1259..f88dd3bf38846 100644
+index 922c704f71dba..917fe2644d68e 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -6832,24 +6832,23 @@ static void uncharge_batch(const struct uncharge_gather *ug)
@@ -6086,7 +6092,8 @@ index ff8014fba1259..f88dd3bf38846 100644
 +static void uncharge_folio(struct folio *folio, struct uncharge_gather *ug)
  {
 -	struct folio *folio = page_folio(page);
- 	unsigned long nr_pages;
+-	unsigned long nr_pages;
++	long nr_pages;
  	struct mem_cgroup *memcg;
  	struct obj_cgroup *objcg;
 -	bool use_objcg = PageMemcgKmem(page);
@@ -6167,7 +6174,7 @@ index ff8014fba1259..f88dd3bf38846 100644
 cgit 1.2.3-1.el7
 
 
-From 6a95c78dfa4eb9bee3c2750f24c9920e0b056337 Mon Sep 17 00:00:00 2001
+From b00573992026935c4b2351496809ef1f81c9afd9 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 1 May 2021 20:42:23 -0400
 Subject: mm/memcg: Convert mem_cgroup_uncharge() to take a folio
@@ -6248,7 +6255,7 @@ index 8f6d7fdea9f4b..6b9c98ddcd09f 100644
  }
  
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index f88dd3bf38846..313977a25f3c8 100644
+index 917fe2644d68e..db26a83d1535c 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -6897,24 +6897,24 @@ static void uncharge_folio(struct folio *folio, struct uncharge_gather *ug)
@@ -6339,7 +6346,7 @@ index 095a5ec6f986c..11ff40104a2cd 100644
 cgit 1.2.3-1.el7
 
 
-From 5574ade1f27b0d24765b3e97ad180577ee0f70bf Mon Sep 17 00:00:00 2001
+From 281068ab1e75875b092357af2e4b582dd769a1c7 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 6 May 2021 18:14:59 -0400
 Subject: mm/memcg: Convert mem_cgroup_migrate() to take folios
@@ -6403,7 +6410,7 @@ index 3c170bc2f8037..2469f714520ab 100644
  	xas_lock_irqsave(&xas, flags);
  	xas_store(&xas, new);
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 313977a25f3c8..4f7ef67a75516 100644
+index db26a83d1535c..a0c6e7deeb0bb 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -6941,36 +6941,35 @@ void mem_cgroup_uncharge_list(struct list_head *page_list)
@@ -6429,8 +6436,8 @@ index 313977a25f3c8..4f7ef67a75516 100644
  {
 -	struct folio *newfolio = page_folio(newpage);
  	struct mem_cgroup *memcg;
--	unsigned int nr_pages = folio_nr_pages(newfolio);
-+	unsigned int nr_pages = folio_nr_pages(new);
+-	long nr_pages = folio_nr_pages(newfolio);
++	long nr_pages = folio_nr_pages(new);
  	unsigned long flags;
  
 -	VM_BUG_ON_PAGE(!PageLocked(oldpage), oldpage);
@@ -6521,7 +6528,7 @@ index 3931fed5c8d8c..2fd75b4d49740 100644
 cgit 1.2.3-1.el7
 
 
-From 2832679327e108a6d58c8bf6e58664f088b8c412 Mon Sep 17 00:00:00 2001
+From 7423e7dd1e01da62c609b522a07854945d2e5936 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 4 May 2021 11:43:01 -0400
 Subject: mm/memcg: Convert mem_cgroup_track_foreign_dirty_slowpath() to folio
@@ -6600,7 +6607,7 @@ index 840d1ba84cf5c..297871ca00047 100644
  
  	TP_printk("bdi %s[%llu]: ino=%lu memcg_id=%u cgroup_ino=%lu page_cgroup_ino=%lu",
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 4f7ef67a75516..d01978a373500 100644
+index a0c6e7deeb0bb..ec87afd6c8b3e 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -4571,17 +4571,17 @@ void mem_cgroup_wb_stats(struct bdi_writeback *wb, unsigned long *pfilepages,
@@ -6628,7 +6635,7 @@ index 4f7ef67a75516..d01978a373500 100644
 cgit 1.2.3-1.el7
 
 
-From 754fb2e00a777b98a26bb9f4077928ca05ec69d5 Mon Sep 17 00:00:00 2001
+From 4c079ba08fed43c8897b1ccbc703cd5c54dcca69 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 28 Jun 2021 17:26:00 -0400
 Subject: mm/memcg: Add folio_memcg_lock() and folio_memcg_unlock()
@@ -6678,7 +6685,7 @@ index f7d429d541177..c1726350bce92 100644
  {
  }
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index d01978a373500..24a32e0c563ba 100644
+index ec87afd6c8b3e..51215295174fe 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -1965,18 +1965,17 @@ void mem_cgroup_print_oom_group(struct mem_cgroup *memcg)
@@ -6782,7 +6789,7 @@ index d01978a373500..24a32e0c563ba 100644
 cgit 1.2.3-1.el7
 
 
-From fbd484b263814820a41dd790d2ddc25b7dfc7a9f Mon Sep 17 00:00:00 2001
+From 8da2385030877bfa4e1c400100d2d3985ff10952 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 1 Mar 2021 16:34:06 -0500
 Subject: mm/memcg: Convert mem_cgroup_move_account() to use a folio
@@ -6797,7 +6804,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 19 insertions(+), 18 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 24a32e0c563ba..2b79d1936c3d2 100644
+index 51215295174fe..620450f4e120a 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -5590,38 +5590,39 @@ static int mem_cgroup_move_account(struct page *page,
@@ -6910,7 +6917,7 @@ index 24a32e0c563ba..2b79d1936c3d2 100644
 cgit 1.2.3-1.el7
 
 
-From 4c1fa0081d16cde620d8ce45cb6c808f817f4698 Mon Sep 17 00:00:00 2001
+From d26b34a18bb7e4e6be6685c3fbad1434994817de Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 28 Jun 2021 20:00:28 -0400
 Subject: mm/memcg: Add folio_lruvec()
@@ -6985,7 +6992,7 @@ index 621508e0ecd5d..a88f7b893f80a 100644
  		/* If we already hold the lock, we can skip some rechecking */
  		if (lruvec != locked) {
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 2b79d1936c3d2..0cfd1890776ae 100644
+index 620450f4e120a..5718be76217e0 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -1186,9 +1186,10 @@ void lruvec_memcg_debug(struct lruvec *lruvec, struct page *page)
@@ -7063,7 +7070,7 @@ index 5ba3e42446fa6..e62c0f2084a26 100644
 cgit 1.2.3-1.el7
 
 
-From acf5b5a4957cdfbbc35f5cf4718ec1bcf4a3a0e1 Mon Sep 17 00:00:00 2001
+From 9041b555c87f289cfee3d5af6a53c11659efd86d Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 28 Jun 2021 21:59:47 -0400
 Subject: mm/memcg: Add folio_lruvec_lock() and similar functions
@@ -7222,7 +7229,7 @@ index ecb1fb1f5f3e1..763bf687ca92a 100644
  	for (i = nr - 1; i >= 1; i--) {
  		__split_huge_page_tail(head, i, lruvec, list);
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 0cfd1890776ae..1aeeb4437ffd5 100644
+index 5718be76217e0..9a018ac7defca 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -1158,67 +1158,59 @@ int mem_cgroup_scan_tasks(struct mem_cgroup *memcg,
@@ -7383,7 +7390,7 @@ index 4620df62f0ffa..0d48306d37dc8 100644
 cgit 1.2.3-1.el7
 
 
-From df506008767a8fc3a6aa95f9f80b7392fb9465fa Mon Sep 17 00:00:00 2001
+From fd3ec53c0bc0cc481591e0672726a30cc577045b Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 29 Jun 2021 22:27:31 -0400
 Subject: mm/memcg: Add folio_lruvec_relock_irq() and
@@ -7558,7 +7565,7 @@ index 0d48306d37dc8..7a2f25b904d9b 100644
 cgit 1.2.3-1.el7
 
 
-From ed8e27c08463c466bbe93a86f9b14f8680a589d3 Mon Sep 17 00:00:00 2001
+From 6e068abc7c4c5ccd09e25f3bdeaaaa8c8b40ca73 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 4 May 2021 17:19:13 -0400
 Subject: mm/workingset: Convert workingset_activation to take a folio
@@ -7684,7 +7691,7 @@ index e62c0f2084a26..39bb60d502173 100644
 cgit 1.2.3-1.el7
 
 
-From 1b2fb6101c7160f90d5b13612df03bf79803cb7e Mon Sep 17 00:00:00 2001
+From cdfc29fd8492446975bcbee54862a3aaeca2bb85 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 10:55:27 -0400
 Subject: mm: Add folio_pfn()
@@ -7698,7 +7705,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 14 insertions(+)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 797dd44344429..a0db9c0ba18b0 100644
+index 36f439b44de3f..29da8ffe73dab 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1623,6 +1623,20 @@ static inline unsigned long page_to_section(const struct page *page)
@@ -7726,7 +7733,7 @@ index 797dd44344429..a0db9c0ba18b0 100644
 cgit 1.2.3-1.el7
 
 
-From 3b7a2acaa70dd1d941c893b9e7c6e5f2eb227f03 Mon Sep 17 00:00:00 2001
+From 24272871ecda68e9e31833f03423bc5bb437f7fe Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 11:17:34 -0400
 Subject: mm: Add folio_raw_mapping()
@@ -7761,7 +7768,7 @@ index 1a8851b730310..fa31a7f0ed798 100644
  void folio_rotate_reclaimable(struct folio *folio);
  
 diff --git a/mm/util.c b/mm/util.c
-index e8c12350b3ebb..d0aa1d9c811e9 100644
+index 8f139c2cf0008..b6fa80b1e3879 100644
 --- a/mm/util.c
 +++ b/mm/util.c
 @@ -635,21 +635,10 @@ void kvfree_sensitive(const void *addr, size_t len)
@@ -7808,7 +7815,7 @@ index e8c12350b3ebb..d0aa1d9c811e9 100644
 cgit 1.2.3-1.el7
 
 
-From 117a27c2743ee3fe7cef9e1a4f1162d9f279c55b Mon Sep 17 00:00:00 2001
+From 33af94ed99e9d7f45ddd4751522c549a5f8c7a16 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 16 Dec 2020 11:06:33 -0500
 Subject: mm: Add flush_dcache_folio()
@@ -7823,8 +7830,8 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
  arch/arm/include/asm/cacheflush.h   |  1 +
  arch/nds32/include/asm/cacheflush.h |  1 +
  include/asm-generic/cacheflush.h    |  6 ++++++
- mm/util.c                           | 13 +++++++++++++
- 5 files changed, 27 insertions(+)
+ mm/util.c                           | 11 +++++++++++
+ 5 files changed, 25 insertions(+)
 
 diff --git a/Documentation/core-api/cachetlb.rst b/Documentation/core-api/cachetlb.rst
 index fe4290e267296..29682f69a9152 100644
@@ -7888,10 +7895,10 @@ index 4a674db4e1fa5..fedc0dfa4877c 100644
  #ifndef flush_dcache_mmap_lock
  static inline void flush_dcache_mmap_lock(struct address_space *mapping)
 diff --git a/mm/util.c b/mm/util.c
-index d0aa1d9c811e9..149537120a918 100644
+index b6fa80b1e3879..4f3a4c229a01e 100644
 --- a/mm/util.c
 +++ b/mm/util.c
-@@ -1057,3 +1057,16 @@ void page_offline_end(void)
+@@ -1057,3 +1057,14 @@ void page_offline_end(void)
  	up_write(&page_offline_rwsem);
  }
  EXPORT_SYMBOL(page_offline_end);
@@ -7899,12 +7906,10 @@ index d0aa1d9c811e9..149537120a918 100644
 +#ifndef ARCH_IMPLEMENTS_FLUSH_DCACHE_FOLIO
 +void flush_dcache_folio(struct folio *folio)
 +{
-+	unsigned int n = folio_nr_pages(folio);
++	long i, nr = folio_nr_pages(folio);
 +
-+	do {
-+		n--;
-+		flush_dcache_page(folio_page(folio, n));
-+	} while (n);
++	for (i = 0; i < nr; i++)
++		flush_dcache_page(folio_page(folio, i));
 +}
 +EXPORT_SYMBOL(flush_dcache_folio);
 +#endif
@@ -7912,7 +7917,7 @@ index d0aa1d9c811e9..149537120a918 100644
 cgit 1.2.3-1.el7
 
 
-From 3508e35dec5c85080e6052cfbe91003fbd4b2b79 Mon Sep 17 00:00:00 2001
+From e1ede82d18221397fcb45bc454f6f2fccc211a98 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 30 Dec 2020 10:21:39 -0500
 Subject: mm: Add kmap_local_folio()
@@ -8008,7 +8013,7 @@ index 8c6e8e996c875..861ad00fb32a8 100644
 cgit 1.2.3-1.el7
 
 
-From a63d61927657461ad1e3a4f1598a3d1650c16b67 Mon Sep 17 00:00:00 2001
+From 6dbcd121ea286e9add9b138af0eb8c8c91fe6f4d Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 24 Apr 2021 14:50:36 -0400
 Subject: mm: Add arch_make_folio_accessible()
@@ -8022,8 +8027,8 @@ from gfp.h to mm.h.
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
  include/linux/gfp.h |  6 ------
- include/linux/mm.h  | 21 +++++++++++++++++++++
- 2 files changed, 21 insertions(+), 6 deletions(-)
+ include/linux/mm.h  | 23 +++++++++++++++++++++++
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
 diff --git a/include/linux/gfp.h b/include/linux/gfp.h
 index 55b2ec1f965a5..dc5ff40608ce9 100644
@@ -8043,10 +8048,10 @@ index 55b2ec1f965a5..dc5ff40608ce9 100644
  struct page *__alloc_pages(gfp_t gfp, unsigned int order, int preferred_nid,
  		nodemask_t *nodemask);
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index a0db9c0ba18b0..776a2e0787358 100644
+index 29da8ffe73dab..8bc23223f3ed1 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -1733,6 +1733,27 @@ static inline size_t folio_size(struct folio *folio)
+@@ -1733,6 +1733,29 @@ static inline size_t folio_size(struct folio *folio)
  	return PAGE_SIZE << folio_order(folio);
  }
  
@@ -8060,8 +8065,10 @@ index a0db9c0ba18b0..776a2e0787358 100644
 +#ifndef HAVE_ARCH_MAKE_FOLIO_ACCESSIBLE
 +static inline int arch_make_folio_accessible(struct folio *folio)
 +{
-+	int ret, i;
-+	for (i = 0; i < folio_nr_pages(folio); i++) {
++	int ret;
++	long i, nr = folio_nr_pages(folio);
++
++	for (i = 0; i < nr; i++) {
 +		ret = arch_make_page_accessible(folio_page(folio, i));
 +		if (ret)
 +			break;
@@ -8078,7 +8085,7 @@ index a0db9c0ba18b0..776a2e0787358 100644
 cgit 1.2.3-1.el7
 
 
-From 76dc430ff513e28cd20c58fa8a6804bdabb70822 Mon Sep 17 00:00:00 2001
+From 74b616e0c5913c49a5657cded6345d631ff0022a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 09:00:12 -0400
 Subject: mm: Add folio_young and folio_idle
@@ -8286,7 +8293,7 @@ index 1e894d34bdceb..1bcb1365b1d06 100644
 cgit 1.2.3-1.el7
 
 
-From 1d70efc2f5a50ce57feb6c91aa947fc9416ca7c8 Mon Sep 17 00:00:00 2001
+From bd64dbf7fe07ad984f1f0f60a67691dcb42dcf2c Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 10:37:50 -0400
 Subject: mm/swap: Add folio_activate()
@@ -8338,7 +8345,7 @@ index 92ad176210ff5..1fd0185d66e80 100644
  
  #endif /* _TRACE_PAGEMAP_H */
 diff --git a/mm/swap.c b/mm/swap.c
-index 85969b36b6360..c3137e4e1cd80 100644
+index 85969b36b6360..e2e9d781c4213 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -322,15 +322,15 @@ void lru_note_cost_page(struct page *page)
@@ -8351,7 +8358,7 @@ index 85969b36b6360..c3137e4e1cd80 100644
 -	if (!PageActive(page) && !PageUnevictable(page)) {
 -		int nr_pages = thp_nr_pages(page);
 +	if (!folio_test_active(folio) && !folio_test_unevictable(folio)) {
-+		int nr_pages = folio_nr_pages(folio);
++		long nr_pages = folio_nr_pages(folio);
  
 -		del_page_from_lru_list(page, lruvec);
 -		SetPageActive(page);
@@ -8433,7 +8440,7 @@ index 85969b36b6360..c3137e4e1cd80 100644
 cgit 1.2.3-1.el7
 
 
-From a70078dc4e93fa277947b7e4f4cdc69a9a955fab Mon Sep 17 00:00:00 2001
+From 70f6cd42bd6cc1b7847f70eabfbc0ac7788ce5d8 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 10:47:39 -0400
 Subject: mm/swap: Add folio_mark_accessed()
@@ -8489,7 +8496,7 @@ index 7044fcc8a8aa8..a374747ae1c6d 100644
 +}
 +EXPORT_SYMBOL(mark_page_accessed);
 diff --git a/mm/swap.c b/mm/swap.c
-index c3137e4e1cd80..d32007fe23b34 100644
+index e2e9d781c4213..3b04be45eba3e 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -390,7 +390,7 @@ static void folio_activate(struct folio *folio)
@@ -8566,7 +8573,7 @@ index c3137e4e1cd80..d32007fe23b34 100644
 cgit 1.2.3-1.el7
 
 
-From c6054bad5e4457522bacd1140bd18075bea0a2f4 Mon Sep 17 00:00:00 2001
+From d1f09d425fe8244f70fb55089123827d0f4882cd Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 28 Feb 2021 16:02:57 -0500
 Subject: mm/rmap: Add folio_mkclean()
@@ -8659,7 +8666,7 @@ index 1df8683c4c4cc..b3aae8eeaeaf4 100644
 cgit 1.2.3-1.el7
 
 
-From 4c5e81b3f533c3c85b3bff6ff878178964a4f6e9 Mon Sep 17 00:00:00 2001
+From c3a8204fe688b9942e930f5e6af84a0974bcab8b Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 07:28:40 -0400
 Subject: mm/migrate: Add folio_migrate_mapping()
@@ -8715,7 +8722,7 @@ index a374747ae1c6d..d883d964fd520 100644
 +EXPORT_SYMBOL(migrate_page_move_mapping);
 +#endif
 diff --git a/mm/migrate.c b/mm/migrate.c
-index 910552318df35..aa4f2310c5bba 100644
+index 910552318df35..1e456013e1be8 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
 @@ -363,7 +363,7 @@ static int expected_page_refs(struct address_space *mapping, struct page *page)
@@ -8743,7 +8750,7 @@ index 910552318df35..aa4f2310c5bba 100644
 -	int expected_count = expected_page_refs(mapping, page) + extra_count;
 -	int nr = thp_nr_pages(page);
 +	int expected_count = expected_page_refs(mapping, &folio->page) + extra_count;
-+	int nr = folio_nr_pages(folio);
++	long nr = folio_nr_pages(folio);
  
  	if (!mapping) {
  		/* Anonymous page without mapping */
@@ -8916,7 +8923,7 @@ index 910552318df35..aa4f2310c5bba 100644
 cgit 1.2.3-1.el7
 
 
-From 785a947f79460f664474dd8c1bb298ac9dc5a4a6 Mon Sep 17 00:00:00 2001
+From 15465d67808337cb24774dd63b8d7539e997225b Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 15:26:29 -0400
 Subject: mm/migrate: Add folio_migrate_flags()
@@ -9091,7 +9098,7 @@ index 23d36b59f9975..3a70786906eb9 100644
  }
  #endif /* CONFIG_MIGRATION */
 diff --git a/mm/migrate.c b/mm/migrate.c
-index aa4f2310c5bba..a86be2bfc9a15 100644
+index 1e456013e1be8..4bc7f93b2579d 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
 @@ -538,82 +538,80 @@ int migrate_huge_page_move_mapping(struct address_space *mapping,
@@ -9262,7 +9269,7 @@ index f51a57e92aa38..23bfb074ca3fc 100644
 cgit 1.2.3-1.el7
 
 
-From 496211c7d6b3928c4098efac61d2b6b203df3d01 Mon Sep 17 00:00:00 2001
+From 289da065b485a52f8b7d55ea5888be43a48b14d6 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 15:05:06 -0400
 Subject: mm/migrate: Add folio_migrate_copy()
@@ -9295,7 +9302,7 @@ index ba0a554b3eae4..6a01de9faff58 100644
  		struct folio *newfolio, struct folio *folio, int extra_count);
  #else
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 776a2e0787358..3d8b4fcac8305 100644
+index 8bc23223f3ed1..940b640752473 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -911,7 +911,7 @@ void __put_page(struct page *page);
@@ -9336,7 +9343,7 @@ index dfc940d5221dc..68eead0259ccb 100644
  		*pagep = NULL;
  	}
 diff --git a/mm/migrate.c b/mm/migrate.c
-index a86be2bfc9a15..36cdae0a12352 100644
+index 4bc7f93b2579d..c96d7a78a2f4e 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
 @@ -613,16 +613,12 @@ void folio_migrate_flags(struct folio *newfolio, struct folio *folio)
@@ -9370,7 +9377,7 @@ index a86be2bfc9a15..36cdae0a12352 100644
  		folio_migrate_flags(newfolio, folio);
  	return MIGRATEPAGE_SUCCESS;
 diff --git a/mm/util.c b/mm/util.c
-index 149537120a918..a0e859def6a8d 100644
+index 4f3a4c229a01e..b57fb165f761f 100644
 --- a/mm/util.c
 +++ b/mm/util.c
 @@ -728,13 +728,16 @@ int __page_mapcount(struct page *page)
@@ -9381,8 +9388,8 @@ index 149537120a918..a0e859def6a8d 100644
 +void folio_copy(struct folio *dst, struct folio *src)
  {
 -	unsigned i, nr = compound_nr(src);
-+	unsigned i = 0;
-+	unsigned nr = folio_nr_pages(src);
++	long i = 0;
++	long nr = folio_nr_pages(src);
  
 -	for (i = 0; i < nr; i++) {
 +	for (;;) {
@@ -9398,7 +9405,7 @@ index 149537120a918..a0e859def6a8d 100644
 cgit 1.2.3-1.el7
 
 
-From 9dadb237652f392f284c17b364bda21b95086ef2 Mon Sep 17 00:00:00 2001
+From 46a8ad1ad2140f5af1ae504c36ed48c176a59a20 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 19 Mar 2021 08:39:50 -0400
 Subject: mm/writeback: Rename __add_wb_stat() to wb_stat_mod()
@@ -9443,7 +9450,7 @@ index 44df4fcef65c1..a852876bb6e23 100644
 cgit 1.2.3-1.el7
 
 
-From 0a767bf67355a4a07964fbe6b0b97de748710a43 Mon Sep 17 00:00:00 2001
+From 5c7158eb428758c126ca6a3091f0fd5047867d64 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 20 Mar 2021 16:34:54 -0400
 Subject: flex_proportions: Allow N events instead of 1
@@ -9565,7 +9572,7 @@ index b34278d05395f..f55f2ebdd9a9f 100644
 cgit 1.2.3-1.el7
 
 
-From d73b19c64e018412912c17728ca9828e9410a58c Mon Sep 17 00:00:00 2001
+From 2b9406bb68022dd3e73a5cd374a5cbeb80934ef6 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 20 Mar 2021 16:45:15 -0400
 Subject: mm/writeback: Change __wb_writeout_inc() to __wb_writeout_add()
@@ -9646,7 +9653,7 @@ index f55f2ebdd9a9f..e542ea37d605e 100644
 cgit 1.2.3-1.el7
 
 
-From cdc8d3ce5bad2cdb3693dcd2e50ac2995229f04f Mon Sep 17 00:00:00 2001
+From 2b6c63ead5d68201443d54c8e59aa93092a80424 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 15 Jan 2021 23:34:16 -0500
 Subject: mm/writeback: Add __folio_end_writeback()
@@ -9779,7 +9786,7 @@ index e542ea37d605e..8d5d7921b1577 100644
 cgit 1.2.3-1.el7
 
 
-From 518480280a7630aa0b1171bbcd3169b4699d2f5d Mon Sep 17 00:00:00 2001
+From f9a79264501d9ace69e78362501e06fd6a448f66 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 24 Apr 2021 12:00:48 -0400
 Subject: mm/writeback: Add folio_start_writeback()
@@ -9943,7 +9950,7 @@ index 8d5d7921b1577..0336273154fb9 100644
 cgit 1.2.3-1.el7
 
 
-From d6a10efac1969044d037738117b113eb7faf30d1 Mon Sep 17 00:00:00 2001
+From 5649988b54d65e0303fdb2002b5ccc6ca6939b3b Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 26 Apr 2021 23:53:10 -0400
 Subject: mm/writeback: Add folio_mark_dirty()
@@ -9967,10 +9974,10 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  3 files changed, 27 insertions(+), 17 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 3d8b4fcac8305..4f82a0092bdef 100644
+index 940b640752473..3fc7926e289db 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -2006,7 +2006,8 @@ int redirty_page_for_writepage(struct writeback_control *wbc,
+@@ -2008,7 +2008,8 @@ int redirty_page_for_writepage(struct writeback_control *wbc,
  				struct page *page);
  void account_page_cleaned(struct page *page, struct address_space *mapping,
  			  struct bdi_writeback *wb);
@@ -10058,7 +10065,7 @@ index 0336273154fb9..d7c0cad6a57f6 100644
 cgit 1.2.3-1.el7
 
 
-From 4df5aefb8ab73fae8ed1a8686a74fe6a89ca4fd7 Mon Sep 17 00:00:00 2001
+From c1847208fc11ec991cb3632dc4ea4d89ab12bff9 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 4 May 2021 11:01:10 -0400
 Subject: mm/writeback: Add __folio_mark_dirty()
@@ -10202,7 +10209,7 @@ index d7c0cad6a57f6..3e02c86eb4453 100644
 cgit 1.2.3-1.el7
 
 
-From aed549d63450fb3737e4533892ac688ac833ed6c Mon Sep 17 00:00:00 2001
+From 14b02f523d010e6eefa275e6822ad69c5524d0e0 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 13 Jul 2021 22:45:50 -0400
 Subject: mm/writeback: Convert tracing writeback_page_template to folios
@@ -10304,7 +10311,7 @@ index 3e02c86eb4453..2dc410b110ff8 100644
 cgit 1.2.3-1.el7
 
 
-From 2505826efe5519be94e268120ab844e2570d1e8a Mon Sep 17 00:00:00 2001
+From 3a23c042c2c362dd73d4051563fd1d396a1f88c8 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 3 May 2021 23:30:44 -0400
 Subject: mm/writeback: Add filemap_dirty_folio()
@@ -10427,7 +10434,7 @@ index 2dc410b110ff8..bd97c461d4998 100644
 cgit 1.2.3-1.el7
 
 
-From aff8d48a6fceca48ada355c41d91071dd87dfc2a Mon Sep 17 00:00:00 2001
+From b3bade8b4106aeff81a779c40c0e0a7a0e648fbf Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 4 May 2021 16:12:09 -0400
 Subject: mm/writeback: Add folio_account_cleaned()
@@ -10447,7 +10454,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  3 files changed, 13 insertions(+), 8 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 4f82a0092bdef..fd5754b0655ca 100644
+index 3fc7926e289db..44faac415bd0b 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -39,7 +39,6 @@ struct anon_vma_chain;
@@ -10458,7 +10465,7 @@ index 4f82a0092bdef..fd5754b0655ca 100644
  struct pt_regs;
  
  extern int sysctl_page_lock_unfairness;
-@@ -2004,8 +2003,6 @@ extern void do_invalidatepage(struct page *page, unsigned int offset,
+@@ -2006,8 +2005,6 @@ extern void do_invalidatepage(struct page *page, unsigned int offset,
  
  int redirty_page_for_writepage(struct writeback_control *wbc,
  				struct page *page);
@@ -10514,7 +10521,7 @@ index bd97c461d4998..792a83bd39178 100644
 cgit 1.2.3-1.el7
 
 
-From ba9fe82694a75bfe320a7295be5789f70d7ef19b Mon Sep 17 00:00:00 2001
+From edb54c201a036b5880358da5f99af633d78c1330 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 8 Mar 2021 16:43:04 -0500
 Subject: mm/writeback: Add folio_cancel_dirty()
@@ -10533,10 +10540,10 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  3 files changed, 19 insertions(+), 15 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index fd5754b0655ca..451adcc058769 100644
+index 44faac415bd0b..ce00cc2f3bec5 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -2006,13 +2006,6 @@ int redirty_page_for_writepage(struct writeback_control *wbc,
+@@ -2008,13 +2008,6 @@ int redirty_page_for_writepage(struct writeback_control *wbc,
  bool folio_mark_dirty(struct folio *folio);
  bool set_page_dirty(struct page *page);
  int set_page_dirty_lock(struct page *page);
@@ -10617,7 +10624,7 @@ index 792a83bd39178..0854ef768d06c 100644
 cgit 1.2.3-1.el7
 
 
-From 22cabba4404a0dc0f7902f6bf94678b1d1cc0449 Mon Sep 17 00:00:00 2001
+From 885b8b4c06613f84bec3db0def5ba52047b1a338 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 28 Feb 2021 16:21:20 -0500
 Subject: mm/writeback: Add folio_clear_dirty_for_io()
@@ -10641,10 +10648,10 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  4 files changed, 40 insertions(+), 32 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 451adcc058769..1cb08a35cf456 100644
+index ce00cc2f3bec5..a0296ec684341 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -2006,7 +2006,6 @@ int redirty_page_for_writepage(struct writeback_control *wbc,
+@@ -2008,7 +2008,6 @@ int redirty_page_for_writepage(struct writeback_control *wbc,
  bool folio_mark_dirty(struct folio *folio);
  bool set_page_dirty(struct page *page);
  int set_page_dirty_lock(struct page *page);
@@ -10794,7 +10801,7 @@ index 0854ef768d06c..66060bbf6aadb 100644
 cgit 1.2.3-1.el7
 
 
-From 441a468d36f002584fb0d404e9e93787ea5651e5 Mon Sep 17 00:00:00 2001
+From e80d3ae4c6f3a03e46badb0f5581594b038511cb Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 3 May 2021 10:06:55 -0400
 Subject: mm/writeback: Add folio_account_redirty()
@@ -10829,7 +10836,7 @@ index eda9cc778ef6d..50cb6e25ab9ee 100644
  void sb_mark_inode_writeback(struct inode *inode);
  void sb_clear_inode_writeback(struct inode *inode);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 66060bbf6aadb..d7bd5580c91e5 100644
+index 66060bbf6aadb..b731c82898e92 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -1084,7 +1084,7 @@ static void wb_update_write_bandwidth(struct bdi_writeback *wb,
@@ -10873,7 +10880,7 @@ index 66060bbf6aadb..d7bd5580c91e5 100644
  		struct inode *inode = mapping->host;
  		struct bdi_writeback *wb;
  		struct wb_lock_cookie cookie = {};
-+		unsigned nr = folio_nr_pages(folio);
++		long nr = folio_nr_pages(folio);
  
  		wb = unlocked_inode_to_wb_begin(inode, &cookie);
 -		current->nr_dirtied--;
@@ -10894,7 +10901,7 @@ index 66060bbf6aadb..d7bd5580c91e5 100644
 cgit 1.2.3-1.el7
 
 
-From d3b5830e50e1c243a88743935e56107359fc6bd8 Mon Sep 17 00:00:00 2001
+From 2f9ead64ae1082851182903835cc1f5703a55103 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 2 May 2021 23:22:52 -0400
 Subject: mm/writeback: Add folio_redirty_for_writepage()
@@ -10926,7 +10933,7 @@ index 176580f54af96..104ae698443ed 100644
  #include "jfs_superblock.h"
  #include "jfs_filsys.h"
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 1cb08a35cf456..5a2e6a41bfb23 100644
+index a0296ec684341..495fe3efc5f6c 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -36,9 +36,7 @@
@@ -10939,7 +10946,7 @@ index 1cb08a35cf456..5a2e6a41bfb23 100644
  struct pt_regs;
  
  extern int sysctl_page_lock_unfairness;
-@@ -2001,8 +1999,6 @@ extern int try_to_release_page(struct page * page, gfp_t gfp_mask);
+@@ -2003,8 +2001,6 @@ extern int try_to_release_page(struct page * page, gfp_t gfp_mask);
  extern void do_invalidatepage(struct page *page, unsigned int offset,
  			      unsigned int length);
  
@@ -10977,7 +10984,7 @@ index 39f5a8d963b18..c1e01bc36d322 100644
 +}
 +EXPORT_SYMBOL(redirty_page_for_writepage);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index d7bd5580c91e5..c2987f05c9442 100644
+index b731c82898e92..987a2f2efe813 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2558,21 +2558,31 @@ void folio_account_redirty(struct folio *folio)
@@ -11006,7 +11013,7 @@ index d7bd5580c91e5..c2987f05c9442 100644
  {
 -	int ret;
 +	bool ret;
-+	unsigned nr = folio_nr_pages(folio);
++	long nr = folio_nr_pages(folio);
 +
 +	wbc->pages_skipped += nr;
 +	ret = filemap_dirty_folio(folio->mapping, folio);
@@ -11026,7 +11033,7 @@ index d7bd5580c91e5..c2987f05c9442 100644
 cgit 1.2.3-1.el7
 
 
-From 36be77420e03b0eb3d342ed1ce36ee160355a65e Mon Sep 17 00:00:00 2001
+From c63d32293834a11de8bd36939360cab5d927f75e Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 23:11:28 -0400
 Subject: mm/filemap: Add i_blocks_per_folio()
@@ -11079,7 +11086,7 @@ index 006de2d84d065..412db88b8d0c4 100644
 cgit 1.2.3-1.el7
 
 
-From 694d597dc82320dfc434f65481f5362043b8b666 Mon Sep 17 00:00:00 2001
+From 21238997cad6abfc0ffa9f70ffc8ba3abd8b7044 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 28 Apr 2021 22:30:06 -0400
 Subject: mm/filemap: Add folio_mkwrite_check_truncate()
@@ -11134,7 +11141,7 @@ index 412db88b8d0c4..18c06c3e42c3f 100644
 cgit 1.2.3-1.el7
 
 
-From aaadfdb56d17f1e3ba9199c0d3f2cdadbca1cce3 Mon Sep 17 00:00:00 2001
+From 43abe5f45e11b8bd404b751bb3917d6a99b7403c Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 16:37:09 -0400
 Subject: mm/filemap: Add readahead_folio()
@@ -11230,7 +11237,7 @@ index 18c06c3e42c3f..bd4daebaf70ee 100644
 cgit 1.2.3-1.el7
 
 
-From 45b9a6db4c8d59c1c327235e84d9dc4ee9389ee8 Mon Sep 17 00:00:00 2001
+From 0403d3847d77a6e42180f0d6c27c2732f7b7c42e Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 10:27:16 -0400
 Subject: mm/workingset: Convert workingset_refault() to take a folio
@@ -11300,7 +11307,7 @@ index 614418e26e2c9..627e7836ade64 100644
  				lru_cache_add(page);
  
 diff --git a/mm/swap.c b/mm/swap.c
-index d32007fe23b34..6e80f30d2e5ed 100644
+index 3b04be45eba3e..ade54c88c2dff 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -315,11 +315,10 @@ void lru_note_cost(struct lruvec *lruvec, bool file, unsigned int nr_pages)
@@ -11416,7 +11423,7 @@ index 39bb60d502173..10830211a187f 100644
 cgit 1.2.3-1.el7
 
 
-From 6b59d53b7a80ba3efa1121dcb0414639924154f5 Mon Sep 17 00:00:00 2001
+From 7c56c9576d4d693ea70de3cad00a7353ff49a31f Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 14 May 2021 15:04:28 -0400
 Subject: mm: Add folio_evictable()
@@ -11477,7 +11484,7 @@ index 08e8a28994d14..0910efec5821a 100644
 cgit 1.2.3-1.el7
 
 
-From 36e54906776dbe6527b31a5b2a67a5b48756dc2e Mon Sep 17 00:00:00 2001
+From 54f7a2b4347ff6b03acd0fce83400a35fdb1c1d8 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 14 May 2021 15:08:29 -0400
 Subject: mm/lru: Convert __pagevec_lru_add_fn to take a folio
@@ -11551,7 +11558,7 @@ index 1fd0185d66e80..171524d3526db 100644
  			__entry->lru,
  			__entry->flags & PAGEMAP_MAPPED		? "M" : " ",
 diff --git a/mm/swap.c b/mm/swap.c
-index 6e80f30d2e5ed..89d4471ceb804 100644
+index ade54c88c2dff..c21648e07127d 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -1001,17 +1001,18 @@ void __pagevec_release(struct pagevec *pvec)
@@ -11564,7 +11571,7 @@ index 6e80f30d2e5ed..89d4471ceb804 100644
 -	int was_unevictable = TestClearPageUnevictable(page);
 -	int nr_pages = thp_nr_pages(page);
 +	int was_unevictable = folio_test_clear_unevictable(folio);
-+	int nr_pages = folio_nr_pages(folio);
++	long nr_pages = folio_nr_pages(folio);
  
 -	VM_BUG_ON_PAGE(PageLRU(page), page);
 +	VM_BUG_ON_FOLIO(folio_test_lru(folio), folio);
@@ -11638,7 +11645,7 @@ index 6e80f30d2e5ed..89d4471ceb804 100644
 cgit 1.2.3-1.el7
 
 
-From 06cbd93e0ca9d5b2451d8eb0849d720be804bb40 Mon Sep 17 00:00:00 2001
+From b438f3a42ebdf2a394d6e075945f5e52c10e4b84 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 11:09:31 -0400
 Subject: mm/lru: Add folio_add_lru()
@@ -11681,7 +11688,7 @@ index c1e01bc36d322..6de3cd78a4aed 100644
 +}
 +EXPORT_SYMBOL(lru_cache_add);
 diff --git a/mm/swap.c b/mm/swap.c
-index 89d4471ceb804..6f382abeccf9d 100644
+index c21648e07127d..ebd1bdd80b452 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -459,29 +459,29 @@ void folio_mark_accessed(struct folio *folio)
@@ -11729,7 +11736,7 @@ index 89d4471ceb804..6f382abeccf9d 100644
 cgit 1.2.3-1.el7
 
 
-From 8f13d55bbc1404e6178b400c7b1aea7a9483c26e Mon Sep 17 00:00:00 2001
+From 3720262041eb074b033d02b83270b8f72b107c36 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 15 Dec 2020 22:55:54 -0500
 Subject: mm/page_alloc: Add folio allocation functions
@@ -11843,7 +11850,7 @@ index dbf25555c9b8b..77d2a3811bdd1 100644
 cgit 1.2.3-1.el7
 
 
-From 786f71c43caedd9958fed1a4ac3810435791a429 Mon Sep 17 00:00:00 2001
+From 3a5bfdcca7d4c6d6efd894142703820b52727c7a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 15 Dec 2020 23:11:07 -0500
 Subject: mm/filemap: Add filemap_alloc_folio
@@ -11927,7 +11934,7 @@ index 675c1429d6865..989030671b646 100644
 cgit 1.2.3-1.el7
 
 
-From 4cbf12a89a987b8e0240847bf3575b27770022f6 Mon Sep 17 00:00:00 2001
+From 62c68ce7688b3b84505b95436e57a707355b24ad Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 8 Dec 2020 08:56:28 -0500
 Subject: mm/filemap: Add filemap_add_folio()
@@ -11949,7 +11956,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  5 files changed, 50 insertions(+), 46 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 5a2e6a41bfb23..52796adf7a2fc 100644
+index 495fe3efc5f6c..dc80039be60e9 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -213,13 +213,6 @@ int overcommit_kbytes_handler(struct ctl_table *, int, void *, size_t *,
@@ -12182,7 +12189,7 @@ index 6de3cd78a4aed..6b19bc4ed6b05 100644
 cgit 1.2.3-1.el7
 
 
-From 848977816e200bbc0a8fd06be82e786817d8c7e5 Mon Sep 17 00:00:00 2001
+From 3d53aa8585f0437d1c0bc69a6e1a8e9acbd7d61f Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 15 Dec 2020 23:22:38 -0500
 Subject: mm/filemap: Convert mapping_get_entry to return a folio
@@ -12270,7 +12277,7 @@ index 79290853aac54..25959c17716bc 100644
 cgit 1.2.3-1.el7
 
 
-From bd3ee02a91ac8c52ac928a86033be634f3d245ef Mon Sep 17 00:00:00 2001
+From 5249d15485e1241443182eed27c02c1d2c680385 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 8 Mar 2021 11:45:35 -0500
 Subject: mm/filemap: Add filemap_get_folio
@@ -12544,7 +12551,7 @@ index 6b19bc4ed6b05..e833e680e944a 100644
 cgit 1.2.3-1.el7
 
 
-From a4757d06df0838a9bf9ed54cfa2522a610499d1c Mon Sep 17 00:00:00 2001
+From 728aded401520b1942fa9ecf7fcd72a8f628504f Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 24 Dec 2020 12:55:56 -0500
 Subject: mm/filemap: Add FGP_STABLE

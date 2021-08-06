@@ -63,7 +63,7 @@ _srcname=linux-${_major}
 pkgbase=linux-cacule-rdb-autogroup-lto
 pkgver=${_major}.${_minor}
 #pkgver=${_major}
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64' 'x86_64_v3')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -85,7 +85,7 @@ source=(
     "${_patchsource}/winesync/5.13-winesync.patch"
     "${_patchsource}/zen-patches/0001-zen-patches.patch"
     "${_patchsource}/lqx-patches-v3/0001-lqx-patches.patch"
-    "${_patchsource}/bfq-patches-v3/0001-bfq-patches.patch"
+    "${_patchsource}/bfq-patches-v5/0001-bfq-patches.patch"
     "${_patchsource}/block-patches-v2/0001-block-patches.patch"
     "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
     "${_patchsource}/bbr2-patches-v2/0001-bbr2-patches.patch"

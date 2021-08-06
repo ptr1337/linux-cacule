@@ -54,7 +54,7 @@ _use_current=
 
 pkgbase=linux-cacule-rt-rdb-autogroup
 _major=5.10
-_minor=42
+_minor=56
 #_rtver=39
 #_rtpatchver=rt${_rtver}
 pkgver=${_major}.${_minor}
