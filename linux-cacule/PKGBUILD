@@ -7,8 +7,6 @@
 # A single multi-core CPU actually runs slower with NUMA enabled.
 # See, https://bugs.archlinux.org/task/31187
 _NUMAdisable=y
-##Enable LLVM/CLANG LTO
-_clang=
 # Enable fsync
 _fsync=y
 #enable futex2
@@ -31,6 +29,8 @@ _mm_protect=y
 _lru_enable=
 ### Enable Linux Random Number Generator
 _lrng_enable=y
+### Enable FULLCONENAT
+_nf_cone=y
 ### Enable SECURITY_FORK_BRUTE
 # WARNING Not recommended.
 # An experimental solution, still in testing phase.
@@ -60,12 +60,12 @@ _use_current=
 ### IMPORTANT: Do no edit below this line unless you know what you're doing
 
 _major=5.13
-_minor=8
+_minor=9
 _srcname=linux-${_major}
 pkgbase=linux-cacule
 pkgver=${_major}.${_minor}
 #pkgver=${_major}
-pkgrel=3
+pkgrel=1
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64' 'x86_64_v3')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -83,9 +83,9 @@ source=(
   "${_patchsource}/arch-patches-v3/0001-arch-patches.patch"
   "${_caculepatches}/v5.13/cacule-5.13.patch"
   "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
-  "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
+#  "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
   "${_patchsource}/futex2-zen-patches-v5/0001-futex2-resync-from-gitlab.collabora.com.patch"
-  "${_patchsource}/winesync/5.13-winesync.patch"
+  #"${_patchsource}/winesync/5.13-winesync.patch"
   "${_patchsource}/xanmod-patches-v2/0001-xanmod-patches.patch"
   "${_patchsource}/zen-patches/0001-zen-patches.patch"
   "${_patchsource}/lqx-patches-v3/0001-lqx-patches.patch"
@@ -134,17 +134,11 @@ prepare() {
         patch -Np1 < "../$src"
     done
 
-    if [ -n  "_clang"  ]; then
-    LLVMOPTS="LLVM=1 LLVM_IAS=1"
-    CLANGOPTS="CC=clang LD=ld.lld"
-    else
-      LLVMOPTS=""
-      CLANGOPTS=""
-     fi
+
  ### Setting config
         echo "Setting config..."
       cp "${srcdir}"/config .config
-        make $LLVMOPTS olddefconfig
+        make  olddefconfig
     ### CPU_ARCH SCRIPT ##
       source "${startdir}"/configure
 
@@ -158,16 +152,6 @@ prepare() {
           scripts/config --set-val CONFIG_HZ 2000
         fi
 
-        ### Optionally disable lto
-          if [ "$_clang" ]; then
-            echo "Setting tick rate to 2k..."
-            scripts/config --disable CONFIG_LTO
-            scripts/config --disable CONFIG_LTO_CLANG
-            scripts/config --disableCONFIG_HAS_LTO_CLANG
-            scripts/config --disable CONFIG_LTO_CLANG_THIN
-            scripts/config --enable CONFIG_LTO_NONE
-
-          fi
 
       ### Optionally set tickrate to 1000
   	     if [ -n "$_1k_HZ_ticks" ]; then
@@ -450,10 +434,10 @@ prepare() {
         fi
     fi
 
-      make $LLVMOPTS config -s kernelrelease > version
+      make vonfig -s kernelrelease > version
     echo "Prepared $pkgbase version $(<version)"
 
-    [[ -z "$_makenconfig" ]] ||make $LLVMOPTS  nconfig
+    [[ -z "$_makenconfig" ]] ||make  nconfig
 
     ### Save configuration for later reuse
     cp -Tf ./.config "${startdir}/config-${pkgver}-${pkgrel}${pkgbase#linux}"
@@ -461,7 +445,7 @@ prepare() {
 
 build() {
     cd $_srcname
-    make make $LLVMOPTS all
+    make  all
 }
 
 _package() {
@@ -480,7 +464,7 @@ _package() {
     echo "Installing boot image..."
     # systemd expects to find the kernel here to allow hibernation
     # https://github.com/systemd/systemd/commit/edda44605f06a41fb86b7ab8128dcf99161d2344
-    install -Dm644 "$(make $CLANGOPTS -s image_name)" "$modulesdir/vmlinuz"
+    install -Dm644 "$(make -s image_name)" "$modulesdir/vmlinuz"
     # Used by mkinitcpio to name the kernel
     echo "$pkgbase" | install -Dm644 /dev/stdin "$modulesdir/pkgbase"
 
