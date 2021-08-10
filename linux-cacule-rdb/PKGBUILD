@@ -26,7 +26,7 @@ _500_HZ_ticks=
 ### Enable protect file mappings under memory pressure
 _mm_protect=y
 ### Enable multigenerational LRU
-_lru_enable=
+_lru_enable=y
 ### Enable Linux Random Number Generator
 _lrng_enable=y
 ### Enable FULLCONENAT
@@ -88,14 +88,14 @@ source=(
   "${_patchsource}/xanmod-patches-v2/0001-xanmod-patches.patch"
   "${_patchsource}/zen-patches/0001-zen-patches.patch"
   "${_patchsource}/lqx-patches-v3/0001-lqx-patches.patch"
-  "${_patchsource}/bfq-patches-v3/0001-bfq-patches.patch"
+  "${_patchsource}/bfq-patches-v5/0001-bfq-patches.patch"
   "${_patchsource}/block-patches-v2/0001-block-patches.patch"
   "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
   "${_patchsource}/bbr2-patches-v2/0001-bbr2-patches.patch"
   "${_patchsource}/btrfs-patches-v2/0001-btrfs-patches.patch"
   "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
   "${_patchsource}/pf-patches-v9/0001-pf-patches.patch"
-  "${_patchsource}/lru-patches-v6/0001-lru-patches.patch"
+  "${_patchsource}/lru-patches-v7/0001-lru-patches.patch"
   "${_patchsource}/ntfs3-patches-v2/0001-ntfs3-patches.patch"
   "${_patchsource}/lrng-patches/0001-lrng-patches-v2.patch"
   "${_patchsource}/security-patches/0001-security-patches.patch"
