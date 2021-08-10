@@ -66,7 +66,7 @@ pkgbase=linux-cacule
 pkgver=${_major}.${_minor}
 #pkgver=${_major}
 pkgrel=2
-pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
+pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets'
 arch=('x86_64' 'x86_64_v3')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
 license=('GPL2')
@@ -79,7 +79,6 @@ source=(
   "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${_major}.tar.xz"
   "https://cdn.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
   "config"
-#  "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
   "${_patchsource}/arch-patches-v3/0001-arch-patches.patch"
   "${_caculepatches}/v5.13/cacule-5.13.patch"
   "${_patchsource}/cpu-patches/0001-cpu-patches.patch"
@@ -89,7 +88,7 @@ source=(
   "${_patchsource}/xanmod-patches-v2/0001-xanmod-patches.patch"
   "${_patchsource}/zen-patches/0001-zen-patches.patch"
   "${_patchsource}/lqx-patches-v3/0001-lqx-patches.patch"
-  "${_patchsource}/bfq-patches-v5/0001-bfq-patches.patch"
+  "${_patchsource}/bfq-patches-v6/0001-bfq-patches.patch"
   "${_patchsource}/block-patches-v2/0001-block-patches.patch"
   "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
   "${_patchsource}/bbr2-patches-v2/0001-bbr2-patches.patch"
@@ -106,7 +105,6 @@ source=(
   "${_patchsource}/clearlinux-patches-v2/0001-clearlinux-patches.patch"
   "${_patchsource}/v4l2loopback-patches-v2/0001-v4l2loopback-patches.patch"
 )
-
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -134,16 +132,14 @@ prepare() {
         patch -Np1 < "../$src"
     done
 
-
  ### Setting config
-        echo "Setting config..."
-      cp "${srcdir}"/config .config
-        make  olddefconfig
+    echo "Setting config..."
+    cp "${srcdir}"/config .config
+    make olddefconfig
     ### CPU_ARCH SCRIPT ##
       source "${startdir}"/configure
 
       cpu_arch
-
       ### Optionally set tickrate to 2000HZ
         if [ -n "$_2k_HZ_ticks" ]; then
           echo "Setting tick rate to 2k..."
@@ -152,14 +148,13 @@ prepare() {
           scripts/config --set-val CONFIG_HZ 2000
         fi
 
-
       ### Optionally set tickrate to 1000
-  	     if [ -n "$_1k_HZ_ticks" ]; then
-  		    echo "Setting tick rate to 1k..."
+         if [ -n "$_1k_HZ_ticks" ]; then
+          echo "Setting tick rate to 1k..."
           scripts/config --disable CONFIG_HZ_300
           scripts/config --enable CONFIG_HZ_1000
           scripts/config --set-val CONFIG_HZ 1000
-  	     fi
+         fi
 
       ### Optionally set tickrate to 500HZ
         if [ -n "$_500_HZ_ticks" ]; then
@@ -195,41 +190,34 @@ prepare() {
     ### Set performance governor
         if [ -n "$_per_gov" ]; then
           echo "Setting performance governor..."
-    		  scripts/config --disable CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
-    		  scripts/config --enable CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
-    		  echo "Disabling uneeded governors..."
-    		  scripts/config --disable CONFIG_CPU_FREQ_GOV_ONDEMAND
-    		  scripts/config --disable CONFIG_CPU_FREQ_GOV_CONSERVATIVE
-    		  scripts/config --disable CONFIG_CPU_FREQ_GOV_USERSPACE
-    		  scripts/config --disable CONFIG_CPU_FREQ_GOV_SCHEDUTIL
+          scripts/config --disable CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
+          scripts/config --enable CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
+          echo "Disabling uneeded governors..."
+          scripts/config --enable CONFIG_CPU_FREQ_GOV_ONDEMAND
+          scripts/config --disable CONFIG_CPU_FREQ_GOV_CONSERVATIVE
+          scripts/config --disable CONFIG_CPU_FREQ_GOV_USERSPACE
+          scripts/config --disable CONFIG_CPU_FREQ_GOV_SCHEDUTIL
         fi
 
     ### Disable Deadline I/O scheduler
-    	   if [ -n "$_deadline_disable" ]; then
-    		   echo "Disabling Deadline I/O scheduler..."
-    		   scripts/config --disable CONFIG_MQ_IOSCHED_DEADLINE
-    	   fi
+         if [ -n "$_deadline_disable" ]; then
+           echo "Disabling Deadline I/O scheduler..."
+           scripts/config --disable CONFIG_MQ_IOSCHED_DEADLINE
+         fi
 
     ### Disable Kyber I/O scheduler
-    	   if [ -n "$_kyber_disable" ]; then
-    		    echo "Disabling Kyber I/O scheduler..."
-    		    scripts/config --disable CONFIG_MQ_IOSCHED_KYBER
-    	    fi
+         if [ -n "$_kyber_disable" ]; then
+            echo "Disabling Kyber I/O scheduler..."
+            scripts/config --disable CONFIG_MQ_IOSCHED_KYBER
+          fi
 
-
-          ### Enable FULLCONENAT
-      	if [ -n "$_nf_cone" ]; then
-      		echo "Enabling FULLCONENAT..."
-      		scripts/config --module CONFIG_IP_NF_TARGET_FULLCONENAT
-      		scripts/config --module CONFIG_NETFILTER_XT_TARGET_FULLCONENAT
-      	fi
 
       ### Enable protect file mappings under memory pressure
           if [ -n "$_mm_protect" ]; then
-          	echo "Enabling protect file mappings under memory pressure..."
-          	scripts/config --enable CONFIG_UNEVICTABLE_FILE
-          	scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
-          	scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
+            echo "Enabling protect file mappings under memory pressure..."
+            scripts/config --enable CONFIG_UNEVICTABLE_FILE
+            scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
+            scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
             scripts/config --enable CONFIG_UNEVICTABLE_ANON
             scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_LOW 65536
             scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_MIN 32768
@@ -237,15 +225,20 @@ prepare() {
 
               ### Enable multigenerational LRU
           if [ -n "$_lru_enable" ]; then
-          	echo "Enabling multigenerational LRU..."
-          	scripts/config --enable CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG
-          	scripts/config --enable CONFIG_LRU_GEN
-          	scripts/config --set-val CONFIG_NR_LRU_GENS 7
-          	scripts/config --set-val CONFIG_TIERS_PER_GEN 4
-          	scripts/config --enable CONFIG_LRU_GEN_ENABLED
-          	scripts/config --disable CONFIG_LRU_GEN_STATS
+            echo "Enabling multigenerational LRU..."
+            scripts/config --enable CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG
+            scripts/config --enable CONFIG_LRU_GEN
+            scripts/config --set-val CONFIG_NR_LRU_GENS 7
+            scripts/config --set-val CONFIG_TIERS_PER_GEN 4
+            scripts/config --enable CONFIG_LRU_GEN_ENABLED
+            scripts/config --disable CONFIG_LRU_GEN_STATS
           fi
-
+          ### Enable FULLCONENAT
+        	if [ -n "$_nf_cone" ]; then
+        		echo "Enabling FULLCONENAT..."
+        		scripts/config --module CONFIG_IP_NF_TARGET_FULLCONENAT
+        		scripts/config --module CONFIG_NETFILTER_XT_TARGET_FULLCONENAT
+        	fi
           ### Enable Linux Random Number Generator
       	if [ -n "$_lrng_enable" ]; then
       		echo "Enabling Linux Random Number Generator ..."
@@ -279,26 +272,26 @@ prepare() {
 
 
             ### Enable SECURITY_FORK_BRUTE
-        	if [ -n "$_fork_brute" ]; then
-        		echo "Enabling SECURITY_FORK_BRUTE..."
-        		scripts/config --enable CONFIG_SECURITY_FORK_BRUTE
-        		scripts/config --set-str CONFIG_LSM landlock,lockdown,brute,yama,bpf
-        	fi
+        if [ -n "$_fork_brute" ]; then
+            echo "Enabling SECURITY_FORK_BRUTE..."
+            scripts/config --enable CONFIG_SECURITY_FORK_BRUTE
+            scripts/config --set-str CONFIG_LSM lockdown,yama,brute
+        fi
 
     ### Enabling ZSTD COMPRESSION ##
           echo "Set module compression to ZSTD"
-         scripts/config --enable CONFIG_MODULE_COMPRESS
+          scripts/config --enable CONFIG_MODULE_COMPRESS
           scripts/config --disable CONFIG_MODULE_COMPRESS_XZ
           scripts/config --enable CONFIG_MODULE_COMPRESS_ZSTD
           scripts/config --set-val CONFIG_MODULE_COMPRESS_ZSTD_LEVEL 19
-          scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
+         scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
 
       ### Enabling Cacule-Config ##
           echo "Enable CacULE CPU scheduler..."
-          scripts/config --disable CONFIG_EXPERT
           scripts/config --enable CONFIG_CACULE_SCHED
           scripts/config --enable CONFIG_FAIR_GROUP_SCHED
           scripts/config --enable CONFIG_SCHED_AUTOGROUP
+          scripts/config --disable CONFIG_EXPERT
           scripts/config --disable CONFIG_SCHED_DEBUG
           scripts/config --disable CONFIG_SCHED_INFO
           scripts/config --disable CONFIG_SCHEDSTATS
@@ -406,7 +399,6 @@ prepare() {
           scripts/config --disable CONFIG_EARLY_PRINTK
           scripts/config --disable CONFIG_DOUBLEFAULT
 
-
     ### Optionally use running kernel's config
     # code originally by nous; http://aur.archlinux.org/packages.php?ID=40191
     if [ -n "$_use_current" ]; then
@@ -434,10 +426,10 @@ prepare() {
         fi
     fi
 
-      make config -s kernelrelease > version
+    make -s kernelrelease > version
     echo "Prepared $pkgbase version $(<version)"
 
-    [[ -z "$_makenconfig" ]] ||make  nconfig
+    [[ -z "$_makenconfig" ]] || make nconfig
 
     ### Save configuration for later reuse
     cp -Tf ./.config "${startdir}/config-${pkgver}-${pkgrel}${pkgbase#linux}"
@@ -445,7 +437,7 @@ prepare() {
 
 build() {
     cd $_srcname
-    make  all
+    make all
 }
 
 _package() {
@@ -465,11 +457,12 @@ _package() {
     # systemd expects to find the kernel here to allow hibernation
     # https://github.com/systemd/systemd/commit/edda44605f06a41fb86b7ab8128dcf99161d2344
     install -Dm644 "$(make -s image_name)" "$modulesdir/vmlinuz"
+
     # Used by mkinitcpio to name the kernel
     echo "$pkgbase" | install -Dm644 /dev/stdin "$modulesdir/pkgbase"
 
     echo "Installing modules..."
-    make  INSTALL_MOD_PATH="$pkgdir/usr" modules_install
+    make INSTALL_MOD_PATH="$pkgdir/usr" modules_install
 
     # remove build and source links
     rm "$modulesdir"/{source,build}
@@ -560,7 +553,7 @@ done
 
 md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
          '39a5d2b3ff92c000dc93f9fa2efb2c45'
-         'e06c061313ff51cf1472f5ac1cdb3db5'
+         '37ce9281370f5b5d479662e9419225a7'
          '6d8a2a8f499dd9643ca4af2254389ce7'
          '078da517ec2d54283af81d7da3af671a'
          '7640a753a7803248543675a6edc75e08'
