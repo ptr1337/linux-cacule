@@ -239,8 +239,8 @@ prepare() {
          scripts/config --enable CONFIG_MODULE_COMPRESS
           scripts/config --disable CONFIG_MODULE_COMPRESS_XZ
           scripts/config --enable CONFIG_MODULE_COMPRESS_ZSTD
-    #      scripts/config --set-val CONFIG_MODULE_COMPRESS_ZSTD_LEVEL 19
-    #      scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
+          scripts/config --set-val CONFIG_MODULE_COMPRESS_ZSTD_LEVEL 19
+          scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
 
 
     ### Enable Linux Random Number Generator
@@ -331,8 +331,6 @@ prepare() {
           scripts/config --set-str CONFIG_DEFAULT_TCP_CONG bbr2
           echo "Enable VHBA-Module"
           scripts/config --module CONFIG_VHBA
-          scripts/config --enable CONFIG_BPF_PRELOAD
-
 
 
     ### Optionally use running kernel's config
@@ -489,7 +487,7 @@ done
 
 md5sums=('76c60fb304510a7bbd9c838790bc5fe4'
          '4d745d474d07277daee24107239c8902'
-         'e48c7e742ba1270c5475b69f034a4331'
+         'e6c68fb1cb4e71bdb5a412f65056d35d'
          '6d8a2a8f499dd9643ca4af2254389ce7'
          '078da517ec2d54283af81d7da3af671a'
          '7640a753a7803248543675a6edc75e08'
