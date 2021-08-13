@@ -43,7 +43,7 @@ _use_current=
 
 pkgbase=linux-cacule-rdb-rt
 _major=5.10
-_minor=56
+_minor=58
 _srcname=linux-${_major}.${_minor}
 pkgver=${_major}.${_minor}
 pkgrel=1
@@ -105,7 +105,6 @@ prepare() {
       make olddefconfig
     ### CPU_ARCH SCRIPT ##
       source "${startdir}"/configure
-      cacule_config
       cpu_arch
       ### Optionally set tickrate to 2000HZ
         if [ -n "$_2k_HZ_ticks" ]; then
