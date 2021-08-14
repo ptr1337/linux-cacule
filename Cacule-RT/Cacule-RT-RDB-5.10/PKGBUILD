@@ -8,12 +8,8 @@
 # NUMA is optimized for multi-socket motherboards.
 # A single multi-core CPU actually runs slower with NUMA enabled.
 # See, https://bugs.archlinux.org/task/31187
-_NUMAdisable=y
+_NUMAdisable=
 # Enable fsync
-_fsync=y
-#_futex2=y
-### Set performance governor as default
-_per_gov=y
 ### Running with a 2000 HZ, 1000HZ or 500HZ tick rate
 _2k_HZ_ticks=
 _1k_HZ_ticks=y
@@ -68,7 +64,8 @@ source=(
 # "${_patchsource}/block-patches-v3/0001-block-patches.patch"
   "${_patchsource}/cpu-patches-v2/0001-cpu-patches.patch"
 # "${_patchsource}/fixes-miscellaneous-v11/0001-fixes-miscellaneous.patch"
-  "${_patchsource}/mm-patches-v4/0001-mm-patches.patch"
+#  "${_patchsource}/mm-patches-v4/0001-mm-patches.patch"
+  "${_le9patches}/le9eb_patches/le9eb-5.10.patch"
   "${_patchsource}/lqx-patches-v4/0001-lqx-patches.patch"
   "${_patchsource}/zstd-upstream-patches/0001-zstd-upstream-patches.patch"
 # ${_patchsource}/clearlinux-patches/0001-clearlinux-patches.patch"
@@ -137,37 +134,14 @@ prepare() {
           scripts/config --disable CONFIG_NUMA
         fi
 
-        if [ -n "$_fsync" ]; then
-          echo "Enable Fsync support"
-          scripts/config --enable CONFIG_FUTEX
-          scripts/config --enable CONFIG_FUTEX_PI
-        fi
-        if [ -n "$_futex2" ]; then
-          echo "Enable Futex2 support"
-          scripts/config --enable CONFIG_FUTEX2
-        fi
 
-    ### Set performance governor
-        if [ -n "$_per_gov" ]; then
-          echo "Setting performance governor..."
-    		  scripts/config --disable CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
-    		  scripts/config --enable CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
-    		  echo "Disabling uneeded governors..."
-    		  scripts/config --enable CONFIG_CPU_FREQ_GOV_ONDEMAND
-    		  scripts/config --disable CONFIG_CPU_FREQ_GOV_CONSERVATIVE
-    		  scripts/config --disable CONFIG_CPU_FREQ_GOV_USERSPACE
-    		  scripts/config --disable CONFIG_CPU_FREQ_GOV_SCHEDUTIL
-        fi
-
-
-
-      ### Enable protect file mappings under memory pressure
-          if [ -n "$_mm_protect" ]; then
-          	echo "Enabling protect file mappings under memory pressure..."
-          	scripts/config --enable CONFIG_UNEVICTABLE_FILE
-          	scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
-          	scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
-          fi
+        ### Enable protect file mappings under memory pressure
+            if [ -n "$_mm_protect" ]; then
+            	echo "Enabling protect file mappings under memory pressure..."
+        #  	scripts/config --enable CONFIG_UNEVICTABLE_FILE
+            	scripts/config --set-val CONFIG_CLEAN_LOW_KBYTES 262144
+            	scripts/config --set-val CONFIG_CLEAN_MIN_KBYTES 131072
+            fi
 
     ### Optionally use running kernel's config
     # code originally by nous; http://aur.archlinux.org/packages.php?ID=40191
