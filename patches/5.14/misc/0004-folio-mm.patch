@@ -1,7 +1,7 @@
 From 6178925933d00d1f9648424490df1ceaf5e5f236 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 5 Jun 2021 23:20:17 -0400
-Subject: mm: Convert get_page_unless_zero() to return bool
+Subject: [PATCH 01/90] mm: Convert get_page_unless_zero() to return bool
 
 atomic_add_unless() returns bool, so remove the widening casts to int
 in page_ref_add_unless() and get_page_unless_zero().  This causes gcc
@@ -17,7 +17,7 @@ Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 7ca22e6e694a8..8dd65290bac0d 100644
+index 7ca22e6e694a84..8dd65290bac0d7 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -755,7 +755,7 @@ static inline int put_page_testzero(struct page *page)
@@ -30,7 +30,7 @@ index 7ca22e6e694a8..8dd65290bac0d 100644
  	return page_ref_add_unless(page, 1, 0);
  }
 diff --git a/include/linux/page_ref.h b/include/linux/page_ref.h
-index 7ad46f45df396..3a799de8ad526 100644
+index 7ad46f45df3967..3a799de8ad5261 100644
 --- a/include/linux/page_ref.h
 +++ b/include/linux/page_ref.h
 @@ -161,9 +161,9 @@ static inline int page_ref_dec_return(struct page *page)
@@ -45,14 +45,11 @@ index 7ad46f45df396..3a799de8ad526 100644
  
  	if (page_ref_tracepoint_active(page_ref_mod_unless))
  		__page_ref_mod_unless(page, nr, ret);
--- 
-cgit 1.2.3-1.el7
 
-
-From 6fa88580a54a758ae4b9d833970337cb0fb21c46 Mon Sep 17 00:00:00 2001
+From 684384f5ce125583fc1754846430d2308c148128 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 6 Dec 2020 22:22:48 -0500
-Subject: mm: Introduce struct folio
+Subject: [PATCH 02/90] mm: Introduce struct folio
 
 A struct folio is a new abstraction to replace the venerable struct page.
 A function which takes a struct folio argument declares that it will
@@ -70,13 +67,13 @@ Reviewed-by: David Howells <dhowells@redhat.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
  Documentation/core-api/mm-api.rst |  1 +
- include/linux/mm.h                | 75 +++++++++++++++++++++++++++++++++++++++
- include/linux/mm_types.h          | 60 +++++++++++++++++++++++++++++++
- include/linux/page-flags.h        | 28 +++++++++++++++
+ include/linux/mm.h                | 75 +++++++++++++++++++++++++++++++
+ include/linux/mm_types.h          | 60 +++++++++++++++++++++++++
+ include/linux/page-flags.h        | 28 ++++++++++++
  4 files changed, 164 insertions(+)
 
 diff --git a/Documentation/core-api/mm-api.rst b/Documentation/core-api/mm-api.rst
-index a42f9baddfbf8..2a94e6164f80f 100644
+index a42f9baddfbf8c..2a94e6164f80f5 100644
 --- a/Documentation/core-api/mm-api.rst
 +++ b/Documentation/core-api/mm-api.rst
 @@ -95,6 +95,7 @@ More Memory Management Functions
@@ -88,7 +85,7 @@ index a42f9baddfbf8..2a94e6164f80f 100644
     :internal:
  .. kernel-doc:: include/linux/mmzone.h
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 8dd65290bac0d..6f89ac0b923f0 100644
+index 8dd65290bac0d7..ab5f97812a9f42 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -949,6 +949,20 @@ static inline unsigned int compound_order(struct page *page)
@@ -120,7 +117,7 @@ index 8dd65290bac0d..6f89ac0b923f0 100644
 + * folio_nr_pages - The number of pages in the folio.
 + * @folio: The folio.
 + *
-+ * Return: A number which is a non-negative power of two.
++ * Return: A positive power of two.
 + */
 +static inline long folio_nr_pages(struct folio *folio)
 +{
@@ -188,7 +185,7 @@ index 8dd65290bac0d..6f89ac0b923f0 100644
  /*
   * Flags passed to show_mem() and show_free_areas() to suppress output in
 diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 52bbd2b7cb465..5749448b486d3 100644
+index 52bbd2b7cb4658..5749448b486d30 100644
 --- a/include/linux/mm_types.h
 +++ b/include/linux/mm_types.h
 @@ -231,6 +231,66 @@ struct page {
@@ -259,7 +256,7 @@ index 52bbd2b7cb465..5749448b486d3 100644
  {
  	return &page[1].compound_mapcount;
 diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index 5922031ffab6e..70ede83455386 100644
+index 5922031ffab6e5..70ede834553865 100644
 --- a/include/linux/page-flags.h
 +++ b/include/linux/page-flags.h
 @@ -191,6 +191,34 @@ static inline unsigned long _compound_head(const struct page *page)
@@ -297,14 +294,11 @@ index 5922031ffab6e..70ede83455386 100644
  static __always_inline int PageTail(struct page *page)
  {
  	return READ_ONCE(page->compound_head) & 1;
--- 
-cgit 1.2.3-1.el7
 
-
-From de5942590c9e7b84bab1e0e952ea0da3bae14930 Mon Sep 17 00:00:00 2001
+From 19c2c99244decc1a60a5511fe511e82f3d24bd80 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 18 Jan 2021 07:40:36 -0500
-Subject: mm: Add folio_pgdat(), folio_zone() and folio_zonenum()
+Subject: [PATCH 03/90] mm: Add folio_pgdat(), folio_zone() and folio_zonenum()
 
 These are just convenience wrappers for callers with folios; pgdat and
 zone can be reached from tail pages as well as head pages.  No change
@@ -324,7 +318,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 15 insertions(+)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 6f89ac0b923f0..32954b8dc5407 100644
+index ab5f97812a9f42..3f3c5e071b60db 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1144,6 +1144,11 @@ static inline enum zone_type page_zonenum(const struct page *page)
@@ -356,14 +350,11 @@ index 6f89ac0b923f0..32954b8dc5407 100644
  #ifdef SECTION_IN_PAGE_FLAGS
  static inline void set_page_section(struct page *page, unsigned long section)
  {
--- 
-cgit 1.2.3-1.el7
 
-
-From fd2289fc1fbc1ce04e06fb4a04458b9983ee172c Mon Sep 17 00:00:00 2001
+From f77210d4232ad61061ac75405dd602e7d7d4a03a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 18 Jan 2021 08:14:00 -0500
-Subject: mm/vmstat: Add functions to account folio statistics
+Subject: [PATCH 04/90] mm/vmstat: Add functions to account folio statistics
 
 Allow page counters to be more readily modified by callers which have
 a folio.  Name these wrappers with 'stat' instead of 'state' as requested
@@ -380,11 +371,11 @@ Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 Reviewed-by: David Howells <dhowells@redhat.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- include/linux/vmstat.h | 107 +++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/vmstat.h | 107 +++++++++++++++++++++++++++++++++++++++++
  1 file changed, 107 insertions(+)
 
 diff --git a/include/linux/vmstat.h b/include/linux/vmstat.h
-index d6a6cf53b1278..241bd0f53fb97 100644
+index d6a6cf53b1278f..241bd0f53fb976 100644
 --- a/include/linux/vmstat.h
 +++ b/include/linux/vmstat.h
 @@ -415,6 +415,78 @@ static inline void drain_zonestat(struct zone *zone,
@@ -513,14 +504,12 @@ index d6a6cf53b1278..241bd0f53fb97 100644
 +	lruvec_stat_mod_folio(folio, idx, -folio_nr_pages(folio));
 +}
  #endif /* _LINUX_VMSTAT_H */
--- 
-cgit 1.2.3-1.el7
 
-
-From 976088cad56e2fe94f0fb43e5233adfafd1ce53d Mon Sep 17 00:00:00 2001
+From a983a91bef5793ee8f4e79c276699b732dbd2830 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 15 Jan 2021 10:52:37 -0500
-Subject: mm/debug: Add VM_BUG_ON_FOLIO() and VM_WARN_ON_ONCE_FOLIO()
+Subject: [PATCH 05/90] mm/debug: Add VM_BUG_ON_FOLIO() and
+ VM_WARN_ON_ONCE_FOLIO()
 
 These are the folio equivalents of VM_BUG_ON_PAGE and
 VM_WARN_ON_ONCE_PAGE.  No change to generated code.
@@ -539,7 +528,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 20 insertions(+)
 
 diff --git a/include/linux/mmdebug.h b/include/linux/mmdebug.h
-index 1935d4c72d104..d7285f8148a3b 100644
+index 1935d4c72d1042..d7285f8148a3b0 100644
 --- a/include/linux/mmdebug.h
 +++ b/include/linux/mmdebug.h
 @@ -22,6 +22,13 @@ void dump_mm(const struct mm_struct *mm);
@@ -588,14 +577,11 @@ index 1935d4c72d104..d7285f8148a3b 100644
  #define VM_WARN_ONCE(cond, format...) BUILD_BUG_ON_INVALID(cond)
  #define VM_WARN(cond, format...) BUILD_BUG_ON_INVALID(cond)
  #endif
--- 
-cgit 1.2.3-1.el7
 
-
-From da060a75ba0940d81fae6914238b4241d176d90e Mon Sep 17 00:00:00 2001
+From d86a8492bd8afa4b3807717cb5f0b9304db1d5ac Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 31 Mar 2021 10:39:55 -0400
-Subject: mm: Add folio reference count functions
+Subject: [PATCH 06/90] mm: Add folio reference count functions
 
 These functions mirror their page reference counterparts.  Also add
 the kernel-doc to the mm-api and correct the return type of
@@ -611,11 +597,11 @@ Reviewed-by: David Howells <dhowells@redhat.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
  Documentation/core-api/mm-api.rst |  1 +
- include/linux/page_ref.h          | 88 ++++++++++++++++++++++++++++++++++++++-
+ include/linux/page_ref.h          | 88 ++++++++++++++++++++++++++++++-
  2 files changed, 88 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/core-api/mm-api.rst b/Documentation/core-api/mm-api.rst
-index 2a94e6164f80f..5c459ee2accee 100644
+index 2a94e6164f80f5..5c459ee2accee8 100644
 --- a/Documentation/core-api/mm-api.rst
 +++ b/Documentation/core-api/mm-api.rst
 @@ -98,4 +98,5 @@ More Memory Management Functions
@@ -625,7 +611,7 @@ index 2a94e6164f80f..5c459ee2accee 100644
 +.. kernel-doc:: include/linux/page_ref.h
  .. kernel-doc:: include/linux/mmzone.h
 diff --git a/include/linux/page_ref.h b/include/linux/page_ref.h
-index 3a799de8ad526..717d53c9ddf1e 100644
+index 3a799de8ad5261..717d53c9ddf1e9 100644
 --- a/include/linux/page_ref.h
 +++ b/include/linux/page_ref.h
 @@ -67,9 +67,31 @@ static inline int page_ref_count(const struct page *page)
@@ -814,14 +800,11 @@ index 3a799de8ad526..717d53c9ddf1e 100644
 +	page_ref_unfreeze(&folio->page, count);
 +}
  #endif
--- 
-cgit 1.2.3-1.el7
 
-
-From b63da4667e07bb694f33dae5a4c536d5938771bb Mon Sep 17 00:00:00 2001
+From f835e266e1ad6ad22cb3a02ec0d8a9b1749b9e09 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 6 Dec 2020 23:04:57 -0500
-Subject: mm: Add folio_put()
+Subject: [PATCH 07/90] mm: Add folio_put()
 
 If we know we have a folio, we can call folio_put() instead of put_page()
 and save the overhead of calling compound_head().  Also skips the
@@ -846,7 +829,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 28 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 32954b8dc5407..890752d3b0d5f 100644
+index 3f3c5e071b60db..5cfe59f47feb58 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -749,6 +749,11 @@ static inline int put_page_testzero(struct page *page)
@@ -908,14 +891,11 @@ index 32954b8dc5407..890752d3b0d5f 100644
  }
  
  /*
--- 
-cgit 1.2.3-1.el7
 
-
-From b8cf9094d2bb70df03d76425811e9b7ede0eb456 Mon Sep 17 00:00:00 2001
+From e302f91b3c11cf766df17f7bd5ea71bd5cf49866 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 6 Dec 2020 23:04:57 -0500
-Subject: mm: Add folio_get()
+Subject: [PATCH 08/90] mm: Add folio_get()
 
 If we know we have a folio, we can call folio_get() instead
 of get_page() and save the overhead of calling compound_head().
@@ -935,7 +915,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 17 insertions(+), 9 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 890752d3b0d5f..372cb7e0d43c6 100644
+index 5cfe59f47feb58..d86b8548036e81 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1223,18 +1223,26 @@ static inline bool is_pci_p2pdma_page(const struct page *page)
@@ -974,14 +954,11 @@ index 890752d3b0d5f..372cb7e0d43c6 100644
  }
  
  bool __must_check try_grab_page(struct page *page, unsigned int flags);
--- 
-cgit 1.2.3-1.el7
 
-
-From 9f1dc04d02e634d087f1817b07656ec8128bcf18 Mon Sep 17 00:00:00 2001
+From eaaed8fd45a7398d90d92cf2f5deee873ca77dcf Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 10 May 2021 16:33:22 -0400
-Subject: mm: Add folio_try_get_rcu()
+Subject: [PATCH 09/90] mm: Add folio_try_get_rcu()
 
 This is the equivalent of page_cache_get_speculative().  Also add
 folio_ref_try_add_rcu (the equivalent of page_cache_add_speculative)
@@ -1004,13 +981,13 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
 Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- include/linux/page_ref.h | 66 +++++++++++++++++++++++++++++++++++++
- include/linux/pagemap.h  | 84 +++---------------------------------------------
- mm/filemap.c             | 20 ++++++++++++
+ include/linux/page_ref.h | 66 +++++++++++++++++++++++++++++++
+ include/linux/pagemap.h  | 84 ++--------------------------------------
+ mm/filemap.c             | 20 ++++++++++
  3 files changed, 90 insertions(+), 80 deletions(-)
 
 diff --git a/include/linux/page_ref.h b/include/linux/page_ref.h
-index 717d53c9ddf1e..2e677e6ad09fc 100644
+index 717d53c9ddf1e9..2e677e6ad09fcf 100644
 --- a/include/linux/page_ref.h
 +++ b/include/linux/page_ref.h
 @@ -247,6 +247,72 @@ static inline bool folio_ref_add_unless(struct folio *folio, int nr, int u)
@@ -1087,7 +1064,7 @@ index 717d53c9ddf1e..2e677e6ad09fc 100644
  {
  	int ret = likely(atomic_cmpxchg(&page->_refcount, count, 0) == count);
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index ed02aa5222634..db1726b1bc1c1 100644
+index ed02aa5222634b..db1726b1bc1c18 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -172,91 +172,15 @@ static inline struct address_space *page_mapping_file(struct page *page)
@@ -1187,7 +1164,7 @@ index ed02aa5222634..db1726b1bc1c1 100644
  
  /**
 diff --git a/mm/filemap.c b/mm/filemap.c
-index d1458ecf2f51e..e7ce8bb137e05 100644
+index d1458ecf2f51ec..e7ce8bb137e051 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1746,6 +1746,26 @@ pgoff_t page_cache_prev_miss(struct address_space *mapping,
@@ -1217,14 +1194,11 @@ index d1458ecf2f51e..e7ce8bb137e05 100644
  /*
   * mapping_get_entry - Get a page cache entry.
   * @mapping: the address_space to search
--- 
-cgit 1.2.3-1.el7
 
-
-From 6021dd5023479d3f63a1f1dd9704dfaf4be1536d Mon Sep 17 00:00:00 2001
+From 9c2bfb50c1a8b199a2df0363f766fbf336a0180f Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 7 Dec 2020 15:42:09 -0500
-Subject: mm: Add folio flag manipulation functions
+Subject: [PATCH 10/90] mm: Add folio flag manipulation functions
 
 These new functions are the folio analogues of the various PageFlags
 functions.  If CONFIG_DEBUG_VM_PGFLAGS is enabled, we check the folio
@@ -1245,11 +1219,11 @@ Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 Reviewed-by: David Howells <dhowells@redhat.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- include/linux/page-flags.h | 219 ++++++++++++++++++++++++++++++++-------------
+ include/linux/page-flags.h | 219 ++++++++++++++++++++++++++-----------
  1 file changed, 156 insertions(+), 63 deletions(-)
 
 diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index 70ede83455386..ddb6606880860 100644
+index 70ede834553865..c36e884ebbc183 100644
 --- a/include/linux/page-flags.h
 +++ b/include/linux/page-flags.h
 @@ -143,6 +143,8 @@ enum pageflags {
@@ -1590,12 +1564,12 @@ index 70ede83455386..ddb6606880860 100644
  __PAGEFLAG(Head, head, PF_ANY) CLEARPAGEFLAG(Head, head, PF_ANY)
  
 +/* Whether there are one or multiple pages in a folio */
-+static inline bool folio_single(struct folio *folio)
++static inline bool folio_test_single(struct folio *folio)
 +{
 +	return !folio_test_head(folio);
 +}
 +
-+static inline bool folio_multi(struct folio *folio)
++static inline bool folio_test_multi(struct folio *folio)
 +{
 +	return folio_test_head(folio);
 +}
@@ -1665,14 +1639,11 @@ index 70ede83455386..ddb6606880860 100644
  #undef PF_ANY
  #undef PF_HEAD
  #undef PF_ONLY_HEAD
--- 
-cgit 1.2.3-1.el7
 
-
-From e726266f2dfc5bfe34c8aa1bf29d73d5f02c3579 Mon Sep 17 00:00:00 2001
+From c158c0423fe745ee9947a7216f0f2a5d560650f5 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 25 Feb 2021 09:47:41 -0500
-Subject: mm/lru: Add folio LRU functions
+Subject: [PATCH 11/90] mm/lru: Add folio LRU functions
 
 Handle arbitrary-order folios being added to the LRU.  By definition,
 all pages being added to the LRU were already head or base pages, but
@@ -1689,12 +1660,12 @@ Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
  Documentation/core-api/mm-api.rst |   1 +
- include/linux/mm_inline.h         | 103 +++++++++++++++++++++++++-------------
+ include/linux/mm_inline.h         | 103 +++++++++++++++++++-----------
  include/trace/events/pagemap.h    |   2 +-
  3 files changed, 69 insertions(+), 37 deletions(-)
 
 diff --git a/Documentation/core-api/mm-api.rst b/Documentation/core-api/mm-api.rst
-index 5c459ee2accee..971149f5d2416 100644
+index 5c459ee2accee8..971149f5d24164 100644
 --- a/Documentation/core-api/mm-api.rst
 +++ b/Documentation/core-api/mm-api.rst
 @@ -95,6 +95,7 @@ More Memory Management Functions
@@ -1706,7 +1677,7 @@ index 5c459ee2accee..971149f5d2416 100644
  .. kernel-doc:: include/linux/mm.h
     :internal:
 diff --git a/include/linux/mm_inline.h b/include/linux/mm_inline.h
-index 355ea1ee32bd7..e2ec68b0515c5 100644
+index 355ea1ee32bd74..e2ec68b0515c5b 100644
 --- a/include/linux/mm_inline.h
 +++ b/include/linux/mm_inline.h
 @@ -6,27 +6,33 @@
@@ -1875,7 +1846,7 @@ index 355ea1ee32bd7..e2ec68b0515c5 100644
  }
  #endif
 diff --git a/include/trace/events/pagemap.h b/include/trace/events/pagemap.h
-index 1d28431e85bdc..92ad176210ff5 100644
+index 1d28431e85bdca..92ad176210ff5b 100644
 --- a/include/trace/events/pagemap.h
 +++ b/include/trace/events/pagemap.h
 @@ -41,7 +41,7 @@ TRACE_EVENT(mm_lru_insertion,
@@ -1887,14 +1858,11 @@ index 1d28431e85bdc..92ad176210ff5 100644
  		__entry->flags	= trace_pagemap_flags(page);
  	),
  
--- 
-cgit 1.2.3-1.el7
 
-
-From 3f2e4a339f28adfe26d0130dd8f9bc9b0db17d6f Mon Sep 17 00:00:00 2001
+From 61253040cc3fcd9d3c25b35d7c30d754479abfd5 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 11 Jan 2021 10:04:40 -0500
-Subject: mm: Handle per-folio private data
+Subject: [PATCH 12/90] mm: Handle per-folio private data
 
 Add folio_get_private() which mirrors page_private() -- ie folio private
 data is the same as page private data.  The only difference is that these
@@ -1922,12 +1890,12 @@ Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 Reviewed-by: David Howells <dhowells@redhat.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- include/linux/mm_types.h | 11 +++++++++++
- include/linux/pagemap.h  | 48 +++++++++++++++++++++++++++++-------------------
+ include/linux/mm_types.h | 11 +++++++++
+ include/linux/pagemap.h  | 48 ++++++++++++++++++++++++----------------
  2 files changed, 40 insertions(+), 19 deletions(-)
 
 diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 5749448b486d3..f38ab53fcf7c8 100644
+index 5749448b486d30..f38ab53fcf7c84 100644
 --- a/include/linux/mm_types.h
 +++ b/include/linux/mm_types.h
 @@ -309,6 +309,12 @@ static inline atomic_t *compound_pincount_ptr(struct page *page)
@@ -1956,7 +1924,7 @@ index 5749448b486d3..f38ab53fcf7c8 100644
  	void * va;
  #if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index db1726b1bc1c1..3279c731ee047 100644
+index db1726b1bc1c18..3279c731ee0472 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -184,42 +184,52 @@ static inline bool page_cache_get_speculative(struct page *page)
@@ -2031,14 +1999,12 @@ index db1726b1bc1c1..3279c731ee047 100644
  #ifdef CONFIG_NUMA
  extern struct page *__page_cache_alloc(gfp_t gfp);
  #else
--- 
-cgit 1.2.3-1.el7
 
-
-From 7d5e7a9eae05dc67c26082a8167e55f08a42884d Mon Sep 17 00:00:00 2001
+From 2e9199487c0559adfa84639985a66008b9c713b7 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 15 Jan 2021 23:39:21 -0500
-Subject: mm/filemap: Add folio_index(), folio_file_page() and folio_contains()
+Subject: [PATCH 13/90] mm/filemap: Add folio_index(), folio_file_page() and
+ folio_contains()
 
 folio_index() is the equivalent of page_index() for folios.
 folio_file_page() is the equivalent of find_subpage().
@@ -2055,11 +2021,11 @@ Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 Reviewed-by: David Howells <dhowells@redhat.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- include/linux/pagemap.h | 56 +++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/pagemap.h | 56 +++++++++++++++++++++++++++++++++++++++++
  1 file changed, 56 insertions(+)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 3279c731ee047..f7c165b5991f0 100644
+index 3279c731ee0472..f7c165b5991f05 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -386,6 +386,62 @@ static inline bool thp_contains(struct page *head, pgoff_t index)
@@ -2125,14 +2091,11 @@ index 3279c731ee047..f7c165b5991f0 100644
  /*
   * Given the page we found in the page cache, return the page corresponding
   * to this index in the file
--- 
-cgit 1.2.3-1.el7
 
-
-From 83648c6697d60ad6be2bfc2c33de3dbe76a0cc3f Mon Sep 17 00:00:00 2001
+From abacca5605ef6a2db0e5617076ee548cdeb8382d Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 21 Mar 2021 16:24:31 -0400
-Subject: mm/filemap: Add folio_next_index()
+Subject: [PATCH 14/90] mm/filemap: Add folio_next_index()
 
 This helper returns the page index of the next folio in the file (ie
 the end of this folio, plus one).
@@ -2152,7 +2115,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 11 insertions(+)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index f7c165b5991f0..bd0e7e91bfd40 100644
+index f7c165b5991f05..bd0e7e91bfd403 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -406,6 +406,17 @@ static inline pgoff_t folio_index(struct folio *folio)
@@ -2173,14 +2136,11 @@ index f7c165b5991f0..bd0e7e91bfd40 100644
  /**
   * folio_file_page - The page for a particular index.
   * @folio: The folio which contains this index.
--- 
-cgit 1.2.3-1.el7
 
-
-From 09cbc6d75502926c0267be6f38ec60cc5a0fc4f0 Mon Sep 17 00:00:00 2001
+From 994739c6e251e373e7fa9e3313d2b589090bc328 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 24 Dec 2020 07:25:19 -0500
-Subject: mm/filemap: Add folio_pos() and folio_file_pos()
+Subject: [PATCH 15/90] mm/filemap: Add folio_pos() and folio_file_pos()
 
 These are just wrappers around page_offset() and page_file_offset()
 respectively.  No change to generated code.
@@ -2197,7 +2157,7 @@ Reviewed-by: David Howells <dhowells@redhat.com>
  1 file changed, 21 insertions(+)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index bd0e7e91bfd40..aa71fa82d6bef 100644
+index bd0e7e91bfd403..aa71fa82d6beff 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -562,6 +562,27 @@ static inline loff_t page_file_offset(struct page *page)
@@ -2228,14 +2188,11 @@ index bd0e7e91bfd40..aa71fa82d6bef 100644
  extern pgoff_t linear_hugepage_index(struct vm_area_struct *vma,
  				     unsigned long address);
  
--- 
-cgit 1.2.3-1.el7
 
-
-From 4b3adce5c856345cc4fc81571722cd1f72751b99 Mon Sep 17 00:00:00 2001
+From 927d5874251e343b38552e236adc3e9ddd9a35ae Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 10 Dec 2020 10:55:05 -0500
-Subject: mm/util: Add folio_mapping() and folio_file_mapping()
+Subject: [PATCH 16/90] mm/util: Add folio_mapping() and folio_file_mapping()
 
 These are the folio equivalent of page_mapping() and page_file_mapping().
 Add an out-of-line page_mapping() wrapper around folio_mapping()
@@ -2276,18 +2233,18 @@ Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 Reviewed-by: David Howells <dhowells@redhat.com>
 ---
  Documentation/core-api/mm-api.rst |  2 ++
- include/linux/mm.h                | 14 --------------
- include/linux/pagemap.h           | 35 +++++++++++++++++++++++++++++++++--
+ include/linux/mm.h                | 14 -------------
+ include/linux/pagemap.h           | 35 +++++++++++++++++++++++++++++--
  include/linux/swap.h              |  6 ++++++
  mm/Makefile                       |  2 +-
- mm/folio-compat.c                 | 13 +++++++++++++
- mm/swapfile.c                     |  8 ++++----
- mm/util.c                         | 30 ++++++++++++++++++------------
+ mm/folio-compat.c                 | 13 ++++++++++++
+ mm/swapfile.c                     |  8 +++----
+ mm/util.c                         | 30 +++++++++++++++-----------
  8 files changed, 77 insertions(+), 33 deletions(-)
  create mode 100644 mm/folio-compat.c
 
 diff --git a/Documentation/core-api/mm-api.rst b/Documentation/core-api/mm-api.rst
-index 971149f5d2416..395835f9289f1 100644
+index 971149f5d24164..395835f9289f1e 100644
 --- a/Documentation/core-api/mm-api.rst
 +++ b/Documentation/core-api/mm-api.rst
 @@ -101,3 +101,5 @@ More Memory Management Functions
@@ -2297,7 +2254,7 @@ index 971149f5d2416..395835f9289f1 100644
 +.. kernel-doc:: mm/util.c
 +   :functions: folio_mapping
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 372cb7e0d43c6..78655d6c33ea7 100644
+index d86b8548036e81..634f60a6f663fb 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1754,19 +1754,6 @@ void page_address_init(void);
@@ -2329,7 +2286,7 @@ index 372cb7e0d43c6..78655d6c33ea7 100644
  /*
   * Return true only if the page has been allocated with
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index aa71fa82d6bef..a0925a89ba116 100644
+index aa71fa82d6beff..a0925a89ba1162 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -162,14 +162,45 @@ static inline void filemap_nr_thps_dec(struct address_space *mapping)
@@ -2381,7 +2338,7 @@ index aa71fa82d6bef..a0925a89ba116 100644
  
  static inline bool page_cache_add_speculative(struct page *page, int count)
 diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 6f5a43251593c..3d3d85354026f 100644
+index 6f5a43251593c8..3d3d85354026fc 100644
 --- a/include/linux/swap.h
 +++ b/include/linux/swap.h
 @@ -320,6 +320,12 @@ struct vma_swap_readahead {
@@ -2398,7 +2355,7 @@ index 6f5a43251593c..3d3d85354026f 100644
  void workingset_age_nonresident(struct lruvec *lruvec, unsigned long nr_pages);
  void *workingset_eviction(struct page *page, struct mem_cgroup *target_memcg);
 diff --git a/mm/Makefile b/mm/Makefile
-index e3436741d5391..d7488bcbbb2b8 100644
+index e3436741d5391c..d7488bcbbb2b8a 100644
 --- a/mm/Makefile
 +++ b/mm/Makefile
 @@ -46,7 +46,7 @@ mmu-$(CONFIG_MMU)	+= process_vm_access.o
@@ -2412,7 +2369,7 @@ index e3436741d5391..d7488bcbbb2b8 100644
  			   mm_init.o percpu.o slab_common.o \
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
 new file mode 100644
-index 0000000000000..5e107aa30a623
+index 00000000000000..5e107aa30a6234
 --- /dev/null
 +++ b/mm/folio-compat.c
 @@ -0,0 +1,13 @@
@@ -2430,7 +2387,7 @@ index 0000000000000..5e107aa30a623
 +}
 +EXPORT_SYMBOL(page_mapping);
 diff --git a/mm/swapfile.c b/mm/swapfile.c
-index 1e07d1c776f2a..3a6c094310daa 100644
+index 1e07d1c776f2ae..3a6c094310daa1 100644
 --- a/mm/swapfile.c
 +++ b/mm/swapfile.c
 @@ -3528,13 +3528,13 @@ struct swap_info_struct *page_swap_info(struct page *page)
@@ -2452,7 +2409,7 @@ index 1e07d1c776f2a..3a6c094310daa 100644
  pgoff_t __page_file_index(struct page *page)
  {
 diff --git a/mm/util.c b/mm/util.c
-index 9043d03750a73..1cde6218d6d14 100644
+index 9043d03750a733..1cde6218d6d142 100644
 --- a/mm/util.c
 +++ b/mm/util.c
 @@ -686,30 +686,36 @@ struct anon_vma *page_anon_vma(struct page *page)
@@ -2504,14 +2461,11 @@ index 9043d03750a73..1cde6218d6d14 100644
  
  /* Slow path of page_mapcount() for compound pages */
  int __page_mapcount(struct page *page)
--- 
-cgit 1.2.3-1.el7
 
-
-From 13d967e764c4bd8c9c7061870ec5d58a9e801c53 Mon Sep 17 00:00:00 2001
+From 95417bc72bc1248853db91114c64cb0779b4a142 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 7 Dec 2020 15:44:35 -0500
-Subject: mm/filemap: Add folio_unlock()
+Subject: [PATCH 17/90] mm/filemap: Add folio_unlock()
 
 Convert unlock_page() to call folio_unlock().  By using a folio we
 avoid a call to compound_head().  This shortens the function from 39
@@ -2534,7 +2488,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  3 files changed, 20 insertions(+), 18 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index a0925a89ba116..a13edc7a29161 100644
+index a0925a89ba1162..a13edc7a291614 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -658,7 +658,8 @@ extern int __lock_page_killable(struct page *page);
@@ -2548,7 +2502,7 @@ index a0925a89ba116..a13edc7a29161 100644
  /*
   * Return true if the page was successfully locked
 diff --git a/mm/filemap.c b/mm/filemap.c
-index e7ce8bb137e05..f936dd963331e 100644
+index e7ce8bb137e051..f936dd963331e3 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1435,29 +1435,24 @@ static inline bool clear_bit_unlock_is_negative_byte(long nr, volatile void *mem
@@ -2594,7 +2548,7 @@ index e7ce8bb137e05..f936dd963331e 100644
  /**
   * end_page_private_2 - Clear PG_private_2 and release any waiters
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 5e107aa30a623..91b3d00a92f74 100644
+index 5e107aa30a6234..91b3d00a92f744 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -11,3 +11,9 @@ struct address_space *page_mapping(struct page *page)
@@ -2607,14 +2561,11 @@ index 5e107aa30a623..91b3d00a92f74 100644
 +	return folio_unlock(page_folio(page));
 +}
 +EXPORT_SYMBOL(unlock_page);
--- 
-cgit 1.2.3-1.el7
 
-
-From 45b5c2d62d2981d1ce48f08b660fb3713ed56b4b Mon Sep 17 00:00:00 2001
+From 1419ac97ce0e0415aff7aa495a1ea0637b948821 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 1 Mar 2021 19:38:25 -0500
-Subject: mm/filemap: Add folio_lock()
+Subject: [PATCH 18/90] mm/filemap: Add folio_lock()
 
 This is like lock_page() but for use by callers who know they have a folio.
 Convert __lock_page() to be __folio_lock().  This saves one call to
@@ -2637,7 +2588,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  2 files changed, 34 insertions(+), 19 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index a13edc7a29161..c3673c55125bf 100644
+index a13edc7a291614..c3673c55125bf9 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -653,7 +653,7 @@ static inline bool wake_page_match(struct wait_page_queue *wait_page,
@@ -2692,7 +2643,7 @@ index a13edc7a29161..c3673c55125bf 100644
  
  /*
 diff --git a/mm/filemap.c b/mm/filemap.c
-index f936dd963331e..0c8b5a043e200 100644
+index f936dd963331e3..0c8b5a043e2005 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1187,7 +1187,7 @@ static void wake_up_page(struct page *page, int bit)
@@ -2741,7 +2692,7 @@ index f936dd963331e..0c8b5a043e200 100644
  }
  
  /**
-@@ -2837,7 +2836,9 @@ unlock:
+@@ -2837,7 +2836,9 @@ loff_t mapping_seek_hole_data(struct address_space *mapping, loff_t start,
  static int lock_page_maybe_drop_mmap(struct vm_fault *vmf, struct page *page,
  				     struct file **fpin)
  {
@@ -2775,14 +2726,11 @@ index f936dd963331e..0c8b5a043e200 100644
  /*
   * Synchronous readahead happens when we don't even find a page in the page
   * cache at all.  We don't want to perform IO under the mmap sem, so if we have
--- 
-cgit 1.2.3-1.el7
 
-
-From 5efb2512f9562f91fa1a1d9febb121f715de8398 Mon Sep 17 00:00:00 2001
+From 0ef3ed598d017ec913486648e175bfeefc25c2cf Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 8 Dec 2020 00:07:31 -0500
-Subject: mm/filemap: Add folio_lock_killable()
+Subject: [PATCH 19/90] mm/filemap: Add folio_lock_killable()
 
 This is like lock_page_killable() but for use by callers who
 know they have a folio.  Convert __lock_page_killable() to be
@@ -2806,7 +2754,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  2 files changed, 19 insertions(+), 13 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index c3673c55125bf..88727c74e0594 100644
+index c3673c55125bf9..88727c74e0594f 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -654,7 +654,7 @@ static inline bool wake_page_match(struct wait_page_queue *wait_page,
@@ -2846,7 +2794,7 @@ index c3673c55125bf..88727c74e0594 100644
  
  /*
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 0c8b5a043e200..45983e98cf236 100644
+index 0c8b5a043e2005..45983e98cf236f 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1589,14 +1589,13 @@ void __folio_lock(struct folio *folio)
@@ -2902,14 +2850,11 @@ index 0c8b5a043e200..45983e98cf236 100644
  			/*
  			 * We didn't have the right flags to drop the mmap_lock,
  			 * but all fault_handlers only check for fatal signals
--- 
-cgit 1.2.3-1.el7
 
-
-From f78e1939136cb4fed1f4f62aad70383bc17b4f85 Mon Sep 17 00:00:00 2001
+From d99c830761c4e46d175abede62a6b46153530817 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 30 Dec 2020 17:58:40 -0500
-Subject: mm/filemap: Add __folio_lock_async()
+Subject: [PATCH 20/90] mm/filemap: Add __folio_lock_async()
 
 There aren't any actual callers of lock_page_async(), so remove it.
 Convert filemap_update_page() to call __folio_lock_async().
@@ -2934,7 +2879,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  3 files changed, 17 insertions(+), 33 deletions(-)
 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 0cac361bf6b8d..c83763135b48a 100644
+index 0cac361bf6b8de..c83763135b48a3 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
 @@ -3149,7 +3149,7 @@ static int io_read_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
@@ -2947,7 +2892,7 @@ index 0cac361bf6b8d..c83763135b48a 100644
   * This gets called when the page is unlocked, and we generally expect that to
   * happen when the page IO is completed and the page is now uptodate. This will
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 88727c74e0594..6f631a3e42dce 100644
+index 88727c74e0594f..6f631a3e42dce6 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -655,7 +655,6 @@ static inline bool wake_page_match(struct wait_page_queue *wait_page,
@@ -2982,7 +2927,7 @@ index 88727c74e0594..6f631a3e42dce 100644
   * lock_page_or_retry - Lock the page, unless this would block and the
   * caller indicated that it can handle a retry.
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 45983e98cf236..554c6150eda06 100644
+index 45983e98cf236f..554c6150eda067 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1597,18 +1597,18 @@ int __folio_lock_killable(struct folio *folio)
@@ -3062,14 +3007,11 @@ index 45983e98cf236..554c6150eda06 100644
  	return error;
  }
  
--- 
-cgit 1.2.3-1.el7
 
-
-From b2190f136783039e3328f63040616da24d904773 Mon Sep 17 00:00:00 2001
+From 6e789744cb170530627a402113021f654b987ecb Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 4 Mar 2021 10:21:02 -0500
-Subject: mm/filemap: Add folio_wait_locked()
+Subject: [PATCH 21/90] mm/filemap: Add folio_wait_locked()
 
 Also add folio_wait_locked_killable().  Turn wait_on_page_locked() and
 wait_on_page_locked_killable() into wrappers.  This eliminates a call
@@ -3090,7 +3032,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  2 files changed, 20 insertions(+), 10 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 6f631a3e42dce..03fea8bbfd8e9 100644
+index 6f631a3e42dce6..03fea8bbfd8e93 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -733,23 +733,33 @@ extern void wait_on_page_bit(struct page *page, int bit_nr);
@@ -3136,7 +3078,7 @@ index 6f631a3e42dce..03fea8bbfd8e9 100644
  
  int put_and_wait_on_page_locked(struct page *page, int state);
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 554c6150eda06..50f901f25d82c 100644
+index 554c6150eda067..50f901f25d82cb 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1649,9 +1649,9 @@ int __lock_page_or_retry(struct page *page, struct mm_struct *mm,
@@ -3151,14 +3093,11 @@ index 554c6150eda06..50f901f25d82c 100644
  		return 0;
  	}
  	if (flags & FAULT_FLAG_KILLABLE) {
--- 
-cgit 1.2.3-1.el7
 
-
-From 751c756b43042d554c84fa13c508a27e79b9ba42 Mon Sep 17 00:00:00 2001
+From 03f8537f1c1bd3ae45b5e99c4d618fd2f3650f42 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 18 Mar 2021 21:39:45 -0400
-Subject: mm/filemap: Add __folio_lock_or_retry()
+Subject: [PATCH 22/90] mm/filemap: Add __folio_lock_or_retry()
 
 Convert __lock_page_or_retry() to __folio_lock_or_retry().  This actually
 saves 4 bytes in the only caller of lock_page_or_retry() (due to better
@@ -3179,7 +3118,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  3 files changed, 20 insertions(+), 19 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 03fea8bbfd8e9..626dbccbfb90a 100644
+index 03fea8bbfd8e93..626dbccbfb90aa 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -655,7 +655,7 @@ static inline bool wake_page_match(struct wait_page_queue *wait_page,
@@ -3212,7 +3151,7 @@ index 03fea8bbfd8e9..626dbccbfb90a 100644
  
  /*
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 50f901f25d82c..270f1e7b67c1c 100644
+index 50f901f25d82cb..270f1e7b67c1cf 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1625,48 +1625,46 @@ static int __folio_lock_async(struct folio *folio, struct wait_page_queue *wait)
@@ -3274,7 +3213,7 @@ index 50f901f25d82c..270f1e7b67c1c 100644
  
  /**
 diff --git a/mm/memory.c b/mm/memory.c
-index 747a01d495f2c..2f111f9b3dbc6 100644
+index 747a01d495f2c5..2f111f9b3dbc61 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
 @@ -4248,7 +4248,7 @@ static vm_fault_t do_shared_fault(struct vm_fault *vmf)
@@ -3295,7 +3234,7 @@ index 747a01d495f2c..2f111f9b3dbc6 100644
   */
  static vm_fault_t handle_pte_fault(struct vm_fault *vmf)
  {
-@@ -4593,7 +4593,7 @@ unlock:
+@@ -4593,7 +4593,7 @@ static vm_fault_t handle_pte_fault(struct vm_fault *vmf)
   * By the time we get here, we already hold the mm semaphore
   *
   * The mmap_lock may have been released depending on flags and our
@@ -3313,14 +3252,11 @@ index 747a01d495f2c..2f111f9b3dbc6 100644
   */
  vm_fault_t handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
  			   unsigned int flags, struct pt_regs *regs)
--- 
-cgit 1.2.3-1.el7
 
-
-From 9dff87f861afe7f33d50e10f08f0dea6a1208c17 Mon Sep 17 00:00:00 2001
+From 8b5474f659ca62c30e6745eb1ae4580c88dad79b Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 8 Dec 2020 01:25:39 -0500
-Subject: mm/swap: Add folio_rotate_reclaimable()
+Subject: [PATCH 23/90] mm/swap: Add folio_rotate_reclaimable()
 
 Convert rotate_reclaimable_page() to folio_rotate_reclaimable().  This
 eliminates all five of the calls to compound_head() in this function,
@@ -3345,7 +3281,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  5 files changed, 21 insertions(+), 18 deletions(-)
 
 diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 3d3d85354026f..8394716a002b5 100644
+index 3d3d85354026fc..8394716a002b5f 100644
 --- a/include/linux/swap.h
 +++ b/include/linux/swap.h
 @@ -371,7 +371,6 @@ extern void lru_add_drain(void);
@@ -3357,7 +3293,7 @@ index 3d3d85354026f..8394716a002b5 100644
  extern void deactivate_page(struct page *page);
  extern void mark_page_lazyfree(struct page *page);
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 270f1e7b67c1c..8a97d89204001 100644
+index 270f1e7b67c1cf..8a97d89204001c 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1529,8 +1529,9 @@ void end_page_writeback(struct page *page)
@@ -3372,7 +3308,7 @@ index 270f1e7b67c1c..8a97d89204001 100644
  
  	/*
 diff --git a/mm/internal.h b/mm/internal.h
-index 31ff935b2547d..1a8851b730310 100644
+index 31ff935b2547d5..1a8851b7303101 100644
 --- a/mm/internal.h
 +++ b/mm/internal.h
 @@ -35,6 +35,7 @@
@@ -3384,7 +3320,7 @@ index 31ff935b2547d..1a8851b730310 100644
  void free_pgtables(struct mmu_gather *tlb, struct vm_area_struct *start_vma,
  		unsigned long floor, unsigned long ceiling);
 diff --git a/mm/page_io.c b/mm/page_io.c
-index c493ce9ebcf50..d597bc6e6e451 100644
+index c493ce9ebcf507..d597bc6e6e4517 100644
 --- a/mm/page_io.c
 +++ b/mm/page_io.c
 @@ -38,7 +38,7 @@ void end_swap_bio_write(struct bio *bio)
@@ -3406,7 +3342,7 @@ index c493ce9ebcf50..d597bc6e6e451 100644
  			 * the normal direct-to-bio case as it could
  			 * be temporary.
 diff --git a/mm/swap.c b/mm/swap.c
-index 19600430e536b..095a5ec6f986c 100644
+index 19600430e536b1..095a5ec6f986c1 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -228,11 +228,13 @@ static void pagevec_lru_move_fn(struct pagevec *pvec,
@@ -3461,14 +3397,11 @@ index 19600430e536b..095a5ec6f986c 100644
  			pagevec_lru_move_fn(pvec, pagevec_move_tail_fn);
  		local_unlock_irqrestore(&lru_rotate.lock, flags);
  	}
--- 
-cgit 1.2.3-1.el7
 
-
-From 4e7027c97dc8979e8056a574a9afed441db3457e Mon Sep 17 00:00:00 2001
+From 00c3622c46c9ffa9950688ea6b4cb91a800f48a5 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 3 Mar 2021 15:21:55 -0500
-Subject: mm/filemap: Add folio_end_writeback()
+Subject: [PATCH 24/90] mm/filemap: Add folio_end_writeback()
 
 Add an end_page_writeback() wrapper function for users that are not yet
 converted to folios.
@@ -3488,12 +3421,12 @@ Reviewed-by: David Howells <dhowells@redhat.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
  include/linux/pagemap.h |  3 ++-
- mm/filemap.c            | 43 +++++++++++++++++++++----------------------
+ mm/filemap.c            | 43 ++++++++++++++++++++---------------------
  mm/folio-compat.c       |  6 ++++++
  3 files changed, 29 insertions(+), 23 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 626dbccbfb90a..66a0191785507 100644
+index 626dbccbfb90aa..66a01917855073 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -768,7 +768,8 @@ static inline int wait_on_page_locked_killable(struct page *page)
@@ -3507,7 +3440,7 @@ index 626dbccbfb90a..66a0191785507 100644
  
  void __set_page_dirty(struct page *, struct address_space *, int warn);
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 8a97d89204001..a56878a553e4f 100644
+index 8a97d89204001c..a56878a553e4f8 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1175,11 +1175,11 @@ static void wake_up_page_bit(struct page *page, int bit_nr)
@@ -3584,7 +3517,7 @@ index 8a97d89204001..a56878a553e4f 100644
  /*
   * After completing I/O on a page, call this routine to update the page
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 91b3d00a92f74..526843d03d582 100644
+index 91b3d00a92f744..526843d03d582c 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -17,3 +17,9 @@ void unlock_page(struct page *page)
@@ -3597,14 +3530,11 @@ index 91b3d00a92f74..526843d03d582 100644
 +	return folio_end_writeback(page_folio(page));
 +}
 +EXPORT_SYMBOL(end_page_writeback);
--- 
-cgit 1.2.3-1.el7
 
-
-From 00545fc51220f52076c7cb0a8358f226e37b5cd5 Mon Sep 17 00:00:00 2001
+From c69377c1df473493dc6783389c8771418e8c40ba Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 4 Mar 2021 11:09:17 -0500
-Subject: mm/writeback: Add folio_wait_writeback()
+Subject: [PATCH 25/90] mm/writeback: Add folio_wait_writeback()
 
 wait_on_page_writeback_killable() only has one caller, so convert it to
 call folio_wait_writeback_killable().  For the wait_on_page_writeback()
@@ -3624,14 +3554,14 @@ Acked-by: Vlastimil Babka <vbabka@suse.cz>
 Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- fs/afs/write.c          |  9 +++++----
+ fs/afs/write.c          |  9 ++++----
  include/linux/pagemap.h |  3 ++-
  mm/folio-compat.c       |  6 ++++++
- mm/page-writeback.c     | 48 +++++++++++++++++++++++++++++++++---------------
+ mm/page-writeback.c     | 48 ++++++++++++++++++++++++++++-------------
  4 files changed, 46 insertions(+), 20 deletions(-)
 
 diff --git a/fs/afs/write.c b/fs/afs/write.c
-index 3104b62c20826..fb7d5c1cabde8 100644
+index 3104b62c208263..fb7d5c1cabde88 100644
 --- a/fs/afs/write.c
 +++ b/fs/afs/write.c
 @@ -839,7 +839,8 @@ int afs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
@@ -3665,7 +3595,7 @@ index 3104b62c20826..fb7d5c1cabde8 100644
  	}
  
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 66a0191785507..0c5f53368fe98 100644
+index 66a01917855073..0c5f53368fe984 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -767,7 +767,8 @@ static inline int wait_on_page_locked_killable(struct page *page)
@@ -3679,7 +3609,7 @@ index 66a0191785507..0c5f53368fe98 100644
  void folio_end_writeback(struct folio *folio);
  void wait_for_stable_page(struct page *page);
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 526843d03d582..41275dac7a92a 100644
+index 526843d03d582c..41275dac7a92a7 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -23,3 +23,9 @@ void end_page_writeback(struct page *page)
@@ -3693,7 +3623,7 @@ index 526843d03d582..41275dac7a92a 100644
 +}
 +EXPORT_SYMBOL_GPL(wait_on_page_writeback);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 9f63548f247c3..c2c00e1533ad9 100644
+index 9f63548f247c33..c2c00e1533ad9a 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2830,33 +2830,51 @@ int __test_set_page_writeback(struct page *page, bool keep_write)
@@ -3763,14 +3693,11 @@ index 9f63548f247c3..c2c00e1533ad9 100644
  
  /**
   * wait_for_stable_page() - wait for writeback to finish, if necessary.
--- 
-cgit 1.2.3-1.el7
 
-
-From 48bca94f1da789629e914e9c41d587a88c54c331 Mon Sep 17 00:00:00 2001
+From d97895a60d88dc5989b37eb6f2661bc45a3a1b51 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 4 Mar 2021 11:25:25 -0500
-Subject: mm/writeback: Add folio_wait_stable()
+Subject: [PATCH 26/90] mm/writeback: Add folio_wait_stable()
 
 Move wait_for_stable_page() into the folio compatibility file.
 folio_wait_stable() avoids a call to compound_head() and is 14 bytes
@@ -3793,7 +3720,7 @@ Reviewed-by: David Howells <dhowells@redhat.com>
  4 files changed, 21 insertions(+), 25 deletions(-)
 
 diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
-index f123e15d966e8..f280f33ff2237 100644
+index f123e15d966e84..f280f33ff22373 100644
 --- a/include/linux/huge_mm.h
 +++ b/include/linux/huge_mm.h
 @@ -250,15 +250,6 @@ static inline spinlock_t *pud_trans_huge_lock(pud_t *pud,
@@ -3826,7 +3753,7 @@ index f123e15d966e8..f280f33ff2237 100644
  {
  	VM_BUG_ON_PGFLAGS(PageTail(page), page);
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 0c5f53368fe98..96b62a2331fbd 100644
+index 0c5f53368fe984..96b62a2331fbd7 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -772,6 +772,7 @@ int folio_wait_writeback_killable(struct folio *folio);
@@ -3838,7 +3765,7 @@ index 0c5f53368fe98..96b62a2331fbd 100644
  void __set_page_dirty(struct page *, struct address_space *, int warn);
  int __set_page_dirty_nobuffers(struct page *page);
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 41275dac7a92a..3c83f03b80d7f 100644
+index 41275dac7a92a7..3c83f03b80d7f8 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -29,3 +29,9 @@ void wait_on_page_writeback(struct page *page)
@@ -3852,7 +3779,7 @@ index 41275dac7a92a..3c83f03b80d7f 100644
 +}
 +EXPORT_SYMBOL_GPL(wait_for_stable_page);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index c2c00e1533ad9..a078e9786cc4e 100644
+index c2c00e1533ad9a..a078e9786cc4ea 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2877,17 +2877,21 @@ int folio_wait_writeback_killable(struct folio *folio)
@@ -3887,14 +3814,11 @@ index c2c00e1533ad9..a078e9786cc4e 100644
  }
 -EXPORT_SYMBOL_GPL(wait_for_stable_page);
 +EXPORT_SYMBOL_GPL(folio_wait_stable);
--- 
-cgit 1.2.3-1.el7
 
-
-From 84a3d81cf9a596bcdf0dcad8298a1e721d013684 Mon Sep 17 00:00:00 2001
+From e94458e5218524bc9af3a259892fd4ef79d50ab6 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 4 Mar 2021 12:02:54 -0500
-Subject: mm/filemap: Add folio_wait_bit()
+Subject: [PATCH 27/90] mm/filemap: Add folio_wait_bit()
 
 Rename wait_on_page_bit() to folio_wait_bit().  We must always wait on
 the folio, otherwise we won't be woken up due to the tail page hashing
@@ -3912,13 +3836,13 @@ Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 Reviewed-by: David Howells <dhowells@redhat.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- include/linux/pagemap.h | 10 +++----
- mm/filemap.c            | 77 +++++++++++++++++++++++--------------------------
+ include/linux/pagemap.h | 10 +++---
+ mm/filemap.c            | 77 +++++++++++++++++++----------------------
  mm/page-writeback.c     |  4 +--
  3 files changed, 43 insertions(+), 48 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 96b62a2331fbd..7eb02baf6f9f9 100644
+index 96b62a2331fbd7..7eb02baf6f9f91 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -729,11 +729,11 @@ static inline bool lock_page_or_retry(struct page *page, struct mm_struct *mm,
@@ -3954,7 +3878,7 @@ index 96b62a2331fbd..7eb02baf6f9f9 100644
  
  static inline void wait_on_page_locked(struct page *page)
 diff --git a/mm/filemap.c b/mm/filemap.c
-index a56878a553e4f..4b0288cfc1655 100644
+index a56878a553e4f8..4b0288cfc1655a 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1102,7 +1102,7 @@ static int wake_page_function(wait_queue_entry_t *wait, unsigned mode, int sync,
@@ -4029,7 +3953,7 @@ index a56878a553e4f..4b0288cfc1655 100644
  	wait_page.bit_nr = bit_nr;
  
  repeat:
-@@ -1254,7 +1255,7 @@ repeat:
+@@ -1254,7 +1255,7 @@ static inline int wait_on_page_bit_common(wait_queue_head_t *q,
  	 * Do one last check whether we can get the
  	 * page bit synchronously.
  	 *
@@ -4038,7 +3962,7 @@ index a56878a553e4f..4b0288cfc1655 100644
  	 * to let any waker we _just_ missed know they
  	 * need to wake us up (otherwise they'll never
  	 * even go to the slow case that looks at the
-@@ -1265,8 +1266,8 @@ repeat:
+@@ -1265,8 +1266,8 @@ static inline int wait_on_page_bit_common(wait_queue_head_t *q,
  	 * lock to avoid races.
  	 */
  	spin_lock_irq(&q->lock);
@@ -4049,7 +3973,7 @@ index a56878a553e4f..4b0288cfc1655 100644
  		__add_wait_queue_entry_tail(q, wait);
  	spin_unlock_irq(&q->lock);
  
-@@ -1276,10 +1277,10 @@ repeat:
+@@ -1276,10 +1277,10 @@ static inline int wait_on_page_bit_common(wait_queue_head_t *q,
  	 * see whether the page bit testing has already
  	 * been done by the wake function.
  	 *
@@ -4062,7 +3986,7 @@ index a56878a553e4f..4b0288cfc1655 100644
  
  	/*
  	 * Note that until the "finish_wait()", or until
-@@ -1316,7 +1317,7 @@ repeat:
+@@ -1316,7 +1317,7 @@ static inline int wait_on_page_bit_common(wait_queue_head_t *q,
  		 *
  		 * And if that fails, we'll have to retry this all.
  		 */
@@ -4071,7 +3995,7 @@ index a56878a553e4f..4b0288cfc1655 100644
  			goto repeat;
  
  		wait->flags |= WQ_FLAG_DONE;
-@@ -1325,7 +1326,7 @@ repeat:
+@@ -1325,7 +1326,7 @@ static inline int wait_on_page_bit_common(wait_queue_head_t *q,
  
  	/*
  	 * If a signal happened, this 'finish_wait()' may remove the last
@@ -4080,7 +4004,7 @@ index a56878a553e4f..4b0288cfc1655 100644
  	 * set. That's ok. The next wakeup will take care of it, and trying
  	 * to do it here would be difficult and prone to races.
  	 */
-@@ -1356,19 +1357,17 @@ repeat:
+@@ -1356,19 +1357,17 @@ static inline int wait_on_page_bit_common(wait_queue_head_t *q,
  	return wait->flags & WQ_FLAG_WOKEN ? 0 : -EINTR;
  }
  
@@ -4169,7 +4093,7 @@ index a56878a553e4f..4b0288cfc1655 100644
  }
  EXPORT_SYMBOL_GPL(__folio_lock_killable);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index a078e9786cc4e..b34278d05395f 100644
+index a078e9786cc4ea..b34278d05395f2 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2846,7 +2846,7 @@ void folio_wait_writeback(struct folio *folio)
@@ -4190,14 +4114,11 @@ index a078e9786cc4e..b34278d05395f 100644
  			return -EINTR;
  	}
  
--- 
-cgit 1.2.3-1.el7
 
-
-From b64ec32fec5b429d99ff6c82ee3c49069db8e7b0 Mon Sep 17 00:00:00 2001
+From 6f9586d66960c40147eae6a403ea1e091059d17a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 15 Jan 2021 17:14:48 -0500
-Subject: mm/filemap: Add folio_wake_bit()
+Subject: [PATCH 28/90] mm/filemap: Add folio_wake_bit()
 
 Convert wake_up_page_bit() to folio_wake_bit().  All callers have a folio,
 so use it directly.  Saves 66 bytes of text in end_page_private_2().
@@ -4215,7 +4136,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 12 insertions(+), 11 deletions(-)
 
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 4b0288cfc1655..3d504bf235346 100644
+index 4b0288cfc1655a..3d504bf2353468 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1121,14 +1121,14 @@ static int wake_page_function(wait_queue_entry_t *wait, unsigned mode, int sync,
@@ -4281,14 +4202,11 @@ index 4b0288cfc1655..3d504bf235346 100644
  }
  EXPORT_SYMBOL(end_page_private_2);
  
--- 
-cgit 1.2.3-1.el7
 
-
-From e0cb7cce5b0e65fc79be5ddd38fb2e90c1a784f4 Mon Sep 17 00:00:00 2001
+From f1c18afa410a4604493b7b4e6221a1a42011089c Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 16 Jan 2021 11:22:14 -0500
-Subject: mm/filemap: Convert page wait queues to be folios
+Subject: [PATCH 29/90] mm/filemap: Convert page wait queues to be folios
 
 Reinforce that page flags are actually in the head page by changing the
 type from page to folio.  Increases the size of cachefiles by two bytes,
@@ -4308,7 +4226,7 @@ Reviewed-by: David Howells <dhowells@redhat.com>
  3 files changed, 31 insertions(+), 31 deletions(-)
 
 diff --git a/fs/cachefiles/rdwr.c b/fs/cachefiles/rdwr.c
-index 8ffc40e84a594..fcf4f3b729233 100644
+index 8ffc40e84a5944..fcf4f3b7292335 100644
 --- a/fs/cachefiles/rdwr.c
 +++ b/fs/cachefiles/rdwr.c
 @@ -25,20 +25,20 @@ static int cachefiles_read_waiter(wait_queue_entry_t *wait, unsigned mode,
@@ -4346,7 +4264,7 @@ index 8ffc40e84a594..fcf4f3b729233 100644
  
  	if (trylock_page(backpage)) {
  		ret = -EIO;
-@@ -294,7 +294,7 @@ monitor_backing_page:
+@@ -294,7 +294,7 @@ static int cachefiles_read_backing_file_one(struct cachefiles_object *object,
  	get_page(backpage);
  	monitor->back_page = backpage;
  	monitor->monitor.private = backpage;
@@ -4365,7 +4283,7 @@ index 8ffc40e84a594..fcf4f3b729233 100644
  
  		/* but the page may have been read before the monitor was
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 7eb02baf6f9f9..c8e74d67b01fb 100644
+index 7eb02baf6f9f91..c8e74d67b01fb1 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -629,13 +629,13 @@ static inline pgoff_t linear_page_index(struct vm_area_struct *vma,
@@ -4403,7 +4321,7 @@ index 7eb02baf6f9f9..c8e74d67b01fb 100644
  /*
   * Fault everything in given userspace address range in.
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 3d504bf235346..ac8c9253cfedd 100644
+index 3d504bf2353468..ac8c9253cfedd4 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1019,11 +1019,11 @@ EXPORT_SYMBOL(__page_cache_alloc);
@@ -4520,14 +4438,11 @@ index 3d504bf235346..ac8c9253cfedd 100644
  	wait->bit_nr = PG_locked;
  
  	spin_lock_irq(&q->lock);
--- 
-cgit 1.2.3-1.el7
 
-
-From 560ce168a62978ee1f17c0ea1a298f293bc0ccf2 Mon Sep 17 00:00:00 2001
+From 9977ac1227c7ef4087b79f40046e2d60305eeb52 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 22 Apr 2021 22:58:32 -0400
-Subject: mm/filemap: Add folio private_2 functions
+Subject: [PATCH 30/90] mm/filemap: Add folio private_2 functions
 
 end_page_private_2() becomes folio_end_private_2(),
 wait_on_page_private_2() becomes folio_wait_private_2() and
@@ -4550,7 +4465,7 @@ Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
  3 files changed, 24 insertions(+), 29 deletions(-)
 
 diff --git a/include/linux/netfs.h b/include/linux/netfs.h
-index 9062adfa2fb9d..fad8c6209eddf 100644
+index 9062adfa2fb9dc..fad8c6209eddfc 100644
 --- a/include/linux/netfs.h
 +++ b/include/linux/netfs.h
 @@ -55,7 +55,7 @@ static inline void set_page_fscache(struct page *page)
@@ -4581,7 +4496,7 @@ index 9062adfa2fb9d..fad8c6209eddf 100644
  
  enum netfs_read_source {
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index c8e74d67b01fb..edf58a581bce6 100644
+index c8e74d67b01fb1..edf58a581bce6c 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -796,9 +796,9 @@ static inline void set_page_private_2(struct page *page)
@@ -4598,7 +4513,7 @@ index c8e74d67b01fb..edf58a581bce6 100644
  /*
   * Add an arbitrary waiter to a page's wait queue
 diff --git a/mm/filemap.c b/mm/filemap.c
-index ac8c9253cfedd..1ef737cf63fa0 100644
+index ac8c9253cfedd4..1ef737cf63fa0b 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1451,56 +1451,51 @@ void folio_unlock(struct folio *folio)
@@ -4684,14 +4599,11 @@ index ac8c9253cfedd..1ef737cf63fa0 100644
  
  /**
   * folio_end_writeback - End writeback against a folio.
--- 
-cgit 1.2.3-1.el7
 
-
-From 3206101a2a222bdf1565f0f2cf13ada5b672a6fe Mon Sep 17 00:00:00 2001
+From 202dc49829050d01708874ae42657b47f378cb3c Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 14:24:30 -0400
-Subject: fs/netfs: Add folio fscache functions
+Subject: [PATCH 31/90] fs/netfs: Add folio fscache functions
 
 Match the page writeback functions by adding
 folio_start_fscache(), folio_end_fscache(), folio_wait_fscache() and
@@ -4709,12 +4621,12 @@ Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
  Documentation/filesystems/netfs_library.rst |  2 +
- include/linux/netfs.h                       | 75 ++++++++++++++++++-----------
- include/linux/pagemap.h                     | 16 ------
+ include/linux/netfs.h                       | 75 +++++++++++++--------
+ include/linux/pagemap.h                     | 16 -----
  3 files changed, 50 insertions(+), 43 deletions(-)
 
 diff --git a/Documentation/filesystems/netfs_library.rst b/Documentation/filesystems/netfs_library.rst
-index 57a6418478186..bb68d39f03b78 100644
+index 57a64184781863..bb68d39f03b789 100644
 --- a/Documentation/filesystems/netfs_library.rst
 +++ b/Documentation/filesystems/netfs_library.rst
 @@ -524,3 +524,5 @@ Note that these methods are passed a pointer to the cache resource structure,
@@ -4724,7 +4636,7 @@ index 57a6418478186..bb68d39f03b78 100644
 +
 +.. kernel-doc:: include/linux/netfs.h
 diff --git a/include/linux/netfs.h b/include/linux/netfs.h
-index fad8c6209eddf..113b5fa9280cf 100644
+index fad8c6209eddfc..113b5fa9280cff 100644
 --- a/include/linux/netfs.h
 +++ b/include/linux/netfs.h
 @@ -22,6 +22,7 @@
@@ -4841,7 +4753,7 @@ index fad8c6209eddf..113b5fa9280cf 100644
  {
  	return folio_wait_private_2_killable(page_folio(page));
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index edf58a581bce6..08f40e004d97e 100644
+index edf58a581bce6c..08f40e004d97ef 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -780,22 +780,6 @@ int __set_page_dirty_no_writeback(struct page *page);
@@ -4867,14 +4779,11 @@ index edf58a581bce6..08f40e004d97e 100644
  void folio_end_private_2(struct folio *folio);
  void folio_wait_private_2(struct folio *folio);
  int folio_wait_private_2_killable(struct folio *folio);
--- 
-cgit 1.2.3-1.el7
 
-
-From 2d49561ed02cdce999b59f696d320f89ac46b584 Mon Sep 17 00:00:00 2001
+From a7b7eeb698b874f03f24643039f48bc76ce778b2 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 12 Apr 2021 16:45:17 -0400
-Subject: mm: Add folio_mapped()
+Subject: [PATCH 32/90] mm: Add folio_mapped()
 
 This function is the equivalent of page_mapped().  It is slightly
 shorter as we do not need to handle the PageTail() case.  Reimplement
@@ -4897,7 +4806,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  4 files changed, 29 insertions(+), 13 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 78655d6c33ea7..d0cb0cb2a42b6 100644
+index 634f60a6f663fb..41b9fd4427b776 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1768,6 +1768,7 @@ static inline pgoff_t page_index(struct page *page)
@@ -4909,7 +4818,7 @@ index 78655d6c33ea7..d0cb0cb2a42b6 100644
  /*
   * Return true only if the page has been allocated with
 diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index f38ab53fcf7c8..1066afc9a06de 100644
+index f38ab53fcf7c84..1066afc9a06de7 100644
 --- a/include/linux/mm_types.h
 +++ b/include/linux/mm_types.h
 @@ -291,6 +291,12 @@ FOLIO_MATCH(memcg_data, memcg_data);
@@ -4926,7 +4835,7 @@ index f38ab53fcf7c8..1066afc9a06de 100644
  {
  	return &page[1].compound_mapcount;
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 3c83f03b80d7f..7044fcc8a8aa8 100644
+index 3c83f03b80d7f8..7044fcc8a8aa82 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -35,3 +35,9 @@ void wait_for_stable_page(struct page *page)
@@ -4940,7 +4849,7 @@ index 3c83f03b80d7f..7044fcc8a8aa8 100644
 +}
 +EXPORT_SYMBOL(page_mapped);
 diff --git a/mm/util.c b/mm/util.c
-index 1cde6218d6d14..8f139c2cf0008 100644
+index 1cde6218d6d142..d135629dbc8b7f 100644
 --- a/mm/util.c
 +++ b/mm/util.c
 @@ -652,28 +652,31 @@ void *page_rmapping(struct page *page)
@@ -4966,7 +4875,7 @@ index 1cde6218d6d14..8f139c2cf0008 100644
 -		return atomic_read(&page->_mapcount) >= 0;
 -	page = compound_head(page);
 -	if (atomic_read(compound_mapcount_ptr(page)) >= 0)
-+	if (folio_single(folio))
++	if (folio_test_single(folio))
 +		return atomic_read(&folio->_mapcount) >= 0;
 +	if (atomic_read(folio_mapcount_ptr(folio)) >= 0)
  		return true;
@@ -4988,14 +4897,11 @@ index 1cde6218d6d14..8f139c2cf0008 100644
  
  struct anon_vma *page_anon_vma(struct page *page)
  {
--- 
-cgit 1.2.3-1.el7
 
-
-From 201055ccf75b88d628f65c117aa1c084337b1ae6 Mon Sep 17 00:00:00 2001
+From fefa4d93accd31382247a07a34fa01c759fa1eed Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 25 Jun 2021 09:27:29 -0400
-Subject: mm: Add folio_nid()
+Subject: [PATCH 33/90] mm: Add folio_nid()
 
 This is the folio equivalent of page_to_nid().
 
@@ -5007,7 +4913,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 5 insertions(+)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index d0cb0cb2a42b6..36f439b44de3f 100644
+index 41b9fd4427b776..98f7e013c0e7e7 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1428,6 +1428,11 @@ static inline int page_to_nid(const struct page *page)
@@ -5022,14 +4928,12 @@ index d0cb0cb2a42b6..36f439b44de3f 100644
  #ifdef CONFIG_NUMA_BALANCING
  static inline int cpu_pid_to_cpupid(int cpu, int pid)
  {
--- 
-cgit 1.2.3-1.el7
 
-
-From 53353b44aa729f1090b5d6bb89e752b52d78a48d Mon Sep 17 00:00:00 2001
+From c24442a4e1037066496bcd25ec7957e6bd02eab8 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 13:40:11 -0400
-Subject: mm/memcg: Remove 'page' parameter to mem_cgroup_charge_statistics()
+Subject: [PATCH 34/90] mm/memcg: Remove 'page' parameter to
+ mem_cgroup_charge_statistics()
 
 The last use of 'page' was removed by commit 468c398233da ("mm:
 memcontrol: switch to native NR_ANON_THPS counter"), so we can now remove
@@ -5044,7 +4948,7 @@ Acked-by: Johannes Weiner <hannes@cmpxchg.org>
  1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index ae1f5d0cb5810..ee892daecb8bc 100644
+index ae1f5d0cb58105..ee892daecb8bc2 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -831,7 +831,6 @@ static unsigned long memcg_events_local(struct mem_cgroup *memcg, int event)
@@ -5094,14 +4998,11 @@ index ae1f5d0cb5810..ee892daecb8bc 100644
  	memcg_check_events(memcg, page);
  
  	css_put(&memcg->css);
--- 
-cgit 1.2.3-1.el7
 
-
-From a2425dadae0e8979d7130ec7558e3c6759052d98 Mon Sep 17 00:00:00 2001
+From 2c22c6982ffbd74fca7e0820e96ea4c7ea83731d Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 14:51:26 -0400
-Subject: mm/memcg: Use the node id in mem_cgroup_update_tree()
+Subject: [PATCH 35/90] mm/memcg: Use the node id in mem_cgroup_update_tree()
 
 By using the node id in mem_cgroup_update_tree(), we can delete
 soft_limit_tree_from_page() and mem_cgroup_page_nodeinfo().  Saves 42
@@ -5116,7 +5017,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 4 insertions(+), 20 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index ee892daecb8bc..d57ff5c5d330a 100644
+index ee892daecb8bc2..d57ff5c5d330a8 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -451,28 +451,12 @@ ino_t page_cgroup_ino(struct page *page)
@@ -5182,14 +5083,11 @@ index ee892daecb8bc..d57ff5c5d330a 100644
  	}
  }
  
--- 
-cgit 1.2.3-1.el7
 
-
-From 908d3cb2a2320f742c0dd30ec9df935e89c1c32a Mon Sep 17 00:00:00 2001
+From 117f7b38099a6890644756c3db8f5f74c0b48155 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 25 Jun 2021 08:57:02 -0400
-Subject: mm/memcg: Remove soft_limit_tree_node()
+Subject: [PATCH 36/90] mm/memcg: Remove soft_limit_tree_node()
 
 Opencode this one-line function in its three callers.
 
@@ -5202,7 +5100,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 3 insertions(+), 9 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index d57ff5c5d330a..f70e33d691aa6 100644
+index d57ff5c5d330a8..f70e33d691aa6e 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -451,12 +451,6 @@ ino_t page_cgroup_ino(struct page *page)
@@ -5245,14 +5143,11 @@ index d57ff5c5d330a..f70e33d691aa6 100644
  
  	/*
  	 * Do not even bother to check the largest node if the root
--- 
-cgit 1.2.3-1.el7
 
-
-From a72691968dffa12d78015e0b46f24427d4fe63ff Mon Sep 17 00:00:00 2001
+From e059cfa28ba8d34602f2840bfe296f97e261e2c6 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 25 Jun 2021 09:05:47 -0400
-Subject: mm/memcg: Convert memcg_check_events to take a node ID
+Subject: [PATCH 37/90] mm/memcg: Convert memcg_check_events to take a node ID
 
 memcg_check_events only uses the page's nid, so call page_to_nid in the
 callers to make the interface easier to understand.
@@ -5265,7 +5160,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 12 insertions(+), 11 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index f70e33d691aa6..1a049bfa0e0a8 100644
+index f70e33d691aa6e..1a049bfa0e0a8f 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -851,7 +851,7 @@ static bool mem_cgroup_event_ratelimit(struct mem_cgroup *memcg,
@@ -5365,14 +5260,11 @@ index f70e33d691aa6..1a049bfa0e0a8 100644
  
  	css_put(&memcg->css);
  }
--- 
-cgit 1.2.3-1.el7
 
-
-From 696fc978c9c3ec3a86641052e388feb2af4928a1 Mon Sep 17 00:00:00 2001
+From 78ab11aea8e73aff2d618ef638a9ba17ba7c38f3 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 28 Jun 2021 14:59:26 -0400
-Subject: mm/memcg: Add folio_memcg() and related functions
+Subject: [PATCH 38/90] mm/memcg: Add folio_memcg() and related functions
 
 memcg information is only stored in the head page, so the memcg
 subsystem needs to assure that all accesses are to the head page.
@@ -5385,12 +5277,12 @@ and folio_memcg_kmem().  They will be converted in a later patch set.
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/memcontrol.h | 109 +++++++++++++++++++++++++++------------------
- mm/memcontrol.c            |  21 +++++----
+ include/linux/memcontrol.h | 109 ++++++++++++++++++++++---------------
+ mm/memcontrol.c            |  21 ++++---
  2 files changed, 77 insertions(+), 53 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index bfe5c486f4add..eabae58741619 100644
+index bfe5c486f4add8..eabae587416199 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -372,6 +372,7 @@ enum page_memcg_data_flags {
@@ -5587,7 +5479,7 @@ index bfe5c486f4add..eabae58741619 100644
  {
  	return false;
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 1a049bfa0e0a8..f0f781dde37a9 100644
+index 1a049bfa0e0a8f..f0f781dde37a98 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -3050,15 +3050,16 @@ int __memcg_kmem_charge_page(struct page *page, gfp_t gfp, int order)
@@ -5658,14 +5550,11 @@ index 1a049bfa0e0a8..f0f781dde37a9 100644
  	}
  
  	if (!memcg)
--- 
-cgit 1.2.3-1.el7
 
-
-From 9ad8c1fbc5bdad6e393a920ed26db1b116e9b5e5 Mon Sep 17 00:00:00 2001
+From e2e8baa71ae9b034e19932261a89a15cf9c8fa2e Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 14:07:12 -0400
-Subject: mm/memcg: Convert commit_charge() to take a folio
+Subject: [PATCH 39/90] mm/memcg: Convert commit_charge() to take a folio
 
 The memcg_data is only set on the head page, so enforce that by
 typing it as a folio.
@@ -5678,7 +5567,7 @@ Acked-by: Michal Hocko <mhocko@suse.com>
  1 file changed, 13 insertions(+), 14 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index f0f781dde37a9..91e3f69b5e0bb 100644
+index f0f781dde37a98..91e3f69b5e0bb7 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -2769,9 +2769,9 @@ static void cancel_charge(struct mem_cgroup *memcg, unsigned int nr_pages)
@@ -5767,14 +5656,11 @@ index f0f781dde37a9..91e3f69b5e0bb 100644
  
  	local_irq_save(flags);
  	mem_cgroup_charge_statistics(memcg, nr_pages);
--- 
-cgit 1.2.3-1.el7
 
-
-From 39deecdc620a2435ac2e4b0064411797d517daa3 Mon Sep 17 00:00:00 2001
+From 06a8bd6cf69ab768e51f5e4bf642dc320d6e7258 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 25 Jun 2021 09:27:04 -0400
-Subject: mm/memcg: Convert mem_cgroup_charge() to take a folio
+Subject: [PATCH 40/90] mm/memcg: Convert mem_cgroup_charge() to take a folio
 
 Convert all callers of mem_cgroup_charge() to call page_folio() on the
 page they're currently passing in.  Many of them will be converted to
@@ -5797,7 +5683,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  11 files changed, 34 insertions(+), 31 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index eabae58741619..62e2ae5c11f2c 100644
+index eabae587416199..62e2ae5c11f2cb 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -704,7 +704,7 @@ static inline bool mem_cgroup_below_min(struct mem_cgroup *memcg)
@@ -5821,7 +5707,7 @@ index eabae58741619..62e2ae5c11f2c 100644
  	return 0;
  }
 diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
-index af24dc3febbef..6357c3580d07b 100644
+index af24dc3febbef1..6357c3580d07b3 100644
 --- a/kernel/events/uprobes.c
 +++ b/kernel/events/uprobes.c
 @@ -167,7 +167,8 @@ static int __replace_page(struct vm_area_struct *vma, unsigned long addr,
@@ -5835,7 +5721,7 @@ index af24dc3febbef..6357c3580d07b 100644
  			return err;
  	}
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 1ef737cf63fa0..7842711f15c06 100644
+index 1ef737cf63fa0b..7842711f15c06a 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -872,7 +872,7 @@ noinline int __add_to_page_cache_locked(struct page *page,
@@ -5848,7 +5734,7 @@ index 1ef737cf63fa0..7842711f15c06 100644
  			goto error;
  		charged = true;
 diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index afff3ac870673..ecb1fb1f5f3e1 100644
+index afff3ac8706732..ecb1fb1f5f3e14 100644
 --- a/mm/huge_memory.c
 +++ b/mm/huge_memory.c
 @@ -603,7 +603,7 @@ static vm_fault_t __do_huge_pmd_anonymous_page(struct vm_fault *vmf,
@@ -5861,7 +5747,7 @@ index afff3ac870673..ecb1fb1f5f3e1 100644
  		count_vm_event(THP_FAULT_FALLBACK);
  		count_vm_event(THP_FAULT_FALLBACK_CHARGE);
 diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-index b0412be08fa2c..8f6d7fdea9f4b 100644
+index b0412be08fa2c5..8f6d7fdea9f4bf 100644
 --- a/mm/khugepaged.c
 +++ b/mm/khugepaged.c
 @@ -1087,7 +1087,7 @@ static void collapse_huge_page(struct mm_struct *mm,
@@ -5883,7 +5769,7 @@ index b0412be08fa2c..8f6d7fdea9f4b 100644
  		goto out;
  	}
 diff --git a/mm/ksm.c b/mm/ksm.c
-index 3fa9bc8a67cf6..23d36b59f9975 100644
+index 3fa9bc8a67cf63..23d36b59f9975f 100644
 --- a/mm/ksm.c
 +++ b/mm/ksm.c
 @@ -2580,7 +2580,8 @@ struct page *ksm_might_need_to_copy(struct page *page,
@@ -5897,7 +5783,7 @@ index 3fa9bc8a67cf6..23d36b59f9975 100644
  		new_page = NULL;
  	}
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 91e3f69b5e0bb..922c704f71dba 100644
+index 91e3f69b5e0bb7..922c704f71dba7 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -6681,10 +6681,9 @@ void mem_cgroup_calculate_protection(struct mem_cgroup *root,
@@ -5978,7 +5864,7 @@ index 91e3f69b5e0bb..922c704f71dba 100644
  	css_put(&memcg->css);
  	return ret;
 diff --git a/mm/memory.c b/mm/memory.c
-index 2f111f9b3dbc6..614418e26e2c9 100644
+index 2f111f9b3dbc61..614418e26e2c93 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
 @@ -990,7 +990,7 @@ page_copy_prealloc(struct mm_struct *src_mm, struct vm_area_struct *vma,
@@ -6019,7 +5905,7 @@ index 2f111f9b3dbc6..614418e26e2c9 100644
  		return VM_FAULT_OOM;
  	}
 diff --git a/mm/migrate.c b/mm/migrate.c
-index 34a9ad3e0a4f9..b5bdae748f82c 100644
+index 34a9ad3e0a4f93..b5bdae748f82c3 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
 @@ -2763,7 +2763,7 @@ static void migrate_vma_insert_page(struct migrate_vma *migrate,
@@ -6032,7 +5918,7 @@ index 34a9ad3e0a4f9..b5bdae748f82c 100644
  
  	/*
 diff --git a/mm/shmem.c b/mm/shmem.c
-index 70d9ce294bb49..3931fed5c8d8c 100644
+index 70d9ce294bb497..3931fed5c8d8c4 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
 @@ -685,7 +685,7 @@ static int shmem_add_to_page_cache(struct page *page,
@@ -6045,7 +5931,7 @@ index 70d9ce294bb49..3931fed5c8d8c 100644
  			if (PageTransHuge(page)) {
  				count_vm_event(THP_FILE_FALLBACK);
 diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
-index 0e2132834bc7d..5d0f55f3c0ede 100644
+index 0e2132834bc7d6..5d0f55f3c0eded 100644
 --- a/mm/userfaultfd.c
 +++ b/mm/userfaultfd.c
 @@ -164,7 +164,7 @@ static int mcopy_atomic_pte(struct mm_struct *dst_mm,
@@ -6057,14 +5943,11 @@ index 0e2132834bc7d..5d0f55f3c0ede 100644
  		goto out_release;
  
  	ret = mfill_atomic_install_pte(dst_mm, dst_pmd, dst_vma, dst_addr,
--- 
-cgit 1.2.3-1.el7
 
-
-From 737dcfb992f6d50761b950146d134ca90a86e650 Mon Sep 17 00:00:00 2001
+From 883681aa23684b49b56f9aa64f973378ca91bb25 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 29 Jun 2021 21:47:12 -0400
-Subject: mm/memcg: Convert uncharge_page() to uncharge_folio()
+Subject: [PATCH 41/90] mm/memcg: Convert uncharge_page() to uncharge_folio()
 
 Use a folio rather than a page to ensure that we're only operating on
 base or head pages, and not tail pages.
@@ -6076,7 +5959,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 15 insertions(+), 16 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 922c704f71dba..917fe2644d68e 100644
+index 922c704f71dba7..917fe2644d68e8 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -6832,24 +6832,23 @@ static void uncharge_batch(const struct uncharge_gather *ug)
@@ -6170,14 +6053,11 @@ index 922c704f71dba..917fe2644d68e 100644
  	if (ug.memcg)
  		uncharge_batch(&ug);
  }
--- 
-cgit 1.2.3-1.el7
 
-
-From b00573992026935c4b2351496809ef1f81c9afd9 Mon Sep 17 00:00:00 2001
+From 92da69fd99f9ad49a1fce5b244179ae30214f22b Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 1 May 2021 20:42:23 -0400
-Subject: mm/memcg: Convert mem_cgroup_uncharge() to take a folio
+Subject: [PATCH 42/90] mm/memcg: Convert mem_cgroup_uncharge() to take a folio
 
 Convert all the callers to call page_folio().  Most of them were already
 using a head page, but a few of them I can't prove were, so this may
@@ -6198,7 +6078,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  8 files changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 62e2ae5c11f2c..165cb04034e20 100644
+index 62e2ae5c11f2cb..165cb04034e20b 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -709,7 +709,7 @@ int mem_cgroup_swapin_charge_page(struct page *page, struct mm_struct *mm,
@@ -6220,10 +6100,10 @@ index 62e2ae5c11f2c..165cb04034e20 100644
  }
  
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 7842711f15c06..3c170bc2f8037 100644
+index 7842711f15c06a..3c170bc2f80373 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
-@@ -923,7 +923,7 @@ unlock:
+@@ -923,7 +923,7 @@ noinline int __add_to_page_cache_locked(struct page *page,
  	if (xas_error(&xas)) {
  		error = xas_error(&xas);
  		if (charged)
@@ -6233,10 +6113,10 @@ index 7842711f15c06..3c170bc2f8037 100644
  	}
  
 diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-index 8f6d7fdea9f4b..6b9c98ddcd09f 100644
+index 8f6d7fdea9f4bf..6b9c98ddcd09ff 100644
 --- a/mm/khugepaged.c
 +++ b/mm/khugepaged.c
-@@ -1211,7 +1211,7 @@ out_up_write:
+@@ -1211,7 +1211,7 @@ static void collapse_huge_page(struct mm_struct *mm,
  	mmap_write_unlock(mm);
  out_nolock:
  	if (!IS_ERR_OR_NULL(*hpage))
@@ -6245,7 +6125,7 @@ index 8f6d7fdea9f4b..6b9c98ddcd09f 100644
  	trace_mm_collapse_huge_page(mm, isolated, result);
  	return;
  }
-@@ -1975,7 +1975,7 @@ xa_unlocked:
+@@ -1975,7 +1975,7 @@ static void collapse_file(struct mm_struct *mm,
  out:
  	VM_BUG_ON(!list_empty(&pagelist));
  	if (!IS_ERR_OR_NULL(*hpage))
@@ -6255,7 +6135,7 @@ index 8f6d7fdea9f4b..6b9c98ddcd09f 100644
  }
  
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 917fe2644d68e..db26a83d1535c 100644
+index 917fe2644d68e8..db26a83d1535c8 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -6897,24 +6897,24 @@ static void uncharge_folio(struct folio *folio, struct uncharge_gather *ug)
@@ -6291,7 +6171,7 @@ index 917fe2644d68e..db26a83d1535c 100644
  }
  
 diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index eefd823deb679..9ae7a57a4cc02 100644
+index eefd823deb679a..9ae7a57a4cc02f 100644
 --- a/mm/memory-failure.c
 +++ b/mm/memory-failure.c
 @@ -763,7 +763,7 @@ static int delete_from_lru_cache(struct page *p)
@@ -6304,7 +6184,7 @@ index eefd823deb679..9ae7a57a4cc02 100644
  		/*
  		 * drop the page count elevated by isolate_lru_page()
 diff --git a/mm/memremap.c b/mm/memremap.c
-index 15a074ffb8d73..6eac40f9f62a7 100644
+index 15a074ffb8d73d..6eac40f9f62a76 100644
 --- a/mm/memremap.c
 +++ b/mm/memremap.c
 @@ -508,7 +508,7 @@ void free_devmap_managed_page(struct page *page)
@@ -6317,7 +6197,7 @@ index 15a074ffb8d73..6eac40f9f62a7 100644
  	/*
  	 * When a device_private page is freed, the page->mapping field
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 3e97e68aef7a8..dbf25555c9b8b 100644
+index 3e97e68aef7a89..dbf25555c9b8bc 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
 @@ -726,7 +726,7 @@ static inline void free_the_page(struct page *page, unsigned int order)
@@ -6330,7 +6210,7 @@ index 3e97e68aef7a8..dbf25555c9b8b 100644
  }
  
 diff --git a/mm/swap.c b/mm/swap.c
-index 095a5ec6f986c..11ff40104a2cd 100644
+index 095a5ec6f986c1..11ff40104a2cd3 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -94,7 +94,7 @@ static void __page_cache_release(struct page *page)
@@ -6342,14 +6222,11 @@ index 095a5ec6f986c..11ff40104a2cd 100644
  	free_unref_page(page, 0);
  }
  
--- 
-cgit 1.2.3-1.el7
 
-
-From 281068ab1e75875b092357af2e4b582dd769a1c7 Mon Sep 17 00:00:00 2001
+From f88fff37343c7248b9adf1e69d6bea23ee9d24f2 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 6 May 2021 18:14:59 -0400
-Subject: mm/memcg: Convert mem_cgroup_migrate() to take folios
+Subject: [PATCH 43/90] mm/memcg: Convert mem_cgroup_migrate() to take folios
 
 Convert all callers of mem_cgroup_migrate() to call page_folio() first.
 They all look like they're using head pages already, but this proves it.
@@ -6366,7 +6243,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  5 files changed, 29 insertions(+), 23 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 165cb04034e20..3be67e9ed8696 100644
+index 165cb04034e20b..3be67e9ed8696a 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -712,7 +712,7 @@ void mem_cgroup_swapin_uncharge_swap(swp_entry_t entry);
@@ -6388,7 +6265,7 @@ index 165cb04034e20..3be67e9ed8696 100644
  }
  
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 3c170bc2f8037..2469f714520ab 100644
+index 3c170bc2f80373..2469f714520abb 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -817,6 +817,8 @@ EXPORT_SYMBOL(file_write_and_wait_range);
@@ -6410,7 +6287,7 @@ index 3c170bc2f8037..2469f714520ab 100644
  	xas_lock_irqsave(&xas, flags);
  	xas_store(&xas, new);
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index db26a83d1535c..a0c6e7deeb0bb 100644
+index db26a83d1535c8..a0c6e7deeb0bb3 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -6941,36 +6941,35 @@ void mem_cgroup_uncharge_list(struct list_head *page_list)
@@ -6480,7 +6357,7 @@ index db26a83d1535c..a0c6e7deeb0bb 100644
  }
  
 diff --git a/mm/migrate.c b/mm/migrate.c
-index b5bdae748f82c..910552318df35 100644
+index b5bdae748f82c3..910552318df355 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
 @@ -541,6 +541,8 @@ int migrate_huge_page_move_mapping(struct address_space *mapping,
@@ -6502,7 +6379,7 @@ index b5bdae748f82c..910552318df35 100644
  EXPORT_SYMBOL(migrate_page_states);
  
 diff --git a/mm/shmem.c b/mm/shmem.c
-index 3931fed5c8d8c..2fd75b4d49740 100644
+index 3931fed5c8d8c4..2fd75b4d497409 100644
 --- a/mm/shmem.c
 +++ b/mm/shmem.c
 @@ -1619,6 +1619,7 @@ static int shmem_replace_page(struct page **pagep, gfp_t gfp,
@@ -6524,14 +6401,12 @@ index 3931fed5c8d8c..2fd75b4d49740 100644
  		__inc_lruvec_page_state(newpage, NR_FILE_PAGES);
  		__dec_lruvec_page_state(oldpage, NR_FILE_PAGES);
  	}
--- 
-cgit 1.2.3-1.el7
 
-
-From 7423e7dd1e01da62c609b522a07854945d2e5936 Mon Sep 17 00:00:00 2001
+From d3e8fec22b9b681e2b218a3aa8dc6639318d75f1 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 4 May 2021 11:43:01 -0400
-Subject: mm/memcg: Convert mem_cgroup_track_foreign_dirty_slowpath() to folio
+Subject: [PATCH 44/90] mm/memcg: Convert
+ mem_cgroup_track_foreign_dirty_slowpath() to folio
 
 The page was only being used for the memcg and to gather trace
 information, so this is a simple conversion.  The only caller of
@@ -6547,7 +6422,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  3 files changed, 11 insertions(+), 10 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 3be67e9ed8696..f7d429d541177 100644
+index 3be67e9ed8696a..f7d429d5411771 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -1560,17 +1560,18 @@ void mem_cgroup_wb_stats(struct bdi_writeback *wb, unsigned long *pfilepages,
@@ -6573,7 +6448,7 @@ index 3be67e9ed8696..f7d429d541177 100644
  
  void mem_cgroup_flush_foreign(struct bdi_writeback *wb);
 diff --git a/include/trace/events/writeback.h b/include/trace/events/writeback.h
-index 840d1ba84cf5c..297871ca00047 100644
+index 840d1ba84cf5cc..297871ca000475 100644
 --- a/include/trace/events/writeback.h
 +++ b/include/trace/events/writeback.h
 @@ -236,9 +236,9 @@ TRACE_EVENT(inode_switch_wbs,
@@ -6607,7 +6482,7 @@ index 840d1ba84cf5c..297871ca00047 100644
  
  	TP_printk("bdi %s[%llu]: ino=%lu memcg_id=%u cgroup_ino=%lu page_cgroup_ino=%lu",
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index a0c6e7deeb0bb..ec87afd6c8b3e 100644
+index a0c6e7deeb0bb3..ec87afd6c8b3e1 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -4571,17 +4571,17 @@ void mem_cgroup_wb_stats(struct bdi_writeback *wb, unsigned long *pfilepages,
@@ -6631,14 +6506,12 @@ index a0c6e7deeb0bb..ec87afd6c8b3e 100644
  
  	/*
  	 * Pick the slot to use.  If there is already a slot for @wb, keep
--- 
-cgit 1.2.3-1.el7
 
-
-From 4c079ba08fed43c8897b1ccbc703cd5c54dcca69 Mon Sep 17 00:00:00 2001
+From 9cca711fcb6e812529f6ce8f27382d49703c98d0 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 28 Jun 2021 17:26:00 -0400
-Subject: mm/memcg: Add folio_memcg_lock() and folio_memcg_unlock()
+Subject: [PATCH 45/90] mm/memcg: Add folio_memcg_lock() and
+ folio_memcg_unlock()
 
 These are the folio equivalents of lock_page_memcg() and
 unlock_page_memcg().
@@ -6652,12 +6525,12 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- include/linux/memcontrol.h | 10 ++++++++++
- mm/memcontrol.c            | 45 +++++++++++++++++++++++++++++----------------
+ include/linux/memcontrol.h | 10 +++++++++
+ mm/memcontrol.c            | 45 ++++++++++++++++++++++++--------------
  2 files changed, 39 insertions(+), 16 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index f7d429d541177..c1726350bce92 100644
+index f7d429d5411771..c1726350bce927 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -950,6 +950,8 @@ void mem_cgroup_print_oom_group(struct mem_cgroup *memcg);
@@ -6685,7 +6558,7 @@ index f7d429d541177..c1726350bce92 100644
  {
  }
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index ec87afd6c8b3e..51215295174fe 100644
+index ec87afd6c8b3e1..51215295174fed 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -1965,18 +1965,17 @@ void mem_cgroup_print_oom_group(struct mem_cgroup *memcg)
@@ -6722,7 +6595,7 @@ index ec87afd6c8b3e..51215295174fe 100644
  	if (unlikely(!memcg))
  		return;
  
-@@ -2004,7 +2003,7 @@ again:
+@@ -2004,7 +2003,7 @@ void lock_page_memcg(struct page *page)
  		return;
  
  	spin_lock_irqsave(&memcg->move_lock, flags);
@@ -6731,7 +6604,7 @@ index ec87afd6c8b3e..51215295174fe 100644
  		spin_unlock_irqrestore(&memcg->move_lock, flags);
  		goto again;
  	}
-@@ -2018,9 +2017,15 @@ again:
+@@ -2018,9 +2017,15 @@ void lock_page_memcg(struct page *page)
  	memcg->move_lock_task = current;
  	memcg->move_lock_flags = flags;
  }
@@ -6785,14 +6658,12 @@ index ec87afd6c8b3e..51215295174fe 100644
  
  	ret = 0;
  	nid = page_to_nid(page);
--- 
-cgit 1.2.3-1.el7
 
-
-From 8da2385030877bfa4e1c400100d2d3985ff10952 Mon Sep 17 00:00:00 2001
+From 8e94a88d9a805200d5ca482bdc600d88caca462e Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 1 Mar 2021 16:34:06 -0500
-Subject: mm/memcg: Convert mem_cgroup_move_account() to use a folio
+Subject: [PATCH 46/90] mm/memcg: Convert mem_cgroup_move_account() to use a
+ folio
 
 This saves dozens of bytes of text by eliminating a lot of calls to
 compound_head().
@@ -6804,7 +6675,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 19 insertions(+), 18 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 51215295174fe..620450f4e120a 100644
+index 51215295174fed..918162a789467b 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -5590,38 +5590,39 @@ static int mem_cgroup_move_account(struct page *page,
@@ -6822,7 +6693,7 @@ index 51215295174fe..620450f4e120a 100644
 -	VM_BUG_ON_PAGE(PageLRU(page), page);
 -	VM_BUG_ON(compound && !PageTransHuge(page));
 +	VM_BUG_ON_FOLIO(folio_test_lru(folio), folio);
-+	VM_BUG_ON(compound && !folio_multi(folio));
++	VM_BUG_ON(compound && !folio_test_multi(folio));
  
  	/*
  	 * Prevent mem_cgroup_migrate() from looking at
@@ -6913,14 +6784,11 @@ index 51215295174fe..620450f4e120a 100644
  out:
  	return ret;
  }
--- 
-cgit 1.2.3-1.el7
 
-
-From d26b34a18bb7e4e6be6685c3fbad1434994817de Mon Sep 17 00:00:00 2001
+From c9e48fec62103ccfb006a1513c3b205fdc81b99b Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 28 Jun 2021 20:00:28 -0400
-Subject: mm/memcg: Add folio_lruvec()
+Subject: [PATCH 47/90] mm/memcg: Add folio_lruvec()
 
 This replaces mem_cgroup_page_lruvec().  All callers converted.
 
@@ -6936,10 +6804,10 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  5 files changed, 20 insertions(+), 17 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index c1726350bce92..0551c378c2431 100644
+index c1726350bce927..0551c378c2431b 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
-@@ -751,18 +751,17 @@ out:
+@@ -751,18 +751,17 @@ static inline struct lruvec *mem_cgroup_lruvec(struct mem_cgroup *memcg,
  }
  
  /**
@@ -6979,7 +6847,7 @@ index c1726350bce92..0551c378c2431 100644
  }
  
 diff --git a/mm/compaction.c b/mm/compaction.c
-index 621508e0ecd5d..a88f7b893f80a 100644
+index 621508e0ecd5da..a88f7b893f80a2 100644
 --- a/mm/compaction.c
 +++ b/mm/compaction.c
 @@ -1028,7 +1028,7 @@ isolate_migratepages_block(struct compact_control *cc, unsigned long low_pfn,
@@ -6992,7 +6860,7 @@ index 621508e0ecd5d..a88f7b893f80a 100644
  		/* If we already hold the lock, we can skip some rechecking */
  		if (lruvec != locked) {
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 620450f4e120a..5718be76217e0 100644
+index 918162a789467b..915a7b359075da 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -1186,9 +1186,10 @@ void lruvec_memcg_debug(struct lruvec *lruvec, struct page *page)
@@ -7032,7 +6900,7 @@ index 620450f4e120a..5718be76217e0 100644
  
  	lruvec_memcg_debug(lruvec, page);
 diff --git a/mm/swap.c b/mm/swap.c
-index 11ff40104a2cd..4ba77fc8da4f8 100644
+index 11ff40104a2cd3..4ba77fc8da4f85 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -315,7 +315,8 @@ void lru_note_cost(struct lruvec *lruvec, bool file, unsigned int nr_pages)
@@ -7046,10 +6914,10 @@ index 11ff40104a2cd..4ba77fc8da4f8 100644
  }
  
 diff --git a/mm/workingset.c b/mm/workingset.c
-index 5ba3e42446fa6..e62c0f2084a26 100644
+index 5ba3e42446fa60..e62c0f2084a261 100644
 --- a/mm/workingset.c
 +++ b/mm/workingset.c
-@@ -396,6 +396,7 @@ out:
+@@ -396,6 +396,7 @@ void workingset_refault(struct page *page, void *shadow)
   */
  void workingset_activation(struct page *page)
  {
@@ -7066,14 +6934,11 @@ index 5ba3e42446fa6..e62c0f2084a26 100644
  	workingset_age_nonresident(lruvec, thp_nr_pages(page));
  out:
  	rcu_read_unlock();
--- 
-cgit 1.2.3-1.el7
 
-
-From 9041b555c87f289cfee3d5af6a53c11659efd86d Mon Sep 17 00:00:00 2001
+From 12bf70a0757e40abfa45ea75737223cdafe60a9a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 28 Jun 2021 21:59:47 -0400
-Subject: mm/memcg: Add folio_lruvec_lock() and similar functions
+Subject: [PATCH 48/90] mm/memcg: Add folio_lruvec_lock() and similar functions
 
 These are the folio equivalents of lock_page_lruvec() and similar
 functions.  Also convert lruvec_memcg_debug() to take a folio.
@@ -7081,17 +6946,17 @@ functions.  Also convert lruvec_memcg_debug() to take a folio.
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/memcontrol.h | 32 +++++++++++++++++--------------
+ include/linux/memcontrol.h | 32 ++++++++++++++-----------
  mm/compaction.c            |  2 +-
- mm/huge_memory.c           |  5 +++--
- mm/memcontrol.c            | 48 +++++++++++++++++++---------------------------
+ mm/huge_memory.c           |  5 ++--
+ mm/memcontrol.c            | 48 ++++++++++++++++----------------------
  mm/rmap.c                  |  2 +-
- mm/swap.c                  |  8 +++++---
+ mm/swap.c                  |  8 ++++---
  mm/vmscan.c                |  3 ++-
  7 files changed, 50 insertions(+), 50 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 0551c378c2431..0973c4a78bf1d 100644
+index 0551c378c2431b..0973c4a78bf1d3 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -768,15 +768,16 @@ struct mem_cgroup *mem_cgroup_from_task(struct task_struct *p);
@@ -7193,7 +7058,7 @@ index 0551c378c2431..0973c4a78bf1d 100644
  
  #ifdef CONFIG_CGROUP_WRITEBACK
 diff --git a/mm/compaction.c b/mm/compaction.c
-index a88f7b893f80a..6f77577be2483 100644
+index a88f7b893f80a2..6f77577be24837 100644
 --- a/mm/compaction.c
 +++ b/mm/compaction.c
 @@ -1038,7 +1038,7 @@ isolate_migratepages_block(struct compact_control *cc, unsigned long low_pfn,
@@ -7206,7 +7071,7 @@ index a88f7b893f80a..6f77577be2483 100644
  			/* Try get exclusive access under lock */
  			if (!skip_updated) {
 diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index ecb1fb1f5f3e1..763bf687ca92a 100644
+index ecb1fb1f5f3e14..763bf687ca92a3 100644
 --- a/mm/huge_memory.c
 +++ b/mm/huge_memory.c
 @@ -2431,7 +2431,8 @@ static void __split_huge_page_tail(struct page *head, int tail,
@@ -7229,7 +7094,7 @@ index ecb1fb1f5f3e1..763bf687ca92a 100644
  	for (i = nr - 1; i >= 1; i--) {
  		__split_huge_page_tail(head, i, lruvec, list);
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 5718be76217e0..9a018ac7defca 100644
+index 915a7b359075da..2c593c8eb44097 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -1158,67 +1158,59 @@ int mem_cgroup_scan_tasks(struct mem_cgroup *memcg,
@@ -7321,7 +7186,7 @@ index 5718be76217e0..9a018ac7defca 100644
  	return lruvec;
  }
 diff --git a/mm/rmap.c b/mm/rmap.c
-index b9eb5c12f3fe1..1df8683c4c4cc 100644
+index b9eb5c12f3fe10..1df8683c4c4ccb 100644
 --- a/mm/rmap.c
 +++ b/mm/rmap.c
 @@ -33,7 +33,7 @@
@@ -7334,7 +7199,7 @@ index b9eb5c12f3fe1..1df8683c4c4cc 100644
   *                 bdi.wb->list_lock (in set_page_dirty's __mark_inode_dirty)
   *                   sb_lock (within inode_lock in fs/fs-writeback.c)
 diff --git a/mm/swap.c b/mm/swap.c
-index 4ba77fc8da4f8..6d0d2bfca48e9 100644
+index 4ba77fc8da4f85..6d0d2bfca48e96 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -80,10 +80,11 @@ static DEFINE_PER_CPU(struct lru_pvecs, lru_pvecs) = {
@@ -7366,7 +7231,7 @@ index 4ba77fc8da4f8..6d0d2bfca48e9 100644
  		unlock_page_lruvec_irq(lruvec);
  		SetPageLRU(page);
 diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 4620df62f0ffa..0d48306d37dc8 100644
+index 4620df62f0ffa1..0d48306d37dc89 100644
 --- a/mm/vmscan.c
 +++ b/mm/vmscan.c
 @@ -1965,6 +1965,7 @@ static unsigned long isolate_lru_pages(unsigned long nr_to_scan,
@@ -7386,14 +7251,11 @@ index 4620df62f0ffa..0d48306d37dc8 100644
  		del_page_from_lru_list(page, lruvec);
  		unlock_page_lruvec_irq(lruvec);
  		ret = 0;
--- 
-cgit 1.2.3-1.el7
 
-
-From fd3ec53c0bc0cc481591e0672726a30cc577045b Mon Sep 17 00:00:00 2001
+From e5d7d32e22dce0b073703989f4b2a95d98c65eef Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 29 Jun 2021 22:27:31 -0400
-Subject: mm/memcg: Add folio_lruvec_relock_irq() and
+Subject: [PATCH 49/90] mm/memcg: Add folio_lruvec_relock_irq() and
  folio_lruvec_relock_irqsave()
 
 These are the folio equivalents of relock_page_lruvec_irq() and
@@ -7405,12 +7267,12 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
  include/linux/memcontrol.h | 17 ++++++++---------
  mm/mlock.c                 |  3 ++-
- mm/swap.c                  | 11 +++++++----
+ mm/swap.c                  | 13 ++++++++-----
  mm/vmscan.c                |  5 +++--
- 4 files changed, 20 insertions(+), 16 deletions(-)
+ 4 files changed, 21 insertions(+), 17 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 0973c4a78bf1d..b6ad2a4357d34 100644
+index 0973c4a78bf1d3..b6ad2a4357d34f 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -1529,19 +1529,19 @@ static inline void unlock_page_lruvec_irqrestore(struct lruvec *lruvec,
@@ -7455,7 +7317,7 @@ index 0973c4a78bf1d..b6ad2a4357d34 100644
  
  		unlock_page_lruvec_irqrestore(locked_lruvec, *flags);
 diff --git a/mm/mlock.c b/mm/mlock.c
-index 16d2ee160d43c..e263d62ae2d09 100644
+index 16d2ee160d43c5..e263d62ae2d09b 100644
 --- a/mm/mlock.c
 +++ b/mm/mlock.c
 @@ -271,6 +271,7 @@ static void __munlock_pagevec(struct pagevec *pvec, struct zone *zone)
@@ -7476,7 +7338,7 @@ index 16d2ee160d43c..e263d62ae2d09 100644
  				continue;
  			} else
 diff --git a/mm/swap.c b/mm/swap.c
-index 6d0d2bfca48e9..aa9c32b714c5b 100644
+index 6d0d2bfca48e96..83ffb9a03ce198 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -211,12 +211,13 @@ static void pagevec_lru_move_fn(struct pagevec *pvec,
@@ -7494,7 +7356,13 @@ index 6d0d2bfca48e9..aa9c32b714c5b 100644
  		(*move_fn)(page, lruvec);
  
  		SetPageLRU(page);
-@@ -907,6 +908,7 @@ void release_pages(struct page **pages, int nr)
+@@ -902,11 +903,12 @@ void release_pages(struct page **pages, int nr)
+ 	int i;
+ 	LIST_HEAD(pages_to_free);
+ 	struct lruvec *lruvec = NULL;
+-	unsigned long flags;
++	unsigned long flags = 0;
+ 	unsigned int lock_batch;
  
  	for (i = 0; i < nr; i++) {
  		struct page *page = pages[i];
@@ -7532,7 +7400,7 @@ index 6d0d2bfca48e9..aa9c32b714c5b 100644
  	}
  	if (lruvec)
 diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 0d48306d37dc8..7a2f25b904d9b 100644
+index 0d48306d37dc89..7a2f25b904d9b9 100644
 --- a/mm/vmscan.c
 +++ b/mm/vmscan.c
 @@ -2075,7 +2075,7 @@ static unsigned int move_pages_to_lru(struct lruvec *lruvec,
@@ -7561,14 +7429,12 @@ index 0d48306d37dc8..7a2f25b904d9b 100644
  		if (page_evictable(page) && PageUnevictable(page)) {
  			del_page_from_lru_list(page, lruvec);
  			ClearPageUnevictable(page);
--- 
-cgit 1.2.3-1.el7
 
-
-From 6e068abc7c4c5ccd09e25f3bdeaaaa8c8b40ca73 Mon Sep 17 00:00:00 2001
+From 5be0e326902ed2e93b0dc79497cd846e5cd3bb5a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 4 May 2021 17:19:13 -0400
-Subject: mm/workingset: Convert workingset_activation to take a folio
+Subject: [PATCH 50/90] mm/workingset: Convert workingset_activation to take a
+ folio
 
 This function already assumed it was being passed a head page.  No real
 change here, except that thp_nr_pages() compiles away on kernels with
@@ -7585,7 +7451,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  4 files changed, 17 insertions(+), 18 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index b6ad2a4357d34..7bc6d5a6b7391 100644
+index b6ad2a4357d34f..7bc6d5a6b73919 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -461,19 +461,21 @@ static inline struct mem_cgroup *page_memcg(struct page *page)
@@ -7628,7 +7494,7 @@ index b6ad2a4357d34..7bc6d5a6b7391 100644
  	WARN_ON_ONCE(!rcu_read_lock_held());
  	return NULL;
 diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 8394716a002b5..989d8f78c256a 100644
+index 8394716a002b5f..989d8f78c256ad 100644
 --- a/include/linux/swap.h
 +++ b/include/linux/swap.h
 @@ -330,7 +330,7 @@ static inline swp_entry_t folio_swap_entry(struct folio *folio)
@@ -7641,7 +7507,7 @@ index 8394716a002b5..989d8f78c256a 100644
  /* Only track the nodes of mappings with shadow entries */
  void workingset_update_node(struct xa_node *node);
 diff --git a/mm/swap.c b/mm/swap.c
-index aa9c32b714c5b..85969b36b6360 100644
+index 83ffb9a03ce198..176adb12ce8443 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -451,7 +451,7 @@ void mark_page_accessed(struct page *page)
@@ -7654,10 +7520,10 @@ index aa9c32b714c5b..85969b36b6360 100644
  	if (page_is_idle(page))
  		clear_page_idle(page);
 diff --git a/mm/workingset.c b/mm/workingset.c
-index e62c0f2084a26..39bb60d502173 100644
+index e62c0f2084a261..39bb60d5021732 100644
 --- a/mm/workingset.c
 +++ b/mm/workingset.c
-@@ -392,13 +392,11 @@ out:
+@@ -392,13 +392,11 @@ void workingset_refault(struct page *page, void *shadow)
  
  /**
   * workingset_activation - note a page activation
@@ -7687,14 +7553,11 @@ index e62c0f2084a26..39bb60d502173 100644
  out:
  	rcu_read_unlock();
  }
--- 
-cgit 1.2.3-1.el7
 
-
-From cdfc29fd8492446975bcbee54862a3aaeca2bb85 Mon Sep 17 00:00:00 2001
+From 64135f31a64711dbffe8bb65b10a216328cc7bea Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 10:55:27 -0400
-Subject: mm: Add folio_pfn()
+Subject: [PATCH 51/90] mm: Add folio_pfn()
 
 This is the folio equivalent of page_to_pfn().
 
@@ -7705,7 +7568,7 @@ Acked-by: Mike Rapoport <rppt@linux.ibm.com>
  1 file changed, 14 insertions(+)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 36f439b44de3f..29da8ffe73dab 100644
+index 98f7e013c0e7e7..69c1e88a7da97c 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1623,6 +1623,20 @@ static inline unsigned long page_to_section(const struct page *page)
@@ -7729,14 +7592,11 @@ index 36f439b44de3f..29da8ffe73dab 100644
  /* MIGRATE_CMA and ZONE_MOVABLE do not allow pin pages */
  #ifdef CONFIG_MIGRATION
  static inline bool is_pinnable_page(struct page *page)
--- 
-cgit 1.2.3-1.el7
 
-
-From 24272871ecda68e9e31833f03423bc5bb437f7fe Mon Sep 17 00:00:00 2001
+From 3bc0556bade4feeac784795d3b1bb6f16fb603d7 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 11:17:34 -0400
-Subject: mm: Add folio_raw_mapping()
+Subject: [PATCH 52/90] mm: Add folio_raw_mapping()
 
 Convert __page_rmapping to folio_raw_mapping and move it to mm/internal.h.
 It's only a couple of instructions (load and mask), so it's definitely
@@ -7750,7 +7610,7 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
  2 files changed, 11 insertions(+), 16 deletions(-)
 
 diff --git a/mm/internal.h b/mm/internal.h
-index 1a8851b730310..fa31a7f0ed798 100644
+index 1a8851b7303101..fa31a7f0ed798f 100644
 --- a/mm/internal.h
 +++ b/mm/internal.h
 @@ -34,6 +34,13 @@
@@ -7768,7 +7628,7 @@ index 1a8851b730310..fa31a7f0ed798 100644
  void folio_rotate_reclaimable(struct folio *folio);
  
 diff --git a/mm/util.c b/mm/util.c
-index 8f139c2cf0008..b6fa80b1e3879 100644
+index d135629dbc8b7f..ec1f3cb827a82d 100644
 --- a/mm/util.c
 +++ b/mm/util.c
 @@ -635,21 +635,10 @@ void kvfree_sensitive(const void *addr, size_t len)
@@ -7811,14 +7671,11 @@ index 8f139c2cf0008..b6fa80b1e3879 100644
  }
  
  /**
--- 
-cgit 1.2.3-1.el7
 
-
-From 33af94ed99e9d7f45ddd4751522c549a5f8c7a16 Mon Sep 17 00:00:00 2001
+From d1089c128effba5c3f298e277b0422193ae1a943 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 16 Dec 2020 11:06:33 -0500
-Subject: mm: Add flush_dcache_folio()
+Subject: [PATCH 53/90] mm: Add flush_dcache_folio()
 
 This is a default implementation which calls flush_dcache_page() on
 each page in the folio.  If architectures can do better, they should
@@ -7834,7 +7691,7 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
  5 files changed, 25 insertions(+)
 
 diff --git a/Documentation/core-api/cachetlb.rst b/Documentation/core-api/cachetlb.rst
-index fe4290e267296..29682f69a9152 100644
+index fe4290e2672969..29682f69a91524 100644
 --- a/Documentation/core-api/cachetlb.rst
 +++ b/Documentation/core-api/cachetlb.rst
 @@ -325,6 +325,12 @@ maps this page at its virtual address.
@@ -7851,7 +7708,7 @@ index fe4290e267296..29682f69a9152 100644
    unsigned long user_vaddr, void *dst, void *src, int len)``
    ``void copy_from_user_page(struct vm_area_struct *vma, struct page *page,
 diff --git a/arch/arm/include/asm/cacheflush.h b/arch/arm/include/asm/cacheflush.h
-index 2e24e765e6d3a..23bf823376e19 100644
+index 2e24e765e6d3af..23bf823376e198 100644
 --- a/arch/arm/include/asm/cacheflush.h
 +++ b/arch/arm/include/asm/cacheflush.h
 @@ -290,6 +290,7 @@ extern void flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr
@@ -7863,7 +7720,7 @@ index 2e24e765e6d3a..23bf823376e19 100644
  static inline void flush_kernel_vmap_range(void *addr, int size)
  {
 diff --git a/arch/nds32/include/asm/cacheflush.h b/arch/nds32/include/asm/cacheflush.h
-index 7d6824f7c0e8d..b5037981f023b 100644
+index 7d6824f7c0e8d8..b5037981f023b4 100644
 --- a/arch/nds32/include/asm/cacheflush.h
 +++ b/arch/nds32/include/asm/cacheflush.h
 @@ -27,6 +27,7 @@ void flush_cache_vunmap(unsigned long start, unsigned long end);
@@ -7875,7 +7732,7 @@ index 7d6824f7c0e8d..b5037981f023b 100644
  		       unsigned long vaddr, void *dst, void *src, int len);
  void copy_from_user_page(struct vm_area_struct *vma, struct page *page,
 diff --git a/include/asm-generic/cacheflush.h b/include/asm-generic/cacheflush.h
-index 4a674db4e1fa5..fedc0dfa4877c 100644
+index 4a674db4e1fa5e..fedc0dfa4877c7 100644
 --- a/include/asm-generic/cacheflush.h
 +++ b/include/asm-generic/cacheflush.h
 @@ -49,9 +49,15 @@ static inline void flush_cache_page(struct vm_area_struct *vma,
@@ -7895,7 +7752,7 @@ index 4a674db4e1fa5..fedc0dfa4877c 100644
  #ifndef flush_dcache_mmap_lock
  static inline void flush_dcache_mmap_lock(struct address_space *mapping)
 diff --git a/mm/util.c b/mm/util.c
-index b6fa80b1e3879..4f3a4c229a01e 100644
+index ec1f3cb827a82d..d020c077a44c40 100644
 --- a/mm/util.c
 +++ b/mm/util.c
 @@ -1057,3 +1057,14 @@ void page_offline_end(void)
@@ -7913,14 +7770,11 @@ index b6fa80b1e3879..4f3a4c229a01e 100644
 +}
 +EXPORT_SYMBOL(flush_dcache_folio);
 +#endif
--- 
-cgit 1.2.3-1.el7
 
-
-From e1ede82d18221397fcb45bc454f6f2fccc211a98 Mon Sep 17 00:00:00 2001
+From 1826c6e209acfd1b46eb7b5cb9212b30bfbc5fd6 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 30 Dec 2020 10:21:39 -0500
-Subject: mm: Add kmap_local_folio()
+Subject: [PATCH 54/90] mm: Add kmap_local_folio()
 
 This allows us to map a portion of a folio.  Callers can only expect
 to access up to the next page boundary.
@@ -7928,12 +7782,12 @@ to access up to the next page boundary.
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/highmem-internal.h | 11 +++++++++++
- include/linux/highmem.h          | 37 +++++++++++++++++++++++++++++++++++++
+ include/linux/highmem-internal.h | 11 ++++++++++
+ include/linux/highmem.h          | 37 ++++++++++++++++++++++++++++++++
  2 files changed, 48 insertions(+)
 
 diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
-index 7902c7d8b55f9..d5d6f930ae1dd 100644
+index 7902c7d8b55f9b..d5d6f930ae1dd8 100644
 --- a/include/linux/highmem-internal.h
 +++ b/include/linux/highmem-internal.h
 @@ -73,6 +73,12 @@ static inline void *kmap_local_page(struct page *page)
@@ -7962,7 +7816,7 @@ index 7902c7d8b55f9..d5d6f930ae1dd 100644
  {
  	return kmap_local_page(page);
 diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-index 8c6e8e996c875..861ad00fb32a8 100644
+index 8c6e8e996c8754..861ad00fb32a88 100644
 --- a/include/linux/highmem.h
 +++ b/include/linux/highmem.h
 @@ -96,6 +96,43 @@ static inline void kmap_flush_unused(void);
@@ -8009,14 +7863,11 @@ index 8c6e8e996c875..861ad00fb32a8 100644
  /**
   * kmap_atomic - Atomically map a page for temporary usage - Deprecated!
   * @page:	Pointer to the page to be mapped
--- 
-cgit 1.2.3-1.el7
 
-
-From 6dbcd121ea286e9add9b138af0eb8c8c91fe6f4d Mon Sep 17 00:00:00 2001
+From be88e1292f1db0e7ca9c491bf012728e41d61956 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 24 Apr 2021 14:50:36 -0400
-Subject: mm: Add arch_make_folio_accessible()
+Subject: [PATCH 55/90] mm: Add arch_make_folio_accessible()
 
 As a default implementation, call arch_make_page_accessible n times.
 If an architecture can do better, it can override this.
@@ -8031,7 +7882,7 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
  2 files changed, 23 insertions(+), 6 deletions(-)
 
 diff --git a/include/linux/gfp.h b/include/linux/gfp.h
-index 55b2ec1f965a5..dc5ff40608ce9 100644
+index 55b2ec1f965a50..dc5ff40608ce90 100644
 --- a/include/linux/gfp.h
 +++ b/include/linux/gfp.h
 @@ -520,12 +520,6 @@ static inline void arch_free_page(struct page *page, int order) { }
@@ -8048,7 +7899,7 @@ index 55b2ec1f965a5..dc5ff40608ce9 100644
  struct page *__alloc_pages(gfp_t gfp, unsigned int order, int preferred_nid,
  		nodemask_t *nodemask);
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 29da8ffe73dab..8bc23223f3ed1 100644
+index 69c1e88a7da97c..9a670af47ca789 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -1733,6 +1733,29 @@ static inline size_t folio_size(struct folio *folio)
@@ -8081,14 +7932,11 @@ index 29da8ffe73dab..8bc23223f3ed1 100644
  /*
   * Some inline functions in vmstat.h depend on page_zone()
   */
--- 
-cgit 1.2.3-1.el7
 
-
-From 74b616e0c5913c49a5657cded6345d631ff0022a Mon Sep 17 00:00:00 2001
+From 5009323080f0e7074210a834a299ef2fd5600e7a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 09:00:12 -0400
-Subject: mm: Add folio_young and folio_idle
+Subject: [PATCH 56/90] mm: Add folio_young and folio_idle
 
 Idle page tracking is handled through page_ext on 32-bit architectures.
 Add folio equivalents for 32-bit and move all the page compatibility
@@ -8099,11 +7947,11 @@ Acked-by: Vlastimil Babka <vbabka@suse.cz>
 Reviewed-by: William Kucharski <william.kucharski@oracle.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/page_idle.h | 99 +++++++++++++++++++++++------------------------
+ include/linux/page_idle.h | 99 +++++++++++++++++++--------------------
  1 file changed, 49 insertions(+), 50 deletions(-)
 
 diff --git a/include/linux/page_idle.h b/include/linux/page_idle.h
-index 1e894d34bdceb..1bcb1365b1d06 100644
+index 1e894d34bdceb2..1bcb1365b1d065 100644
 --- a/include/linux/page_idle.h
 +++ b/include/linux/page_idle.h
 @@ -8,46 +8,16 @@
@@ -8289,14 +8137,11 @@ index 1e894d34bdceb..1bcb1365b1d06 100644
 +	folio_clear_idle(page_folio(page));
 +}
  #endif /* _LINUX_MM_PAGE_IDLE_H */
--- 
-cgit 1.2.3-1.el7
 
-
-From bd64dbf7fe07ad984f1f0f60a67691dcb42dcf2c Mon Sep 17 00:00:00 2001
+From 36a1cb2283738c76196b16ac1b42663c4e145b8d Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 10:37:50 -0400
-Subject: mm/swap: Add folio_activate()
+Subject: [PATCH 57/90] mm/swap: Add folio_activate()
 
 This replaces activate_page() and eliminates lots of calls to
 compound_head().  Saves net 118 bytes of kernel text.  There are still
@@ -8306,12 +8151,12 @@ pagevec_lru_move_fn() is converted to use folios.
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- include/trace/events/pagemap.h | 14 ++++++--------
- mm/swap.c                      | 41 ++++++++++++++++++++++-------------------
+ include/trace/events/pagemap.h | 14 +++++-------
+ mm/swap.c                      | 41 ++++++++++++++++++----------------
  2 files changed, 28 insertions(+), 27 deletions(-)
 
 diff --git a/include/trace/events/pagemap.h b/include/trace/events/pagemap.h
-index 92ad176210ff5..1fd0185d66e80 100644
+index 92ad176210ff5b..1fd0185d66e80b 100644
 --- a/include/trace/events/pagemap.h
 +++ b/include/trace/events/pagemap.h
 @@ -60,23 +60,21 @@ TRACE_EVENT(mm_lru_insertion,
@@ -8345,7 +8190,7 @@ index 92ad176210ff5..1fd0185d66e80 100644
  
  #endif /* _TRACE_PAGEMAP_H */
 diff --git a/mm/swap.c b/mm/swap.c
-index 85969b36b6360..e2e9d781c4213 100644
+index 176adb12ce8443..68c374a61be653 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -322,15 +322,15 @@ void lru_note_cost_page(struct page *page)
@@ -8436,14 +8281,11 @@ index 85969b36b6360..e2e9d781c4213 100644
  		else
  			__lru_cache_activate_page(page);
  		ClearPageReferenced(page);
--- 
-cgit 1.2.3-1.el7
 
-
-From 70f6cd42bd6cc1b7847f70eabfbc0ac7788ce5d8 Mon Sep 17 00:00:00 2001
+From 52192665e494a1268b4e6d8b86ee2a28ad263d58 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 10:47:39 -0400
-Subject: mm/swap: Add folio_mark_accessed()
+Subject: [PATCH 58/90] mm/swap: Add folio_mark_accessed()
 
 Convert mark_page_accessed() to folio_mark_accessed().  It already
 operated on the entire compound page, but now we can avoid calling
@@ -8460,7 +8302,7 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
  3 files changed, 25 insertions(+), 19 deletions(-)
 
 diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 989d8f78c256a..c7a4c0a5863d1 100644
+index 989d8f78c256ad..c7a4c0a5863d1f 100644
 --- a/include/linux/swap.h
 +++ b/include/linux/swap.h
 @@ -352,7 +352,8 @@ extern void lru_note_cost(struct lruvec *lruvec, bool file,
@@ -8474,7 +8316,7 @@ index 989d8f78c256a..c7a4c0a5863d1 100644
  extern atomic_t lru_disable_count;
  
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 7044fcc8a8aa8..a374747ae1c6d 100644
+index 7044fcc8a8aa82..a374747ae1c6d5 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -5,6 +5,7 @@
@@ -8496,7 +8338,7 @@ index 7044fcc8a8aa8..a374747ae1c6d 100644
 +}
 +EXPORT_SYMBOL(mark_page_accessed);
 diff --git a/mm/swap.c b/mm/swap.c
-index e2e9d781c4213..3b04be45eba3e 100644
+index 68c374a61be653..22ca05042e6239 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -390,7 +390,7 @@ static void folio_activate(struct folio *folio)
@@ -8569,14 +8411,11 @@ index e2e9d781c4213..3b04be45eba3e 100644
  
  /**
   * lru_cache_add - add a page to a page list
--- 
-cgit 1.2.3-1.el7
 
-
-From d1f09d425fe8244f70fb55089123827d0f4882cd Mon Sep 17 00:00:00 2001
+From 491cefc3f1ffdc6ec23d15589ef56bb06fb1e3ca Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 28 Feb 2021 16:02:57 -0500
-Subject: mm/rmap: Add folio_mkclean()
+Subject: [PATCH 59/90] mm/rmap: Add folio_mkclean()
 
 Transform page_mkclean() into folio_mkclean() and add a page_mkclean()
 wrapper around folio_mkclean().
@@ -8593,7 +8432,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  2 files changed, 12 insertions(+), 10 deletions(-)
 
 diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index c976cc6de2574..e704b1a4c06c0 100644
+index c976cc6de25747..e704b1a4c06c09 100644
 --- a/include/linux/rmap.h
 +++ b/include/linux/rmap.h
 @@ -235,7 +235,7 @@ unsigned long page_address_in_vma(struct page *, struct vm_area_struct *);
@@ -8624,7 +8463,7 @@ index c976cc6de2574..e704b1a4c06c0 100644
 +}
  #endif	/* _LINUX_RMAP_H */
 diff --git a/mm/rmap.c b/mm/rmap.c
-index 1df8683c4c4cc..b3aae8eeaeaf4 100644
+index 1df8683c4c4ccb..b3aae8eeaeaf42 100644
 --- a/mm/rmap.c
 +++ b/mm/rmap.c
 @@ -980,7 +980,7 @@ static bool invalid_mkclean_vma(struct vm_area_struct *vma, void *arg)
@@ -8662,14 +8501,11 @@ index 1df8683c4c4cc..b3aae8eeaeaf4 100644
  
  /**
   * page_move_anon_rmap - move a page to our anon_vma
--- 
-cgit 1.2.3-1.el7
 
-
-From c3a8204fe688b9942e930f5e6af84a0974bcab8b Mon Sep 17 00:00:00 2001
+From 79e71311a97c9fb39d53cd6be7c083f9bf1dad90 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 07:28:40 -0400
-Subject: mm/migrate: Add folio_migrate_mapping()
+Subject: [PATCH 60/90] mm/migrate: Add folio_migrate_mapping()
 
 Reimplement migrate_page_move_mapping() as a wrapper around
 folio_migrate_mapping().  Saves 193 bytes of kernel text.
@@ -8677,13 +8513,13 @@ folio_migrate_mapping().  Saves 193 bytes of kernel text.
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/migrate.h |  2 ++
- mm/folio-compat.c       | 11 +++++++
- mm/migrate.c            | 85 +++++++++++++++++++++++++------------------------
+ include/linux/migrate.h |  2 +
+ mm/folio-compat.c       | 11 ++++++
+ mm/migrate.c            | 85 +++++++++++++++++++++--------------------
  3 files changed, 57 insertions(+), 41 deletions(-)
 
 diff --git a/include/linux/migrate.h b/include/linux/migrate.h
-index 23dadf7aeba89..eb14495a1f468 100644
+index 23dadf7aeba896..eb14495a1f468d 100644
 --- a/include/linux/migrate.h
 +++ b/include/linux/migrate.h
 @@ -51,6 +51,8 @@ extern int migrate_huge_page_move_mapping(struct address_space *mapping,
@@ -8696,7 +8532,7 @@ index 23dadf7aeba89..eb14495a1f468 100644
  
  static inline void putback_movable_pages(struct list_head *l) {}
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index a374747ae1c6d..d883d964fd520 100644
+index a374747ae1c6d5..d883d964fd5205 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -4,6 +4,7 @@
@@ -8722,7 +8558,7 @@ index a374747ae1c6d..d883d964fd520 100644
 +EXPORT_SYMBOL(migrate_page_move_mapping);
 +#endif
 diff --git a/mm/migrate.c b/mm/migrate.c
-index 910552318df35..1e456013e1be8 100644
+index 910552318df355..1e456013e1be8e 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
 @@ -363,7 +363,7 @@ static int expected_page_refs(struct address_space *mapping, struct page *page)
@@ -8919,14 +8755,11 @@ index 910552318df35..1e456013e1be8 100644
   * ZONE_DEVICE page.
   */
  static bool migrate_vma_check_page(struct page *page)
--- 
-cgit 1.2.3-1.el7
 
-
-From 15465d67808337cb24774dd63b8d7539e997225b Mon Sep 17 00:00:00 2001
+From a83a9947a2b3bdb8204ccecc5a79233fb8a57817 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 15:26:29 -0400
-Subject: mm/migrate: Add folio_migrate_flags()
+Subject: [PATCH 61/90] mm/migrate: Add folio_migrate_flags()
 
 Turn migrate_page_states() into a wrapper around folio_migrate_flags().
 Also convert two functions only called from folio_migrate_flags() to
@@ -8936,18 +8769,20 @@ alone shrinks by two thirds -- 1967 bytes down to 642 bytes.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Zi Yan <ziy@nvidia.com>
+Reviewed-by: David Howells <dhowells@redhat.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 ---
- include/linux/ksm.h        |  4 +--
+ include/linux/ksm.h        |  4 +-
  include/linux/migrate.h    |  1 +
- include/linux/page_owner.h |  8 ++---
- mm/folio-compat.c          |  6 ++++
- mm/ksm.c                   | 31 ++++++++++-------
- mm/migrate.c               | 84 ++++++++++++++++++++++------------------------
- mm/page_owner.c            | 10 +++---
+ include/linux/page_owner.h |  8 ++--
+ mm/folio-compat.c          |  6 +++
+ mm/ksm.c                   | 31 ++++++++------
+ mm/migrate.c               | 84 +++++++++++++++++++-------------------
+ mm/page_owner.c            | 10 ++---
  7 files changed, 77 insertions(+), 67 deletions(-)
 
 diff --git a/include/linux/ksm.h b/include/linux/ksm.h
-index 161e8164abcf5..a38a5bca1ba58 100644
+index 161e8164abcf53..a38a5bca1ba58e 100644
 --- a/include/linux/ksm.h
 +++ b/include/linux/ksm.h
 @@ -52,7 +52,7 @@ struct page *ksm_might_need_to_copy(struct page *page,
@@ -8969,7 +8804,7 @@ index 161e8164abcf5..a38a5bca1ba58 100644
  }
  #endif /* CONFIG_MMU */
 diff --git a/include/linux/migrate.h b/include/linux/migrate.h
-index eb14495a1f468..ba0a554b3eae4 100644
+index eb14495a1f468d..ba0a554b3eae49 100644
 --- a/include/linux/migrate.h
 +++ b/include/linux/migrate.h
 @@ -51,6 +51,7 @@ extern int migrate_huge_page_move_mapping(struct address_space *mapping,
@@ -8981,7 +8816,7 @@ index eb14495a1f468..ba0a554b3eae4 100644
  		struct folio *newfolio, struct folio *folio, int extra_count);
  #else
 diff --git a/include/linux/page_owner.h b/include/linux/page_owner.h
-index 719bfe5108c56..43c638c51c1f5 100644
+index 719bfe5108c560..43c638c51c1f58 100644
 --- a/include/linux/page_owner.h
 +++ b/include/linux/page_owner.h
 @@ -12,7 +12,7 @@ extern void __reset_page_owner(struct page *page, unsigned int order);
@@ -9016,7 +8851,7 @@ index 719bfe5108c56..43c638c51c1f5 100644
  }
  static inline void set_page_owner_migrate_reason(struct page *page, int reason)
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index d883d964fd520..3f00ad92d1ff5 100644
+index d883d964fd5205..3f00ad92d1ff5a 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -58,4 +58,10 @@ int migrate_page_move_mapping(struct address_space *mapping,
@@ -9031,10 +8866,10 @@ index d883d964fd520..3f00ad92d1ff5 100644
 +EXPORT_SYMBOL(migrate_page_states);
  #endif
 diff --git a/mm/ksm.c b/mm/ksm.c
-index 23d36b59f9975..3a70786906eb9 100644
+index 23d36b59f9975f..3a70786906eb99 100644
 --- a/mm/ksm.c
 +++ b/mm/ksm.c
-@@ -753,7 +753,7 @@ stale:
+@@ -753,7 +753,7 @@ static struct page *get_ksm_page(struct stable_node *stable_node,
  	/*
  	 * We come here from above when page->mapping or !PageSwapCache
  	 * suggests that the node is stale; but it might be under migration.
@@ -9059,7 +8894,7 @@ index 23d36b59f9975..3a70786906eb9 100644
  }
  
  static inline void set_page_stable_node(struct page *page,
-@@ -2661,26 +2666,26 @@ again:
+@@ -2661,26 +2666,26 @@ void rmap_walk_ksm(struct page *page, struct rmap_walk_control *rwc)
  }
  
  #ifdef CONFIG_MIGRATION
@@ -9098,7 +8933,7 @@ index 23d36b59f9975..3a70786906eb9 100644
  }
  #endif /* CONFIG_MIGRATION */
 diff --git a/mm/migrate.c b/mm/migrate.c
-index 1e456013e1be8..4bc7f93b2579d 100644
+index 1e456013e1be8e..f514cdabd7aeb7 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
 @@ -538,82 +538,80 @@ int migrate_huge_page_move_mapping(struct address_space *mapping,
@@ -9213,7 +9048,7 @@ index 1e456013e1be8..4bc7f93b2579d 100644
 +		folio_set_readahead(newfolio);
  
 -	copy_page_owner(page, newpage);
-+	folio_copy_owner(folio, newfolio);
++	folio_copy_owner(newfolio, folio);
  
 -	if (!PageHuge(page))
 +	if (!folio_test_hugetlb(folio))
@@ -9234,7 +9069,7 @@ index 1e456013e1be8..4bc7f93b2579d 100644
  }
  EXPORT_SYMBOL(migrate_page);
 diff --git a/mm/page_owner.c b/mm/page_owner.c
-index f51a57e92aa38..23bfb074ca3fc 100644
+index f51a57e92aa380..23bfb074ca3fc8 100644
 --- a/mm/page_owner.c
 +++ b/mm/page_owner.c
 @@ -210,10 +210,10 @@ void __split_page_owner(struct page *page, unsigned int nr)
@@ -9265,14 +9100,11 @@ index f51a57e92aa38..23bfb074ca3fc 100644
  	 * in that case we also don't need to explicitly clear the info from
  	 * the new page, which will be freed.
  	 */
--- 
-cgit 1.2.3-1.el7
 
-
-From 289da065b485a52f8b7d55ea5888be43a48b14d6 Mon Sep 17 00:00:00 2001
+From 47e210cd25aa043230020b9dd5accf111fda92ac Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 7 May 2021 15:05:06 -0400
-Subject: mm/migrate: Add folio_migrate_copy()
+Subject: [PATCH 62/90] mm/migrate: Add folio_migrate_copy()
 
 This is the folio equivalent of migrate_page_copy(), which is retained
 as a wrapper for filesystems which are not yet converted to folios.
@@ -9286,11 +9118,11 @@ Reviewed-by: Zi Yan <ziy@nvidia.com>
  mm/folio-compat.c       |  6 ++++++
  mm/hugetlb.c            |  2 +-
  mm/migrate.c            | 14 +++++---------
- mm/util.c               | 11 +++++++----
- 6 files changed, 21 insertions(+), 15 deletions(-)
+ mm/util.c               | 21 +++++++++++++++++----
+ 6 files changed, 31 insertions(+), 15 deletions(-)
 
 diff --git a/include/linux/migrate.h b/include/linux/migrate.h
-index ba0a554b3eae4..6a01de9faff58 100644
+index ba0a554b3eae49..6a01de9faff589 100644
 --- a/include/linux/migrate.h
 +++ b/include/linux/migrate.h
 @@ -52,6 +52,7 @@ extern int migrate_huge_page_move_mapping(struct address_space *mapping,
@@ -9302,7 +9134,7 @@ index ba0a554b3eae4..6a01de9faff58 100644
  		struct folio *newfolio, struct folio *folio, int extra_count);
  #else
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 8bc23223f3ed1..940b640752473 100644
+index 9a670af47ca789..01f16537ab0ca7 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -911,7 +911,7 @@ void __put_page(struct page *page);
@@ -9315,7 +9147,7 @@ index 8bc23223f3ed1..940b640752473 100644
  /*
   * Compound pages have a destructor function.  Provide a
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 3f00ad92d1ff5..2ccd8f213fc4d 100644
+index 3f00ad92d1ff5a..2ccd8f213fc4da 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -64,4 +64,10 @@ void migrate_page_states(struct page *newpage, struct page *page)
@@ -9330,7 +9162,7 @@ index 3f00ad92d1ff5..2ccd8f213fc4d 100644
 +EXPORT_SYMBOL(migrate_page_copy);
  #endif
 diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index dfc940d5221dc..68eead0259ccb 100644
+index dfc940d5221dca..68eead0259ccba 100644
 --- a/mm/hugetlb.c
 +++ b/mm/hugetlb.c
 @@ -5200,7 +5200,7 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
@@ -9343,7 +9175,7 @@ index dfc940d5221dc..68eead0259ccb 100644
  		*pagep = NULL;
  	}
 diff --git a/mm/migrate.c b/mm/migrate.c
-index 4bc7f93b2579d..c96d7a78a2f4e 100644
+index f514cdabd7aeb7..ec4013408de76c 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
 @@ -613,16 +613,12 @@ void folio_migrate_flags(struct folio *newfolio, struct folio *folio)
@@ -9377,14 +9209,24 @@ index 4bc7f93b2579d..c96d7a78a2f4e 100644
  		folio_migrate_flags(newfolio, folio);
  	return MIGRATEPAGE_SUCCESS;
 diff --git a/mm/util.c b/mm/util.c
-index 4f3a4c229a01e..b57fb165f761f 100644
+index d020c077a44c40..811a246f83b395 100644
 --- a/mm/util.c
 +++ b/mm/util.c
-@@ -728,13 +728,16 @@ int __page_mapcount(struct page *page)
+@@ -728,13 +728,26 @@ int __page_mapcount(struct page *page)
  }
  EXPORT_SYMBOL_GPL(__page_mapcount);
  
 -void copy_huge_page(struct page *dst, struct page *src)
++/**
++ * folio_copy - Copy the contents of one folio to another.
++ * @dst: Folio to copy to.
++ * @src: Folio to copy from.
++ *
++ * The bytes in the folio represented by @src are copied to @dst.
++ * Assumes the caller has validated that @dst is at least as large as @src.
++ * Can be called in atomic context for order-0 folios, but if the folio is
++ * larger, it may sleep.
++ */
 +void folio_copy(struct folio *dst, struct folio *src)
  {
 -	unsigned i, nr = compound_nr(src);
@@ -9401,14 +9243,11 @@ index 4f3a4c229a01e..b57fb165f761f 100644
  	}
  }
  
--- 
-cgit 1.2.3-1.el7
 
-
-From 46a8ad1ad2140f5af1ae504c36ed48c176a59a20 Mon Sep 17 00:00:00 2001
+From 45308e0da7c6a642706ae00e1b2a85816db71541 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 19 Mar 2021 08:39:50 -0400
-Subject: mm/writeback: Rename __add_wb_stat() to wb_stat_mod()
+Subject: [PATCH 63/90] mm/writeback: Rename __add_wb_stat() to wb_stat_mod()
 
 Make this look like the newly renamed vmstat functions.
 
@@ -9419,7 +9258,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/include/linux/backing-dev.h b/include/linux/backing-dev.h
-index 44df4fcef65c1..a852876bb6e23 100644
+index 44df4fcef65c1e..a852876bb6e238 100644
 --- a/include/linux/backing-dev.h
 +++ b/include/linux/backing-dev.h
 @@ -64,7 +64,7 @@ static inline bool bdi_has_dirty_io(struct backing_dev_info *bdi)
@@ -9446,14 +9285,11 @@ index 44df4fcef65c1..a852876bb6e23 100644
  }
  
  static inline s64 wb_stat(struct bdi_writeback *wb, enum wb_stat_item item)
--- 
-cgit 1.2.3-1.el7
 
-
-From 5c7158eb428758c126ca6a3091f0fd5047867d64 Mon Sep 17 00:00:00 2001
+From 2b3126e2970dddb0be4fbb8113e781c663259883 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 20 Mar 2021 16:34:54 -0400
-Subject: flex_proportions: Allow N events instead of 1
+Subject: [PATCH 64/90] flex_proportions: Allow N events instead of 1
 
 When batching events (such as writing back N pages in a single I/O), it
 is better to do one flex_proportion operation instead of N.  There is
@@ -9471,7 +9307,7 @@ Reviewed-by: Jan Kara <jack@suse.cz>
  3 files changed, 26 insertions(+), 15 deletions(-)
 
 diff --git a/include/linux/flex_proportions.h b/include/linux/flex_proportions.h
-index c12df59d3f5fc..3e378b1fb0bc8 100644
+index c12df59d3f5fcb..3e378b1fb0bc82 100644
 --- a/include/linux/flex_proportions.h
 +++ b/include/linux/flex_proportions.h
 @@ -83,9 +83,10 @@ struct fprop_local_percpu {
@@ -9498,7 +9334,7 @@ index c12df59d3f5fc..3e378b1fb0bc8 100644
  }
  
 diff --git a/lib/flex_proportions.c b/lib/flex_proportions.c
-index 4515439375243..53e7eb1dd76c9 100644
+index 45154393752433..53e7eb1dd76c96 100644
 --- a/lib/flex_proportions.c
 +++ b/lib/flex_proportions.c
 @@ -217,11 +217,12 @@ static void fprop_reflect_period_percpu(struct fprop_global *p,
@@ -9554,7 +9390,7 @@ index 4515439375243..53e7eb1dd76c9 100644
 +	__fprop_add_percpu(p, pl, nr);
  }
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index b34278d05395f..f55f2ebdd9a9f 100644
+index b34278d05395f2..f55f2ebdd9a9f6 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -566,8 +566,8 @@ static void wb_domain_writeout_inc(struct wb_domain *dom,
@@ -9568,14 +9404,12 @@ index b34278d05395f..f55f2ebdd9a9f 100644
  	/* First event after period switching was turned off? */
  	if (unlikely(!dom->period_time)) {
  		/*
--- 
-cgit 1.2.3-1.el7
 
-
-From 2b9406bb68022dd3e73a5cd374a5cbeb80934ef6 Mon Sep 17 00:00:00 2001
+From caf1c0989b37c9928aa78b4763e4dd5a3a32f130 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 20 Mar 2021 16:45:15 -0400
-Subject: mm/writeback: Change __wb_writeout_inc() to __wb_writeout_add()
+Subject: [PATCH 65/90] mm/writeback: Change __wb_writeout_inc() to
+ __wb_writeout_add()
 
 Allow for accounting N pages at once instead of one page at a time.
 
@@ -9587,7 +9421,7 @@ Reviewed-by: Jan Kara <jack@suse.cz>
  1 file changed, 11 insertions(+), 11 deletions(-)
 
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index f55f2ebdd9a9f..e542ea37d605e 100644
+index f55f2ebdd9a9f6..e542ea37d605ee 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -562,12 +562,12 @@ static unsigned long wp_next_time(unsigned long cur_time)
@@ -9649,14 +9483,11 @@ index f55f2ebdd9a9f..e542ea37d605e 100644
  			}
  		}
  
--- 
-cgit 1.2.3-1.el7
 
-
-From 2b6c63ead5d68201443d54c8e59aa93092a80424 Mon Sep 17 00:00:00 2001
+From a21c220d76b282d225982e0c83470042f9afb0be Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 15 Jan 2021 23:34:16 -0500
-Subject: mm/writeback: Add __folio_end_writeback()
+Subject: [PATCH 66/90] mm/writeback: Add __folio_end_writeback()
 
 test_clear_page_writeback() is actually an mm-internal function, although
 it's named as if it's a pagecache function.  Move it to mm/internal.h,
@@ -9676,7 +9507,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  4 files changed, 17 insertions(+), 16 deletions(-)
 
 diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index ddb6606880860..6f9d1f26b1ef0 100644
+index c36e884ebbc183..243cac5ba49254 100644
 --- a/include/linux/page-flags.h
 +++ b/include/linux/page-flags.h
 @@ -655,7 +655,6 @@ static __always_inline void SetPageUptodate(struct page *page)
@@ -9688,7 +9519,7 @@ index ddb6606880860..6f9d1f26b1ef0 100644
  
  #define test_set_page_writeback(page)			\
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 2469f714520ab..7adef76691c99 100644
+index 2469f714520abb..7adef76691c99c 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1535,7 +1535,7 @@ void folio_end_writeback(struct folio *folio)
@@ -9701,7 +9532,7 @@ index 2469f714520ab..7adef76691c99 100644
  
  	smp_mb__after_atomic();
 diff --git a/mm/internal.h b/mm/internal.h
-index fa31a7f0ed798..08e8a28994d14 100644
+index fa31a7f0ed798f..08e8a28994d14d 100644
 --- a/mm/internal.h
 +++ b/mm/internal.h
 @@ -43,6 +43,7 @@ static inline void *folio_raw_mapping(struct folio *folio)
@@ -9713,7 +9544,7 @@ index fa31a7f0ed798..08e8a28994d14 100644
  void free_pgtables(struct mmu_gather *tlb, struct vm_area_struct *start_vma,
  		unsigned long floor, unsigned long ceiling);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index e542ea37d605e..8d5d7921b1577 100644
+index e542ea37d605ee..8d5d7921b15778 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -583,7 +583,7 @@ static void wb_domain_writeout_add(struct wb_domain *dom,
@@ -9782,14 +9613,11 @@ index e542ea37d605e..8d5d7921b1577 100644
  	return ret;
  }
  
--- 
-cgit 1.2.3-1.el7
 
-
-From f9a79264501d9ace69e78362501e06fd6a448f66 Mon Sep 17 00:00:00 2001
+From ce19a6d7e4062fa45eac59cd318a95eee2320551 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sat, 24 Apr 2021 12:00:48 -0400
-Subject: mm/writeback: Add folio_start_writeback()
+Subject: [PATCH 67/90] mm/writeback: Add folio_start_writeback()
 
 Rename set_page_writeback() to folio_start_writeback() to match
 folio_end_writeback().  Do not bother with wrappers that return void;
@@ -9803,13 +9631,13 @@ although it does eliminate a couple of calls to compound_head().
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/page-flags.h | 19 ++++++++++---------
+ include/linux/page-flags.h | 19 +++++++++---------
  mm/folio-compat.c          |  6 ++++++
- mm/page-writeback.c        | 40 +++++++++++++++++++++-------------------
+ mm/page-writeback.c        | 40 ++++++++++++++++++++------------------
  3 files changed, 37 insertions(+), 28 deletions(-)
 
 diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index 6f9d1f26b1ef0..54c4af35c6283 100644
+index 243cac5ba49254..b48bc214fe897f 100644
 --- a/include/linux/page-flags.h
 +++ b/include/linux/page-flags.h
 @@ -655,21 +655,22 @@ static __always_inline void SetPageUptodate(struct page *page)
@@ -9845,7 +9673,7 @@ index 6f9d1f26b1ef0..54c4af35c6283 100644
  
  __PAGEFLAG(Head, head, PF_ANY) CLEARPAGEFLAG(Head, head, PF_ANY)
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 2ccd8f213fc4d..10ce5582d8698 100644
+index 2ccd8f213fc4da..10ce5582d86987 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -71,3 +71,9 @@ void migrate_page_copy(struct page *newpage, struct page *page)
@@ -9859,7 +9687,7 @@ index 2ccd8f213fc4d..10ce5582d8698 100644
 +}
 +EXPORT_SYMBOL(set_page_writeback);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 8d5d7921b1577..0336273154fb9 100644
+index 8d5d7921b15778..0336273154fb90 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2773,21 +2773,23 @@ bool __folio_end_writeback(struct folio *folio)
@@ -9946,14 +9774,11 @@ index 8d5d7921b1577..0336273154fb9 100644
  
  /**
   * folio_wait_writeback - Wait for a folio to finish writeback.
--- 
-cgit 1.2.3-1.el7
 
-
-From 5649988b54d65e0303fdb2002b5ccc6ca6939b3b Mon Sep 17 00:00:00 2001
+From 6b6726b2589fe118691f4b6476958d32a84805bc Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 26 Apr 2021 23:53:10 -0400
-Subject: mm/writeback: Add folio_mark_dirty()
+Subject: [PATCH 68/90] mm/writeback: Add folio_mark_dirty()
 
 Reimplement set_page_dirty() as a wrapper around folio_mark_dirty().
 There is no change to filesystems as they were already being called
@@ -9974,7 +9799,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  3 files changed, 27 insertions(+), 17 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 940b640752473..3fc7926e289db 100644
+index 01f16537ab0ca7..c322a6e692c353 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -2008,7 +2008,8 @@ int redirty_page_for_writepage(struct writeback_control *wbc,
@@ -9988,7 +9813,7 @@ index 940b640752473..3fc7926e289db 100644
  void __cancel_dirty_page(struct page *page);
  static inline void cancel_dirty_page(struct page *page)
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 10ce5582d8698..2c2b3917b5dc9 100644
+index 10ce5582d86987..2c2b3917b5dc95 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -77,3 +77,9 @@ bool set_page_writeback(struct page *page)
@@ -10002,7 +9827,7 @@ index 10ce5582d8698..2c2b3917b5dc9 100644
 +}
 +EXPORT_SYMBOL(set_page_dirty);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 0336273154fb9..d7c0cad6a57f6 100644
+index 0336273154fb90..d7c0cad6a57f63 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2564,18 +2564,21 @@ int redirty_page_for_writepage(struct writeback_control *wbc, struct page *page)
@@ -10061,14 +9886,11 @@ index 0336273154fb9..d7c0cad6a57f6 100644
  
  /*
   * set_page_dirty() is racy if the caller has no reference against
--- 
-cgit 1.2.3-1.el7
 
-
-From c1847208fc11ec991cb3632dc4ea4d89ab12bff9 Mon Sep 17 00:00:00 2001
+From 09891ef4eaf4dcddbdef0846e163b0666d7e8cb1 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 4 May 2021 11:01:10 -0400
-Subject: mm/writeback: Add __folio_mark_dirty()
+Subject: [PATCH 69/90] mm/writeback: Add __folio_mark_dirty()
 
 Turn __set_page_dirty() into a wrapper around __folio_mark_dirty().
 Convert account_page_dirtied() into folio_account_dirtied() and account
@@ -10078,11 +9900,11 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
  include/linux/memcontrol.h |  5 ++---
  include/linux/pagemap.h    |  7 ++++++-
- mm/page-writeback.c        | 41 +++++++++++++++++++++--------------------
+ mm/page-writeback.c        | 41 +++++++++++++++++++-------------------
  3 files changed, 29 insertions(+), 24 deletions(-)
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 7bc6d5a6b7391..12e9a662f1ef6 100644
+index 7bc6d5a6b73919..12e9a662f1ef65 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
 @@ -1576,10 +1576,9 @@ void mem_cgroup_wb_stats(struct bdi_writeback *wb, unsigned long *pfilepages,
@@ -10107,7 +9929,7 @@ index 7bc6d5a6b7391..12e9a662f1ef6 100644
  {
  }
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 08f40e004d97e..3d88c17fedc92 100644
+index 08f40e004d97ef..3d88c17fedc922 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -773,8 +773,13 @@ void end_page_writeback(struct page *page);
@@ -10126,7 +9948,7 @@ index 08f40e004d97e..3d88c17fedc92 100644
  int __set_page_dirty_no_writeback(struct page *page);
  
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index d7c0cad6a57f6..3e02c86eb4453 100644
+index d7c0cad6a57f63..3e02c86eb44537 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2421,29 +2421,30 @@ EXPORT_SYMBOL(__set_page_dirty_no_writeback);
@@ -10205,14 +10027,12 @@ index d7c0cad6a57f6..3e02c86eb4453 100644
  				PAGECACHE_TAG_DIRTY);
  	}
  	xa_unlock_irqrestore(&mapping->i_pages, flags);
--- 
-cgit 1.2.3-1.el7
 
-
-From 14b02f523d010e6eefa275e6822ad69c5524d0e0 Mon Sep 17 00:00:00 2001
+From 0dfc43991c011316355185f32fbeb4f593df8792 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 13 Jul 2021 22:45:50 -0400
-Subject: mm/writeback: Convert tracing writeback_page_template to folios
+Subject: [PATCH 70/90] mm/writeback: Convert tracing writeback_page_template
+ to folios
 
 Rename writeback_dirty_page() to writeback_dirty_folio() and
 wait_on_page_writeback() to folio_wait_writeback().
@@ -10224,7 +10044,7 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
  2 files changed, 13 insertions(+), 13 deletions(-)
 
 diff --git a/include/trace/events/writeback.h b/include/trace/events/writeback.h
-index 297871ca00047..7dccb66474f73 100644
+index 297871ca000475..7dccb66474f735 100644
 --- a/include/trace/events/writeback.h
 +++ b/include/trace/events/writeback.h
 @@ -52,11 +52,11 @@ WB_WORK_REASON
@@ -10277,7 +10097,7 @@ index 297871ca00047..7dccb66474f73 100644
  
  DECLARE_EVENT_CLASS(writeback_dirty_inode_template,
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 3e02c86eb4453..2dc410b110ff8 100644
+index 3e02c86eb44537..2dc410b110ff82 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2426,7 +2426,7 @@ static void folio_account_dirtied(struct folio *folio,
@@ -10307,14 +10127,11 @@ index 3e02c86eb4453..2dc410b110ff8 100644
  		if (folio_wait_bit_killable(folio, PG_writeback))
  			return -EINTR;
  	}
--- 
-cgit 1.2.3-1.el7
 
-
-From 3a23c042c2c362dd73d4051563fd1d396a1f88c8 Mon Sep 17 00:00:00 2001
+From 288f54c58e24dd0f7901a599d5543df39a05e88a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 3 May 2021 23:30:44 -0400
-Subject: mm/writeback: Add filemap_dirty_folio()
+Subject: [PATCH 71/90] mm/writeback: Add filemap_dirty_folio()
 
 Reimplement __set_page_dirty_nobuffers() as a wrapper around
 filemap_dirty_folio().
@@ -10323,12 +10140,12 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
  include/linux/writeback.h |  1 +
- mm/folio-compat.c         |  6 +++++
- mm/page-writeback.c       | 60 ++++++++++++++++++++++++-----------------------
+ mm/folio-compat.c         |  6 ++++
+ mm/page-writeback.c       | 60 ++++++++++++++++++++-------------------
  3 files changed, 38 insertions(+), 29 deletions(-)
 
 diff --git a/include/linux/writeback.h b/include/linux/writeback.h
-index 667e86cfbdcfe..eda9cc778ef6d 100644
+index 667e86cfbdcfe3..eda9cc778ef6da 100644
 --- a/include/linux/writeback.h
 +++ b/include/linux/writeback.h
 @@ -398,6 +398,7 @@ void writeback_set_ratelimit(void);
@@ -10340,7 +10157,7 @@ index 667e86cfbdcfe..eda9cc778ef6d 100644
  
  void sb_mark_inode_writeback(struct inode *inode);
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 2c2b3917b5dc9..dad962b920e5e 100644
+index 2c2b3917b5dc95..dad962b920e5e1 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -83,3 +83,9 @@ bool set_page_dirty(struct page *page)
@@ -10354,7 +10171,7 @@ index 2c2b3917b5dc9..dad962b920e5e 100644
 +}
 +EXPORT_SYMBOL(__set_page_dirty_nobuffers);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 2dc410b110ff8..bd97c461d4998 100644
+index 2dc410b110ff82..bd97c461d4998a 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2488,41 +2488,43 @@ void __folio_mark_dirty(struct folio *folio, struct address_space *mapping,
@@ -10430,14 +10247,11 @@ index 2dc410b110ff8..bd97c461d4998 100644
  
  /*
   * Call this whenever redirtying a page, to de-account the dirty counters
--- 
-cgit 1.2.3-1.el7
 
-
-From b3bade8b4106aeff81a779c40c0e0a7a0e648fbf Mon Sep 17 00:00:00 2001
+From 01e78b6a5bf88c469bf70c5e370540ab75f40529 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 4 May 2021 16:12:09 -0400
-Subject: mm/writeback: Add folio_account_cleaned()
+Subject: [PATCH 72/90] mm/writeback: Add folio_account_cleaned()
 
 Get the statistics right; compound pages were being accounted as a
 single page.  This didn't matter before now as no filesystem which
@@ -10454,7 +10268,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  3 files changed, 13 insertions(+), 8 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 3fc7926e289db..44faac415bd0b 100644
+index c322a6e692c353..a554d792e82b50 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -39,7 +39,6 @@ struct anon_vma_chain;
@@ -10475,7 +10289,7 @@ index 3fc7926e289db..44faac415bd0b 100644
  bool set_page_dirty(struct page *page);
  int set_page_dirty_lock(struct page *page);
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 3d88c17fedc92..665ba6a673853 100644
+index 3d88c17fedc922..665ba6a673853d 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -779,6 +779,13 @@ static inline void __set_page_dirty(struct page *page,
@@ -10493,7 +10307,7 @@ index 3d88c17fedc92..665ba6a673853 100644
  int __set_page_dirty_nobuffers(struct page *page);
  int __set_page_dirty_no_writeback(struct page *page);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index bd97c461d4998..792a83bd39178 100644
+index bd97c461d4998a..792a83bd391789 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2453,14 +2453,15 @@ static void folio_account_dirtied(struct folio *folio,
@@ -10517,14 +10331,11 @@ index bd97c461d4998..792a83bd39178 100644
  	}
  }
  
--- 
-cgit 1.2.3-1.el7
 
-
-From edb54c201a036b5880358da5f99af633d78c1330 Mon Sep 17 00:00:00 2001
+From e990731a67c80e6c757a6062b35c17e5bce6b1e6 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 8 Mar 2021 16:43:04 -0500
-Subject: mm/writeback: Add folio_cancel_dirty()
+Subject: [PATCH 73/90] mm/writeback: Add folio_cancel_dirty()
 
 Turn __cancel_dirty_page() into __folio_cancel_dirty() and add wrappers.
 Move the prototypes into pagemap.h since this is page cache functionality.
@@ -10540,7 +10351,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  3 files changed, 19 insertions(+), 15 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 44faac415bd0b..ce00cc2f3bec5 100644
+index a554d792e82b50..614d35b8d813bd 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -2008,13 +2008,6 @@ int redirty_page_for_writepage(struct writeback_control *wbc,
@@ -10558,7 +10369,7 @@ index 44faac415bd0b..ce00cc2f3bec5 100644
  
  int get_cmdline(struct task_struct *task, char *buffer, int buflen);
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 665ba6a673853..a4d0aeaf884d8 100644
+index 665ba6a673853d..a4d0aeaf884d8a 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -786,6 +786,17 @@ static inline void account_page_cleaned(struct page *page,
@@ -10580,7 +10391,7 @@ index 665ba6a673853..a4d0aeaf884d8 100644
  int __set_page_dirty_nobuffers(struct page *page);
  int __set_page_dirty_no_writeback(struct page *page);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 792a83bd39178..0854ef768d06c 100644
+index 792a83bd391789..0854ef768d06c9 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2640,28 +2640,28 @@ EXPORT_SYMBOL(set_page_dirty_lock);
@@ -10620,14 +10431,11 @@ index 792a83bd39178..0854ef768d06c 100644
  
  /*
   * Clear a page's dirty flag, while caring for dirty memory accounting.
--- 
-cgit 1.2.3-1.el7
 
-
-From 885b8b4c06613f84bec3db0def5ba52047b1a338 Mon Sep 17 00:00:00 2001
+From 822fc58aec6cf91d03a07bd533afe9898bcd2bb0 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 28 Feb 2021 16:21:20 -0500
-Subject: mm/writeback: Add folio_clear_dirty_for_io()
+Subject: [PATCH 74/90] mm/writeback: Add folio_clear_dirty_for_io()
 
 Transform clear_page_dirty_for_io() into folio_clear_dirty_for_io()
 and add a compatibility wrapper.  Also move the declaration to pagemap.h
@@ -10643,12 +10451,12 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
  include/linux/mm.h      |  1 -
  include/linux/pagemap.h |  2 ++
- mm/folio-compat.c       |  6 +++++
- mm/page-writeback.c     | 63 +++++++++++++++++++++++++------------------------
+ mm/folio-compat.c       |  6 ++++
+ mm/page-writeback.c     | 63 +++++++++++++++++++++--------------------
  4 files changed, 40 insertions(+), 32 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index ce00cc2f3bec5..a0296ec684341 100644
+index 614d35b8d813bd..480960fc7a5fbb 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -2008,7 +2008,6 @@ int redirty_page_for_writepage(struct writeback_control *wbc,
@@ -10660,7 +10468,7 @@ index ce00cc2f3bec5..a0296ec684341 100644
  int get_cmdline(struct task_struct *task, char *buffer, int buflen);
  
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index a4d0aeaf884d8..006de2d84d065 100644
+index a4d0aeaf884d8a..006de2d84d0655 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -797,6 +797,8 @@ static inline void cancel_dirty_page(struct page *page)
@@ -10673,7 +10481,7 @@ index a4d0aeaf884d8..006de2d84d065 100644
  int __set_page_dirty_nobuffers(struct page *page);
  int __set_page_dirty_no_writeback(struct page *page);
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index dad962b920e5e..39f5a8d963b18 100644
+index dad962b920e5e1..39f5a8d963b189 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -89,3 +89,9 @@ int __set_page_dirty_nobuffers(struct page *page)
@@ -10687,7 +10495,7 @@ index dad962b920e5e..39f5a8d963b18 100644
 +}
 +EXPORT_SYMBOL(clear_page_dirty_for_io);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 0854ef768d06c..66060bbf6aadb 100644
+index 0854ef768d06c9..66060bbf6aadba 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2664,25 +2664,25 @@ void __folio_cancel_dirty(struct folio *folio)
@@ -10797,14 +10605,11 @@ index 0854ef768d06c..66060bbf6aadb 100644
  
  bool __folio_end_writeback(struct folio *folio)
  {
--- 
-cgit 1.2.3-1.el7
 
-
-From e80d3ae4c6f3a03e46badb0f5581594b038511cb Mon Sep 17 00:00:00 2001
+From 9e6ea826db2479bf33b7f1f05d54f32488f4a892 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 3 May 2021 10:06:55 -0400
-Subject: mm/writeback: Add folio_account_redirty()
+Subject: [PATCH 75/90] mm/writeback: Add folio_account_redirty()
 
 Account the number of pages in the folio that we're redirtying.
 Turn account_page_dirty() into a wrapper around it.  Also turn
@@ -10819,7 +10624,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  2 files changed, 24 insertions(+), 14 deletions(-)
 
 diff --git a/include/linux/writeback.h b/include/linux/writeback.h
-index eda9cc778ef6d..50cb6e25ab9ee 100644
+index eda9cc778ef6da..50cb6e25ab9eef 100644
 --- a/include/linux/writeback.h
 +++ b/include/linux/writeback.h
 @@ -399,7 +399,11 @@ void tag_pages_for_writeback(struct address_space *mapping,
@@ -10836,7 +10641,7 @@ index eda9cc778ef6d..50cb6e25ab9ee 100644
  void sb_mark_inode_writeback(struct inode *inode);
  void sb_clear_inode_writeback(struct inode *inode);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index 66060bbf6aadb..b731c82898e92 100644
+index 66060bbf6aadba..b731c82898e924 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -1084,7 +1084,7 @@ static void wb_update_write_bandwidth(struct bdi_writeback *wb,
@@ -10897,14 +10702,11 @@ index 66060bbf6aadb..b731c82898e92 100644
  
  /*
   * When a writepage implementation decides that it doesn't want to write this
--- 
-cgit 1.2.3-1.el7
 
-
-From 2f9ead64ae1082851182903835cc1f5703a55103 Mon Sep 17 00:00:00 2001
+From 369b052ca7f6a6d4d5b9bfca92cf8c19b10d37ba Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Sun, 2 May 2021 23:22:52 -0400
-Subject: mm/writeback: Add folio_redirty_for_writepage()
+Subject: [PATCH 76/90] mm/writeback: Add folio_redirty_for_writepage()
 
 Reimplement redirty_page_for_writepage() as a wrapper around
 folio_redirty_for_writepage().  Account the number of pages in the
@@ -10921,7 +10723,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  5 files changed, 30 insertions(+), 14 deletions(-)
 
 diff --git a/fs/jfs/jfs_metapage.c b/fs/jfs/jfs_metapage.c
-index 176580f54af96..104ae698443ed 100644
+index 176580f54af961..104ae698443ed0 100644
 --- a/fs/jfs/jfs_metapage.c
 +++ b/fs/jfs/jfs_metapage.c
 @@ -13,6 +13,7 @@
@@ -10933,7 +10735,7 @@ index 176580f54af96..104ae698443ed 100644
  #include "jfs_superblock.h"
  #include "jfs_filsys.h"
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index a0296ec684341..495fe3efc5f6c 100644
+index 480960fc7a5fbb..9a738a7d4b3315 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -36,9 +36,7 @@
@@ -10956,7 +10758,7 @@ index a0296ec684341..495fe3efc5f6c 100644
  bool set_page_dirty(struct page *page);
  int set_page_dirty_lock(struct page *page);
 diff --git a/include/linux/writeback.h b/include/linux/writeback.h
-index 50cb6e25ab9ee..5383f7e39816a 100644
+index 50cb6e25ab9eef..5383f7e39816a1 100644
 --- a/include/linux/writeback.h
 +++ b/include/linux/writeback.h
 @@ -404,6 +404,8 @@ static inline void account_page_redirty(struct page *page)
@@ -10969,7 +10771,7 @@ index 50cb6e25ab9ee..5383f7e39816a 100644
  void sb_mark_inode_writeback(struct inode *inode);
  void sb_clear_inode_writeback(struct inode *inode);
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 39f5a8d963b18..c1e01bc36d322 100644
+index 39f5a8d963b189..c1e01bc36d3225 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -95,3 +95,10 @@ bool clear_page_dirty_for_io(struct page *page)
@@ -10984,7 +10786,7 @@ index 39f5a8d963b18..c1e01bc36d322 100644
 +}
 +EXPORT_SYMBOL(redirty_page_for_writepage);
 diff --git a/mm/page-writeback.c b/mm/page-writeback.c
-index b731c82898e92..987a2f2efe813 100644
+index b731c82898e924..987a2f2efe8139 100644
 --- a/mm/page-writeback.c
 +++ b/mm/page-writeback.c
 @@ -2558,21 +2558,31 @@ void folio_account_redirty(struct folio *folio)
@@ -11029,14 +10831,11 @@ index b731c82898e92..987a2f2efe813 100644
  
  /**
   * folio_mark_dirty - Mark a folio as being modified.
--- 
-cgit 1.2.3-1.el7
 
-
-From c63d32293834a11de8bd36939360cab5d927f75e Mon Sep 17 00:00:00 2001
+From a608e7f5b647fd34a396768600cf8bf6f6dfea4e Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 23:11:28 -0400
-Subject: mm/filemap: Add i_blocks_per_folio()
+Subject: [PATCH 77/90] mm/filemap: Add i_blocks_per_folio()
 
 Reimplement i_blocks_per_page() as a wrapper around i_blocks_per_folio().
 
@@ -11047,7 +10846,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 006de2d84d065..412db88b8d0c4 100644
+index 006de2d84d0655..412db88b8d0c4b 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -1150,19 +1150,25 @@ static inline int page_mkwrite_check_truncate(struct page *page,
@@ -11082,14 +10881,11 @@ index 006de2d84d065..412db88b8d0c4 100644
 +	return i_blocks_per_folio(inode, page_folio(page));
  }
  #endif /* _LINUX_PAGEMAP_H */
--- 
-cgit 1.2.3-1.el7
 
-
-From 21238997cad6abfc0ffa9f70ffc8ba3abd8b7044 Mon Sep 17 00:00:00 2001
+From 383865b99353663ea01153f98168ce8393be3a60 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Wed, 28 Apr 2021 22:30:06 -0400
-Subject: mm/filemap: Add folio_mkwrite_check_truncate()
+Subject: [PATCH 78/90] mm/filemap: Add folio_mkwrite_check_truncate()
 
 This is the folio equivalent of page_mkwrite_check_truncate().
 
@@ -11099,7 +10895,7 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
  1 file changed, 28 insertions(+)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 412db88b8d0c4..18c06c3e42c3f 100644
+index 412db88b8d0c4b..18c06c3e42c3f1 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -1121,6 +1121,34 @@ static inline unsigned long dir_pages(struct inode *inode)
@@ -11137,14 +10933,11 @@ index 412db88b8d0c4..18c06c3e42c3f 100644
  /**
   * page_mkwrite_check_truncate - check if page was truncated
   * @page: the page to check
--- 
-cgit 1.2.3-1.el7
 
-
-From 43abe5f45e11b8bd404b751bb3917d6a99b7403c Mon Sep 17 00:00:00 2001
+From eb0e13c5bdb2c1f1b908ede57a18ce9f62f8edfa Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 27 Apr 2021 16:37:09 -0400
-Subject: mm/filemap: Add readahead_folio()
+Subject: [PATCH 79/90] mm/filemap: Add readahead_folio()
 
 The pointers stored in the page cache are folios, by definition.
 This change comes with a behaviour change -- callers of readahead_folio()
@@ -11153,15 +10946,17 @@ how readpage works, rather than matching how readpages used to work.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: David Howells <dhowells@redhat.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 ---
- include/linux/pagemap.h | 53 +++++++++++++++++++++++++++++++++++--------------
- 1 file changed, 38 insertions(+), 15 deletions(-)
+ include/linux/pagemap.h | 54 +++++++++++++++++++++++++++++------------
+ 1 file changed, 39 insertions(+), 15 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 18c06c3e42c3f..bd4daebaf70ee 100644
+index 18c06c3e42c3f1..15bb6f0fe41774 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
-@@ -988,33 +988,56 @@ void page_cache_async_readahead(struct address_space *mapping,
+@@ -988,33 +988,57 @@ void page_cache_async_readahead(struct address_space *mapping,
  	page_cache_async_ra(&ractl, page, req_count);
  }
  
@@ -11228,19 +11023,18 @@ index 18c06c3e42c3f..bd4daebaf70ee 100644
 +	struct folio *folio = __readahead_folio(ractl);
  
 -	return page;
-+	folio_put(folio);
++	if (folio)
++		folio_put(folio);
 +	return folio;
  }
  
  static inline unsigned int __readahead_batch(struct readahead_control *rac,
--- 
-cgit 1.2.3-1.el7
 
-
-From 0403d3847d77a6e42180f0d6c27c2732f7b7c42e Mon Sep 17 00:00:00 2001
+From 65dc3f0471221a4fd3dbb7af13078d889c70fbd6 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 10:27:16 -0400
-Subject: mm/workingset: Convert workingset_refault() to take a folio
+Subject: [PATCH 80/90] mm/workingset: Convert workingset_refault() to take a
+ folio
 
 This nets us 178 bytes of savings from removing calls to compound_head.
 The three callers all grow a little, but each of them will be converted
@@ -11258,7 +11052,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  6 files changed, 26 insertions(+), 26 deletions(-)
 
 diff --git a/include/linux/swap.h b/include/linux/swap.h
-index c7a4c0a5863d1..5e01675af7ab9 100644
+index c7a4c0a5863d1f..5e01675af7ab9b 100644
 --- a/include/linux/swap.h
 +++ b/include/linux/swap.h
 @@ -329,7 +329,7 @@ static inline swp_entry_t folio_swap_entry(struct folio *folio)
@@ -11280,7 +11074,7 @@ index c7a4c0a5863d1..5e01675af7ab9 100644
  void mark_page_accessed(struct page *);
  void folio_mark_accessed(struct folio *);
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 7adef76691c99..675c1429d6865 100644
+index 7adef76691c99c..675c1429d6865f 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -981,7 +981,7 @@ int add_to_page_cache_lru(struct page *page, struct address_space *mapping,
@@ -11293,7 +11087,7 @@ index 7adef76691c99..675c1429d6865 100644
  	}
  	return ret;
 diff --git a/mm/memory.c b/mm/memory.c
-index 614418e26e2c9..627e7836ade64 100644
+index 614418e26e2c93..627e7836ade641 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
 @@ -3538,7 +3538,8 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
@@ -11307,7 +11101,7 @@ index 614418e26e2c9..627e7836ade64 100644
  				lru_cache_add(page);
  
 diff --git a/mm/swap.c b/mm/swap.c
-index 3b04be45eba3e..ade54c88c2dff 100644
+index 22ca05042e6239..69c38f6bab2d59 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -315,11 +315,10 @@ void lru_note_cost(struct lruvec *lruvec, bool file, unsigned int nr_pages)
@@ -11326,7 +11120,7 @@ index 3b04be45eba3e..ade54c88c2dff 100644
  
  static void __folio_activate(struct folio *folio, struct lruvec *lruvec)
 diff --git a/mm/swap_state.c b/mm/swap_state.c
-index c56aa9ac050dd..1a29b4f982087 100644
+index c56aa9ac050dd2..1a29b4f982087a 100644
 --- a/mm/swap_state.c
 +++ b/mm/swap_state.c
 @@ -498,7 +498,7 @@ struct page *__read_swap_cache_async(swp_entry_t entry, gfp_t gfp_mask,
@@ -11339,7 +11133,7 @@ index c56aa9ac050dd..1a29b4f982087 100644
  	/* Caller will initiate read into locked page */
  	lru_cache_add(page);
 diff --git a/mm/workingset.c b/mm/workingset.c
-index 39bb60d502173..10830211a187f 100644
+index 39bb60d5021732..10830211a187fb 100644
 --- a/mm/workingset.c
 +++ b/mm/workingset.c
 @@ -273,17 +273,17 @@ void *workingset_eviction(struct page *page, struct mem_cgroup *target_memcg)
@@ -11419,14 +11213,11 @@ index 39bb60d502173..10830211a187f 100644
  		inc_lruvec_state(lruvec, WORKINGSET_RESTORE_BASE + file);
  	}
  out:
--- 
-cgit 1.2.3-1.el7
 
-
-From 7c56c9576d4d693ea70de3cad00a7353ff49a31f Mon Sep 17 00:00:00 2001
+From 4f53c8d7d66610a16f205de61e3b5bf59909a93a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 14 May 2021 15:04:28 -0400
-Subject: mm: Add folio_evictable()
+Subject: [PATCH 81/90] mm: Add folio_evictable()
 
 This is the folio equivalent of page_evictable().  Unfortunately, it's
 different from !folio_test_unevictable(), but I think it's used in places
@@ -11440,7 +11231,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 19 insertions(+), 8 deletions(-)
 
 diff --git a/mm/internal.h b/mm/internal.h
-index 08e8a28994d14..0910efec5821a 100644
+index 08e8a28994d14d..0910efec5821a8 100644
 --- a/mm/internal.h
 +++ b/mm/internal.h
 @@ -72,17 +72,28 @@ unsigned find_lock_entries(struct address_space *mapping, pgoff_t start,
@@ -11480,14 +11271,11 @@ index 08e8a28994d14..0910efec5821a 100644
  static inline bool page_evictable(struct page *page)
  {
  	bool ret;
--- 
-cgit 1.2.3-1.el7
 
-
-From 54f7a2b4347ff6b03acd0fce83400a35fdb1c1d8 Mon Sep 17 00:00:00 2001
+From a0f0e7731e5529fc2a135dc9d4bb93a6d14cb470 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Fri, 14 May 2021 15:08:29 -0400
-Subject: mm/lru: Convert __pagevec_lru_add_fn to take a folio
+Subject: [PATCH 82/90] mm/lru: Convert __pagevec_lru_add_fn to take a folio
 
 This saves five calls to compound_head(), totalling 60 bytes of text.
 
@@ -11499,7 +11287,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  2 files changed, 33 insertions(+), 33 deletions(-)
 
 diff --git a/include/trace/events/pagemap.h b/include/trace/events/pagemap.h
-index 1fd0185d66e80..171524d3526db 100644
+index 1fd0185d66e80b..171524d3526dbb 100644
 --- a/include/trace/events/pagemap.h
 +++ b/include/trace/events/pagemap.h
 @@ -16,38 +16,38 @@
@@ -11558,7 +11346,7 @@ index 1fd0185d66e80..171524d3526db 100644
  			__entry->lru,
  			__entry->flags & PAGEMAP_MAPPED		? "M" : " ",
 diff --git a/mm/swap.c b/mm/swap.c
-index ade54c88c2dff..c21648e07127d 100644
+index 69c38f6bab2d59..4fb7d55a884276 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -1001,17 +1001,18 @@ void __pagevec_release(struct pagevec *pvec)
@@ -11641,14 +11429,11 @@ index ade54c88c2dff..c21648e07127d 100644
  	}
  	if (lruvec)
  		unlock_page_lruvec_irqrestore(lruvec, flags);
--- 
-cgit 1.2.3-1.el7
 
-
-From b438f3a42ebdf2a394d6e075945f5e52c10e4b84 Mon Sep 17 00:00:00 2001
+From 0c6515968c45dc3610ba73f4413688c97a6287b4 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 29 Apr 2021 11:09:31 -0400
-Subject: mm/lru: Add folio_add_lru()
+Subject: [PATCH 83/90] mm/lru: Add folio_add_lru()
 
 Reimplement lru_cache_add() as a wrapper around folio_add_lru().
 Saves 159 bytes of kernel text due to removing calls to compound_head().
@@ -11662,7 +11447,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  3 files changed, 18 insertions(+), 11 deletions(-)
 
 diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 5e01675af7ab9..81801ba78b1e8 100644
+index 5e01675af7ab9b..81801ba78b1e8f 100644
 --- a/include/linux/swap.h
 +++ b/include/linux/swap.h
 @@ -351,6 +351,7 @@ extern unsigned long nr_free_buffer_pages(void);
@@ -11674,7 +11459,7 @@ index 5e01675af7ab9..81801ba78b1e8 100644
  void mark_page_accessed(struct page *);
  void folio_mark_accessed(struct folio *);
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index c1e01bc36d322..6de3cd78a4aed 100644
+index c1e01bc36d3225..6de3cd78a4aedb 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -102,3 +102,9 @@ bool redirty_page_for_writepage(struct writeback_control *wbc,
@@ -11688,7 +11473,7 @@ index c1e01bc36d322..6de3cd78a4aed 100644
 +}
 +EXPORT_SYMBOL(lru_cache_add);
 diff --git a/mm/swap.c b/mm/swap.c
-index c21648e07127d..ebd1bdd80b452 100644
+index 4fb7d55a884276..31a249086f0a3b 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -459,29 +459,29 @@ void folio_mark_accessed(struct folio *folio)
@@ -11732,14 +11517,11 @@ index c21648e07127d..ebd1bdd80b452 100644
  
  /**
   * lru_cache_add_inactive_or_unevictable
--- 
-cgit 1.2.3-1.el7
 
-
-From 3720262041eb074b033d02b83270b8f72b107c36 Mon Sep 17 00:00:00 2001
+From 1248a3bba1d0d9f2dd4f7a0dc81b63ef8c721d21 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 15 Dec 2020 22:55:54 -0500
-Subject: mm/page_alloc: Add folio allocation functions
+Subject: [PATCH 84/90] mm/page_alloc: Add folio allocation functions
 
 The __folio_alloc(), __folio_alloc_node() and folio_alloc() functions
 are mostly for type safety, but they also ensure that the page allocator
@@ -11755,7 +11537,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  3 files changed, 38 insertions(+)
 
 diff --git a/include/linux/gfp.h b/include/linux/gfp.h
-index dc5ff40608ce9..3745efd21cf6d 100644
+index dc5ff40608ce90..3745efd21cf6df 100644
 --- a/include/linux/gfp.h
 +++ b/include/linux/gfp.h
 @@ -523,6 +523,8 @@ static inline void arch_alloc_page(struct page *page, int order) { }
@@ -11803,7 +11585,7 @@ index dc5ff40608ce9..3745efd21cf6d 100644
  	alloc_pages(gfp_mask, order)
  #define alloc_hugepage_vma(gfp_mask, vma, addr, order) \
 diff --git a/mm/mempolicy.c b/mm/mempolicy.c
-index e32360e902744..95d0cf05f7ca4 100644
+index e32360e9027447..95d0cf05f7ca44 100644
 --- a/mm/mempolicy.c
 +++ b/mm/mempolicy.c
 @@ -2249,6 +2249,16 @@ struct page *alloc_pages(gfp_t gfp, unsigned order)
@@ -11824,10 +11606,10 @@ index e32360e902744..95d0cf05f7ca4 100644
  {
  	struct mempolicy *pol = mpol_dup(vma_policy(src));
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index dbf25555c9b8b..77d2a3811bdd1 100644
+index dbf25555c9b8bc..77d2a3811bdd1d 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -5413,6 +5413,18 @@ out:
+@@ -5413,6 +5413,18 @@ struct page *__alloc_pages(gfp_t gfp, unsigned int order, int preferred_nid,
  }
  EXPORT_SYMBOL(__alloc_pages);
  
@@ -11846,14 +11628,11 @@ index dbf25555c9b8b..77d2a3811bdd1 100644
  /*
   * Common helper functions. Never use with __GFP_HIGHMEM because the returned
   * address cannot represent highmem pages. Use alloc_pages and then kmap if
--- 
-cgit 1.2.3-1.el7
 
-
-From 3a5bfdcca7d4c6d6efd894142703820b52727c7a Mon Sep 17 00:00:00 2001
+From 7417557eae143b5d6505d822ec8113d92e9c5931 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 15 Dec 2020 23:11:07 -0500
-Subject: mm/filemap: Add filemap_alloc_folio
+Subject: [PATCH 85/90] mm/filemap: Add filemap_alloc_folio
 
 Reimplement __page_cache_alloc as a wrapper around filemap_alloc_folio
 to allow filesystems to be converted at our leisure.  Increases
@@ -11868,7 +11647,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  2 files changed, 15 insertions(+), 10 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index bd4daebaf70ee..848acb44ac80a 100644
+index 15bb6f0fe41774..6618993ffe4c02 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -262,14 +262,19 @@ static inline void *detach_page_private(struct page *page)
@@ -11895,7 +11674,7 @@ index bd4daebaf70ee..848acb44ac80a 100644
  {
  	return __page_cache_alloc(mapping_gfp_mask(x));
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 675c1429d6865..989030671b646 100644
+index 675c1429d6865f..989030671b646d 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -989,24 +989,24 @@ int add_to_page_cache_lru(struct page *page, struct address_space *mapping,
@@ -11930,14 +11709,11 @@ index 675c1429d6865..989030671b646 100644
  #endif
  
  /*
--- 
-cgit 1.2.3-1.el7
 
-
-From 62c68ce7688b3b84505b95436e57a707355b24ad Mon Sep 17 00:00:00 2001
+From e722da64983d46cac2d2e91ac0b831dc2fabcac7 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 8 Dec 2020 08:56:28 -0500
-Subject: mm/filemap: Add filemap_add_folio()
+Subject: [PATCH 86/90] mm/filemap: Add filemap_add_folio()
 
 Convert __add_to_page_cache_locked() into __filemap_add_folio().
 Add an assertion to it that (for !hugetlbfs), the folio is naturally
@@ -11949,14 +11725,14 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
  include/linux/mm.h      |  7 -----
- include/linux/pagemap.h | 10 +++++--
+ include/linux/pagemap.h | 10 ++++--
  kernel/bpf/verifier.c   |  2 +-
- mm/filemap.c            | 70 ++++++++++++++++++++++++-------------------------
+ mm/filemap.c            | 70 ++++++++++++++++++++---------------------
  mm/folio-compat.c       |  7 +++++
  5 files changed, 50 insertions(+), 46 deletions(-)
 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 495fe3efc5f6c..dc80039be60e9 100644
+index 9a738a7d4b3315..571db16ecf6400 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -213,13 +213,6 @@ int overcommit_kbytes_handler(struct ctl_table *, int, void *, size_t *,
@@ -11974,7 +11750,7 @@ index 495fe3efc5f6c..dc80039be60e9 100644
  #if defined(CONFIG_SPARSEMEM) && !defined(CONFIG_SPARSEMEM_VMEMMAP)
  #define nth_page(page,n) pfn_to_page(page_to_pfn((page)) + (n))
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 848acb44ac80a..19b2e3bea14ca 100644
+index 6618993ffe4c02..3ff457210a1401 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -877,9 +877,11 @@ static inline int fault_in_pages_readable(const char __user *uaddr, int size)
@@ -12003,7 +11779,7 @@ index 848acb44ac80a..19b2e3bea14ca 100644
   * struct readahead_control - Describes a readahead request.
   *
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 42a4063de7cd2..f0a4f8b818e42 100644
+index 42a4063de7cd24..f0a4f8b818e423 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
 @@ -13015,7 +13015,7 @@ BTF_SET_START(btf_non_sleepable_error_inject)
@@ -12016,7 +11792,7 @@ index 42a4063de7cd2..f0a4f8b818e42 100644
  BTF_ID(func, should_failslab)
  BTF_SET_END(btf_non_sleepable_error_inject)
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 989030671b646..79290853aac54 100644
+index 989030671b646d..79290853aac54b 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -855,26 +855,25 @@ void replace_page_cache_page(struct page *old, struct page *new)
@@ -12091,7 +11867,7 @@ index 989030671b646..79290853aac54 100644
  unlock:
  		xas_unlock_irq(&xas);
  	} while (xas_nomem(&xas, gfp));
-@@ -925,19 +924,19 @@ unlock:
+@@ -925,19 +924,19 @@ noinline int __add_to_page_cache_locked(struct page *page,
  	if (xas_error(&xas)) {
  		error = xas_error(&xas);
  		if (charged)
@@ -12171,7 +11947,7 @@ index 989030671b646..79290853aac54 100644
  #ifdef CONFIG_NUMA
  struct folio *filemap_alloc_folio(gfp_t gfp, unsigned int order)
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 6de3cd78a4aed..6b19bc4ed6b05 100644
+index 6de3cd78a4aedb..6b19bc4ed6b05b 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -108,3 +108,10 @@ void lru_cache_add(struct page *page)
@@ -12185,14 +11961,11 @@ index 6de3cd78a4aed..6b19bc4ed6b05 100644
 +	return filemap_add_folio(mapping, page_folio(page), index, gfp);
 +}
 +EXPORT_SYMBOL(add_to_page_cache_lru);
--- 
-cgit 1.2.3-1.el7
 
-
-From 3d53aa8585f0437d1c0bc69a6e1a8e9acbd7d61f Mon Sep 17 00:00:00 2001
+From 8b5a8018039b0100a0f3750d074ece486296ff23 Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Tue, 15 Dec 2020 23:22:38 -0500
-Subject: mm/filemap: Convert mapping_get_entry to return a folio
+Subject: [PATCH 87/90] mm/filemap: Convert mapping_get_entry to return a folio
 
 The pagecache only contains folios, so indicate that this is definitely
 not a tail page.  Shrinks mapping_get_entry() by 56 bytes, but grows
@@ -12206,7 +11979,7 @@ Reviewed-by: Christoph Hellwig <hch@lst.de>
  1 file changed, 14 insertions(+), 21 deletions(-)
 
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 79290853aac54..25959c17716bc 100644
+index 79290853aac54b..25959c17716bcc 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
 @@ -1755,49 +1755,42 @@ EXPORT_SYMBOL(page_cache_prev_miss);
@@ -12273,14 +12046,11 @@ index 79290853aac54..25959c17716bc 100644
  }
  
  /**
--- 
-cgit 1.2.3-1.el7
 
-
-From 5249d15485e1241443182eed27c02c1d2c680385 Mon Sep 17 00:00:00 2001
+From 01c004f94f63bbcfe1e169d005a345ce4865fadf Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Mon, 8 Mar 2021 11:45:35 -0500
-Subject: mm/filemap: Add filemap_get_folio
+Subject: [PATCH 88/90] mm/filemap: Add filemap_get_folio
 
 filemap_get_folio() is a replacement for find_get_page().
 Turn pagecache_get_page() into a wrapper around __filemap_get_folio().
@@ -12293,13 +12063,13 @@ pagecache_get_page() is 99 bytes.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/linux/pagemap.h | 41 +++++++++++-----------
- mm/filemap.c            | 92 +++++++++++++++++++++++--------------------------
- mm/folio-compat.c       | 12 +++++++
+ include/linux/pagemap.h | 41 +++++++++---------
+ mm/filemap.c            | 92 ++++++++++++++++++++---------------------
+ mm/folio-compat.c       | 12 ++++++
  3 files changed, 76 insertions(+), 69 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index 19b2e3bea14ca..b24933eced181 100644
+index 3ff457210a1401..967411a945a61d 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -302,8 +302,26 @@ pgoff_t page_cache_prev_miss(struct address_space *mapping,
@@ -12358,10 +12128,10 @@ index 19b2e3bea14ca..b24933eced181 100644
   * find_or_create_page - locate or add a pagecache page
   * @mapping: the page's address_space
 diff --git a/mm/filemap.c b/mm/filemap.c
-index 25959c17716bc..b0a241036267d 100644
+index 25959c17716bcc..b0a241036267dc 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
-@@ -1794,93 +1794,89 @@ out:
+@@ -1794,93 +1794,89 @@ static void *mapping_get_entry(struct address_space *mapping, pgoff_t index)
  }
  
  /**
@@ -12489,7 +12259,7 @@ index 25959c17716bc..b0a241036267d 100644
  			return NULL;
  
  		if (WARN_ON_ONCE(!(fgp_flags & (FGP_LOCK | FGP_FOR_MMAP))))
-@@ -1888,27 +1884,27 @@ no_page:
+@@ -1888,27 +1884,27 @@ struct page *pagecache_get_page(struct address_space *mapping, pgoff_t index,
  
  		/* Init accessed so avoid atomic mark_page_accessed later */
  		if (fgp_flags & FGP_ACCESSED)
@@ -12528,7 +12298,7 @@ index 25959c17716bc..b0a241036267d 100644
  static inline struct page *find_get_entry(struct xa_state *xas, pgoff_t max,
  		xa_mark_t mark)
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index 6b19bc4ed6b05..e833e680e944a 100644
+index 6b19bc4ed6b05b..e833e680e944ac 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -115,3 +115,15 @@ int add_to_page_cache_lru(struct page *page, struct address_space *mapping,
@@ -12547,14 +12317,11 @@ index 6b19bc4ed6b05..e833e680e944a 100644
 +	return folio_file_page(folio, index);
 +}
 +EXPORT_SYMBOL(pagecache_get_page);
--- 
-cgit 1.2.3-1.el7
 
-
-From 728aded401520b1942fa9ecf7fcd72a8f628504f Mon Sep 17 00:00:00 2001
+From 0efb3bb626017289a60be5f4f978f2de080d531a Mon Sep 17 00:00:00 2001
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Date: Thu, 24 Dec 2020 12:55:56 -0500
-Subject: mm/filemap: Add FGP_STABLE
+Subject: [PATCH 89/90] mm/filemap: Add FGP_STABLE
 
 Allow filemap_get_folio() to wait for writeback to complete (if the
 filesystem wants that behaviour).  This is the folio equivalent of
@@ -12574,7 +12341,7 @@ Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
  3 files changed, 17 insertions(+), 22 deletions(-)
 
 diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index b24933eced181..83c1a798265f8 100644
+index 967411a945a61d..38f6e022e7acf0 100644
 --- a/include/linux/pagemap.h
 +++ b/include/linux/pagemap.h
 @@ -301,6 +301,7 @@ pgoff_t page_cache_prev_miss(struct address_space *mapping,
@@ -12586,10 +12353,10 @@ index b24933eced181..83c1a798265f8 100644
  struct folio *__filemap_get_folio(struct address_space *mapping, pgoff_t index,
  		int fgp_flags, gfp_t gfp);
 diff --git a/mm/filemap.c b/mm/filemap.c
-index b0a241036267d..29a1e53683125 100644
+index b0a241036267dc..29a1e53683125c 100644
 --- a/mm/filemap.c
 +++ b/mm/filemap.c
-@@ -1817,6 +1817,7 @@ out:
+@@ -1817,6 +1817,7 @@ static void *mapping_get_entry(struct address_space *mapping, pgoff_t index)
   * * %FGP_WRITE - The page will be written to by the caller.
   * * %FGP_NOFS - __GFP_FS will get cleared in gfp.
   * * %FGP_NOWAIT - Don't get blocked by page lock.
@@ -12597,7 +12364,7 @@ index b0a241036267d..29a1e53683125 100644
   *
   * If %FGP_LOCK or %FGP_CREAT are specified then the function may sleep even
   * if the %GFP flags specified for %FGP_CREAT are atomic.
-@@ -1867,6 +1868,8 @@ repeat:
+@@ -1867,6 +1868,8 @@ struct folio *__filemap_get_folio(struct address_space *mapping, pgoff_t index,
  			folio_clear_idle(folio);
  	}
  
@@ -12606,7 +12373,7 @@ index b0a241036267d..29a1e53683125 100644
  no_page:
  	if (!folio && (fgp_flags & FGP_CREAT)) {
  		int err;
-@@ -3590,28 +3593,6 @@ out:
+@@ -3590,28 +3593,6 @@ generic_file_direct_write(struct kiocb *iocb, struct iov_iter *from)
  }
  EXPORT_SYMBOL(generic_file_direct_write);
  
@@ -12636,7 +12403,7 @@ index b0a241036267d..29a1e53683125 100644
  				struct iov_iter *i, loff_t pos)
  {
 diff --git a/mm/folio-compat.c b/mm/folio-compat.c
-index e833e680e944a..5b6ae1da314ee 100644
+index e833e680e944ac..5b6ae1da314ee0 100644
 --- a/mm/folio-compat.c
 +++ b/mm/folio-compat.c
 @@ -116,6 +116,7 @@ int add_to_page_cache_lru(struct page *page, struct address_space *mapping,
@@ -12663,6 +12430,121 @@ index e833e680e944a..5b6ae1da314ee 100644
 +			mapping_gfp_mask(mapping));
 +}
 +EXPORT_SYMBOL(grab_cache_page_write_begin);
--- 
-cgit 1.2.3-1.el7
 
+From 02f07e4b10d3183e58e39ca7ac0d3f92a0fb1af4 Mon Sep 17 00:00:00 2001
+From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Date: Tue, 9 Mar 2021 13:48:03 -0500
+Subject: [PATCH 90/90] mm/writeback: Add folio_write_one
+
+Transform write_one_page() into folio_write_one() and add a compatibility
+wrapper.  Also move the declaration to pagemap.h as this is page cache
+functionality that doesn't need to be used by the rest of the kernel.
+
+Saves 58 bytes of kernel text.  While folio_write_one() is 101 bytes
+smaller than write_one_page(), the inlined call to page_folio() expands
+each caller.  There are fewer than ten callers so it doesn't seem worth
+putting a wrapper in the core.
+
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reviewed-by: David Howells <dhowells@redhat.com>
+---
+ include/linux/mm.h      |  4 ----
+ include/linux/pagemap.h |  5 +++++
+ mm/page-writeback.c     | 30 +++++++++++++++---------------
+ 3 files changed, 20 insertions(+), 19 deletions(-)
+
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 571db16ecf6400..8e5c3a4646be2c 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2787,10 +2787,6 @@ extern vm_fault_t filemap_map_pages(struct vm_fault *vmf,
+ 		pgoff_t start_pgoff, pgoff_t end_pgoff);
+ extern vm_fault_t filemap_page_mkwrite(struct vm_fault *vmf);
+ 
+-/* mm/page-writeback.c */
+-int __must_check write_one_page(struct page *page);
+-void task_dirty_inc(struct task_struct *tsk);
+-
+ extern unsigned long stack_guard_gap;
+ /* Generic expand stack which grows the stack according to GROWS{UP,DOWN} */
+ extern int expand_stack(struct vm_area_struct *vma, unsigned long address);
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index 38f6e022e7acf0..f55d8d9001a9f3 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -804,6 +804,11 @@ static inline void cancel_dirty_page(struct page *page)
+ }
+ bool folio_clear_dirty_for_io(struct folio *folio);
+ bool clear_page_dirty_for_io(struct page *page);
++int __must_check folio_write_one(struct folio *folio);
++static inline int __must_check write_one_page(struct page *page)
++{
++	return folio_write_one(page_folio(page));
++}
+ 
+ int __set_page_dirty_nobuffers(struct page *page);
+ int __set_page_dirty_no_writeback(struct page *page);
+diff --git a/mm/page-writeback.c b/mm/page-writeback.c
+index 987a2f2efe8139..fea09170c1dfe3 100644
+--- a/mm/page-writeback.c
++++ b/mm/page-writeback.c
+@@ -2364,44 +2364,44 @@ int do_writepages(struct address_space *mapping, struct writeback_control *wbc)
+ }
+ 
+ /**
+- * write_one_page - write out a single page and wait on I/O
+- * @page: the page to write
++ * folio_write_one - write out a single folio and wait on I/O.
++ * @folio: The folio to write.
+  *
+- * The page must be locked by the caller and will be unlocked upon return.
++ * The folio must be locked by the caller and will be unlocked upon return.
+  *
+  * Note that the mapping's AS_EIO/AS_ENOSPC flags will be cleared when this
+  * function returns.
+  *
+  * Return: %0 on success, negative error code otherwise
+  */
+-int write_one_page(struct page *page)
++int folio_write_one(struct folio *folio)
+ {
+-	struct address_space *mapping = page->mapping;
++	struct address_space *mapping = folio->mapping;
+ 	int ret = 0;
+ 	struct writeback_control wbc = {
+ 		.sync_mode = WB_SYNC_ALL,
+-		.nr_to_write = 1,
++		.nr_to_write = folio_nr_pages(folio),
+ 	};
+ 
+-	BUG_ON(!PageLocked(page));
++	BUG_ON(!folio_test_locked(folio));
+ 
+-	wait_on_page_writeback(page);
++	folio_wait_writeback(folio);
+ 
+-	if (clear_page_dirty_for_io(page)) {
+-		get_page(page);
+-		ret = mapping->a_ops->writepage(page, &wbc);
++	if (folio_clear_dirty_for_io(folio)) {
++		folio_get(folio);
++		ret = mapping->a_ops->writepage(&folio->page, &wbc);
+ 		if (ret == 0)
+-			wait_on_page_writeback(page);
+-		put_page(page);
++			folio_wait_writeback(folio);
++		folio_put(folio);
+ 	} else {
+-		unlock_page(page);
++		folio_unlock(folio);
+ 	}
+ 
+ 	if (!ret)
+ 		ret = filemap_check_errors(mapping);
+ 	return ret;
+ }
+-EXPORT_SYMBOL(write_one_page);
++EXPORT_SYMBOL(folio_write_one);
+ 
+ /*
+  * For address_spaces which do not use buffers nor write back.
