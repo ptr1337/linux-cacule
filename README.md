@@ -54,11 +54,30 @@ You can tune the scheduler with following commands:
 
 ## prebuilt Kernels
 
-Im providing a fileserver where i upload my builded kernels - Skylake and Generic and v3 ones.
-<https://build.cachyos.org>
+We are providing a repo which includes all kernels in generic v3 and generic and more optimized packages
+
+### How to add the repo
+
+      sudo pacman-key --recv-key F3B607488DB35A47 --keyserver keyserver.ubuntu.com
+
+      sudo pacman-key --lsign-key F3B607488DB35A47
+
+      sudo pacman -U 'https://build.cachyos.org/repo/x86_64/cachyos/cachyos-keyring-1-1-any.pkg.tar.zst' 'https://build.cachyos.org/repo/x86_64/cachyos/cachyos-mirrorlist-2-1-any.pkg.tar.zst' 'https://build.cachyos.org/repo/x86_64/cachyos/cachyos-v3-mirrorlist-2-1-any.pkg.tar.zst'
+
+
+Then add to your /etc/pacman.conf
+
+    #[cachyos-desktop-v3]
+    #Include = /etc/pacman.d/cachyos-v3-mirrorlist
+    #[cachyos-v3]
+    #Include = /etc/pacman.d/cachyos-v3-mirrorlist
+    [cachyos-desktop]
+    Include = /etc/pacman.d/cachyos-mirrorlist
+    [cachyos]
+    Include = /etc/pacman.d/cachyos-mirrorlist
 
 More informations youll find here:
-<https://github.com/CachyOS>
+<https://gitlab.com/cachyos>
 or
 at our Discord:
 <https://discord.gg/k39qfrxPNa>
@@ -71,11 +90,11 @@ Here you find the repo from the creator of the scheduler:
 
 # Credits
 
-Hamad Marri for his cacule scheduler <https://github.com/hamadmarri>
+[Hamad Marri](https://github.com/hamadmarri)
 
-BL4CKH47H4CK3R <https://github.com/BL4CKH47H4CK3R>
+[BL4CKH47H4CK3R](https://github.com/BL4CKH47H4CK3R)
 
-SirLucjan (Piotr Gorski) for his patches <https://github.com/sirlucjan/kernel-patches>
+[SirLucjan (Piotr Gorski)](https://github.com/sirlucjan)
 
 Archlinux
 
