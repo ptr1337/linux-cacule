@@ -1,39 +1,28 @@
-# Linux-Cacule Kernels for several architectures (armv7/aarch64 and x86_64)
+# CacULE Scheduler based Kernel with several other patches and improvements
 
 ## General Informations
 
-    - Linux-cacule is the stable kernel
-    - The linux-cacule-rdb is still a expermiental kernel.At the moment not maintained, needs to be updated
-    - Follow the readme, the sysctl options can improve much your expierence!!!
+The CacULE CPU scheduler is a CFS patchset that is based on interactivity score mechanism. The interactivity score is inspired by the ULE scheduler (FreeBSD scheduler). The goal of this patch is to enhance system responsiveness/latency.
 
-### amd64 /  x86_64
+## Features
 
-    # Linux 5.13.y
-        - linux-cacule                         https://aur.archlinux.org/packages/linux-cacule/
-        - linux-cacule-rdb                     https://aur.archlinux.org/packages/linux-cacule-rdb/
-    # Linux 5.12.y
-        - linux-hardened-cacule                https://aur.archlinux.org/packages/linux-hardened-cacule/
-    # Linux 5.14-rc
-        - linux-cacule-rc                      https://aur.archlinux.org/packages/linux-cacule-rc/
-        - linux-cacule-rdb-rc                  https://aur.archlinux.org/packages/linux-cacule-rdb-rc/
+-   If compiling yourself you can set several features which you want to use
+-   Choose between 2000Hz, 1000Hz (default), 500Hz
+-   BBRv2 TCP tcp_congestion_control
+-   LLVM FULL LTO provided with \*-llvm Kernel
+-   automatic cpu detection and optimizing your kernel for your cpu architecture
+-   LRNG Framework (default enabled)
+-   FUTEX, WINESYNC and FUTEX2
+-   GCC/CLANG CPU optimization
+-   ANBOX support
+-   latest ZSTD libary
+-   BTRFS improvements
+-   Protection of clean file pages (page cache) may be used to prevent thrashing, reducing I/O under memory pressure, avoid high latency and prevent livelock in near-OOM conditions
+-   LRU Patchset
+-   Improved BFQ Scheduler
+-   NTFS3 driver
 
-
-- When building the kernel, you can edit the PKGBUILD to your prefences regarding the user specific wishes
-- Also at building the kernel, you will be asked for some things like your cpu architecture, disabling debug settings for better performance, ...
-
-### aarch64/armv7h
-
-    # Linux 5.11.y
-        - linux-raspberrypi4-cacule-stable      
-        - linux-raspberrypi4-cacule             
-
-
-#### Some infos for building  arm devices:
-    -  it is automaticly collecting your architecture, so you can use the pkgbuild for armv7h/aarch64 without changes
-    -  All kernels are tested and working
-
-
-## General Informations
+## CacULE Sysctl values
 
 ### Tips & Tricks:
 
@@ -63,31 +52,30 @@ You can tune the scheduler with following commands:
             net.core.default_qdisc = cake
             net.ipv4.tcp_congestion_control = bbr2
 
-
 ## prebuilt Kernels
 
 Im providing a fileserver where i upload my builded kernels - Skylake and Generic and v3 ones.
-https://build.cachyos.org
+<https://build.cachyos.org>
 
 More informations youll find here:
-https://github.com/CachyOS
+<https://github.com/CachyOS>
 or
 at our Discord:
-https://discord.gg/k39qfrxPNa
+<https://discord.gg/k39qfrxPNa>
 
-##  more explained Informations for the cacule scheduler
+## more explained Informations for the cacule scheduler
 
 Here you find the repo from the creator of the scheduler:
 
-https://github.com/hamadmarri/cacule-cpu-scheduler
-
-
+<https://github.com/hamadmarri/cacule-cpu-scheduler>
 
 # Credits
 
-Hamad Marri for his cacule scheduler https://github.com/hamadmarri
+Hamad Marri for his cacule scheduler <https://github.com/hamadmarri>
 
-SirLucjan (Piotr Gorski) for his patches https://github.com/sirlucjan/kernel-patches
+BL4CKH47H4CK3R <https://github.com/BL4CKH47H4CK3R>
+
+SirLucjan (Piotr Gorski) for his patches <https://github.com/sirlucjan/kernel-patches>
 
 Archlinux
 
