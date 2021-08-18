@@ -1,68 +1,57 @@
-# CacULE Scheduler based Kernel with several other patches and improvements
+<h1><center>Linux Kernel With CacULE Scheduler, Several Other Patches & Improvements</center></h1>
 
-## General Informations
+### General Informations
 
-The CacULE CPU scheduler is a CFS patchset that is based on interactivity score mechanism. The interactivity score is inspired by the ULE scheduler (FreeBSD scheduler). The goal of this patch is to enhance system responsiveness/latency.
+The CacULE CPU Scheduler is a improved alternative to CFS Patchset which is based on interactivity score mechanism. The interactivity score is inspired by the ULE Scheduler (FreeBSD Scheduler). The goal of this scheduler is to enhance system performance, responsiveness and latency.
 
-## Features
+### Features
 
--   If compiling yourself you can set several features which you want to use
--   Choose between 2000Hz, 1000Hz (default), 500Hz
--   BBRv2 TCP tcp_congestion_control
--   LLVM FULL LTO provided with \*-llvm Kernel
--   automatic cpu detection and optimizing your kernel for your cpu architecture
--   LRNG Framework (default enabled)
--   FUTEX, WINESYNC and FUTEX2
--   GCC/CLANG CPU optimization
--   ANBOX support
--   latest ZSTD libary
--   BTRFS improvements
--   Protection of clean file pages (page cache) may be used to prevent thrashing, reducing I/O under memory pressure, avoid high latency and prevent livelock in near-OOM conditions
--   LRU Patchset
+-   At the time of compiling you can set several features which you want to use
+-   GCC/CLANG Optimization with Auto CPU Optmization
+-   Choose between 500Hz, 1000Hz (default), 2000Hz
 -   Improved BFQ Scheduler
--   NTFS3 driver
+-   Latest LRU Patchset
+-   BBRv2 tcp_congestion_control
+-   LLVM FULL LTO provided with \*-llvm Kernel
+-   LRNG Framework (default)
+-   FUTEX, WINESYNC & FUTEX2 patchset
+-   Android ANBOX patchset
+-   Latest Paragon NTFS3 driver support
+-   Latest & improved ZSTD patchset
+-   Latest BTRFS improvements & fixes
+-   Protection of clean file pages (page cache) may be used to prevent thrashing, reducing I/O under memory pressure, avoid high latency and prevent livelock in near OOM (Out Of Memory) conditions
 
-## CacULE Sysctl values
+### CacULE Tips & Tricks (Sysctl Values)
 
-### Tips & Tricks:
+You can tune the scheduler by setting these sysctl values
 
-You can tune the scheduler with following commands:
+    net.core.netdev_max_backlog = 16384
+    net.core.somaxconn = 8192
+    net.core.rmem_default = 1048576
+    net.core.rmem_max = 16777216
+    net.core.wmem_default = 1048576
+    net.core.wmem_max = 16777216
+    net.core.optmem_max = 65536
+    net.ipv4.tcp_rmem = 4096 1048576 2097152
+    net.ipv4.tcp_wmem = 4096 65536 16777216
+    net.ipv4.udp_rmem_min = 8192
+    net.ipv4.udp_wmem_min = 8192
+    net.ipv4.tcp_fastopen = 3
+    net.ipv4.tcp_keepalive_time = 60
+    net.ipv4.tcp_keepalive_intvl = 10
+    net.ipv4.tcp_keepalive_probes = 6
+    net.ipv4.conf.default.log_martians = 1
+    net.ipv4.conf.all.log_martians = 1
+    net.ipv4.tcp_mtu_probing = 1
+    net.ipv4.tcp_syncookies = 1
+    net.core.default_qdisc = cake
+    net.ipv4.tcp_congestion_control = bbr2
 
-           ### Some general Network-Settings ##
+### Prebuilt Kernel Server
 
-            net.core.netdev_max_backlog = 16384
-            net.core.somaxconn = 8192
-            net.core.rmem_default = 1048576
-            net.core.rmem_max = 16777216
-            net.core.wmem_default = 1048576
-            net.core.wmem_max = 16777216
-            net.core.optmem_max = 65536
-            net.ipv4.tcp_rmem = 4096 1048576 2097152
-            net.ipv4.tcp_wmem = 4096 65536 16777216
-            net.ipv4.udp_rmem_min = 8192
-            net.ipv4.udp_wmem_min = 8192
-            net.ipv4.tcp_fastopen = 3
-            net.ipv4.tcp_keepalive_time = 60
-            net.ipv4.tcp_keepalive_intvl = 10
-            net.ipv4.tcp_keepalive_probes = 6
-            net.ipv4.conf.default.log_martians = 1
-            net.ipv4.conf.all.log_martians = 1
-            net.ipv4.tcp_mtu_probing = 1
-            net.ipv4.tcp_syncookies = 1
-            net.core.default_qdisc = cake
-            net.ipv4.tcp_congestion_control = bbr2
+We are providing a [repo](https://build.cachyos.org/?dir=repo) which includes all kernels in generic-v3 and generic and more optimized packages
 
-## prebuilt Kernels
-
-We are providing a repo which includes all kernels in generic v3 and generic and more optimized packages
-
-### How to add the repo
-
--   I created a script which automaticly detects your cpu, if x86-64-v3 is detected it will add the the optimized repos, which includes Kernels and also KDE/XFCE packages.
--   If x86-64-v3 is not detected it will use the normal generic repo, which includes the Kernels and also little bit optimized KDE/XFCE packages.
--   Whats exactly in the repo you can find at <https://aur.cachyos.org>
-
-### How to run the script:
+### How to add our Repo automaticly with cpu detection (if x86-64-v3 is supported):
 
 Just run following command:
 
@@ -71,31 +60,24 @@ Just run following command:
       cd repo
       sudo ./cachyos-repo.sh
 
-This will also backup your old config. If you face in any issues you can easily revert it to use your old pacman.conf and run "sudo pacman -Suuy"
+This script will also backup your old pacman.conf.
 
-More informations you will find here:
-[Gitlab](https://gitlab.com/cachyos)
+More informations you will find here [CachyOS](https://gitlab.com/cachyos) or [Discord](https://discord.gg/k39qfrxPNa)
 
-or
+### More Informations for the CacULE Scheduler
 
-at our [Discord](https://discord.gg/k39qfrxPNa)
+Here you find more informatiom from the [repo](https://github.com/hamadmarri/cacule-cpu-scheduler) of the creator
 
-## more explained Informations for the cacule scheduler
+### Valueable Contributors
 
-Here you find the repo from the creator of the scheduler:
+[Hamad Marri](https://github.com/hamadmarri) for the CacULE Scheduler
 
-<https://github.com/hamadmarri/cacule-cpu-scheduler>
+[BL4CKH47H4CK3R](https://github.com/BL4CKH47H4CK3R) for Optimization, Bug Hunting & Support
 
-# Credits
+[SirLucjan (Piotr Gorski)](https://github.com/sirlucjan) for many cool patches
 
-[Hamad Marri](https://github.com/hamadmarri)
+[Archlinux](https://archlinux.org) for the great linux operating system
 
-[BL4CKH47H4CK3R](https://github.com/BL4CKH47H4CK3R)
+[GarudaLinux](https://garudalinux.org) for suggestions and supports
 
-[SirLucjan (Piotr Gorski)](https://github.com/sirlucjan)
-
-Archlinux
-
-GarudaLinux
-
-and all other Kernel Developers
+[And all other Kernel Developers and Supporters](https://github.com/torvalds/linux)
