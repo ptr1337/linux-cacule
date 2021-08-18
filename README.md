@@ -78,7 +78,7 @@ More informations you will find here:
 
 or
 
-at our [Discord](<https://discord.gg/k39qfrxPNa)
+at our [Discord](https://discord.gg/k39qfrxPNa)
 
 ## more explained Informations for the cacule scheduler
 
