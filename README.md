@@ -58,29 +58,27 @@ We are providing a repo which includes all kernels in generic v3 and generic and
 
 ### How to add the repo
 
-      sudo pacman-key --recv-key F3B607488DB35A47 --keyserver keyserver.ubuntu.com
+-   I created a script which automaticly detects your cpu, if x86-64-v3 is detected it will add the the optimized repos, which includes Kernels and also KDE/XFCE packages.
+-   If x86-64-v3 is not detected it will use the normal generic repo, which includes the Kernels and also little bit optimized KDE/XFCE packages.
+-   Whats exactly in the repo you can find at <https://aur.cachyos.org>
 
-      sudo pacman-key --lsign-key F3B607488DB35A47
+### How to run the script:
 
-      sudo pacman -U 'https://build.cachyos.org/repo/x86_64/cachyos/cachyos-keyring-1-1-any.pkg.tar.zst' 'https://build.cachyos.org/repo/x86_64/cachyos/cachyos-mirrorlist-2-1-any.pkg.tar.zst' 'https://build.cachyos.org/repo/x86_64/cachyos/cachyos-v3-mirrorlist-2-1-any.pkg.tar.zst'
+Just run following command:
 
+      wget https://build.cachyos.org/cachyos-repo.tar.xz
+      tar xvf cachyos-repo.tar.xz
+      cd repo
+      sudo ./cachyos-repo.sh
 
-Then add to your /etc/pacman.conf
+This will also backup your old config. If you face in any issues you can easily revert it to use your old pacman.conf and run "sudo pacman -Suuy"
 
-    #[cachyos-desktop-v3]
-    #Include = /etc/pacman.d/cachyos-v3-mirrorlist
-    #[cachyos-v3]
-    #Include = /etc/pacman.d/cachyos-v3-mirrorlist
-    [cachyos-desktop]
-    Include = /etc/pacman.d/cachyos-mirrorlist
-    [cachyos]
-    Include = /etc/pacman.d/cachyos-mirrorlist
+More informations you will find here:
+[Gitlab](https://gitlab.com/cachyos)
 
-More informations youll find here:
-<https://gitlab.com/cachyos>
 or
-at our Discord:
-<https://discord.gg/k39qfrxPNa>
+
+at our [Discord]\(<https://discord.gg/k39qfrxPNa>=>
 
 ## more explained Informations for the cacule scheduler
 
