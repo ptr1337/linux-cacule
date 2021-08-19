@@ -52,7 +52,7 @@ _use_current=
 pkgbase=linux-cacule-rdb
 pkgname=("${pkgbase}" "${pkgbase}-headers")
 pkgver=5.13.12
-pkgrel=2
+pkgrel=3
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux Kernel with cacule scheduler and lto compiled'
 _gittag=v${pkgver%.*}-${pkgver##*.}
@@ -82,7 +82,7 @@ source=(
 "${_patchsource}/bbr2-patches-v2/0001-bbr2-patches.patch"
 "${_patchsource}/btrfs-patches-v2/0001-btrfs-patches.patch"
 "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
-"${_patchsource}/pf-patches-v9/0001-pf-patches.patch"
+"${_patchsource}/pf-patches-v10/0001-pf-patches.patch"
 "${_patchsource}/lru-patches-v7/0001-lru-patches.patch"
 "${_patchsource}/ntfs3-patches-v2/0001-ntfs3-patches.patch"
 "${_patchsource}/lrng-patches/0001-lrng-patches-v2.patch"
