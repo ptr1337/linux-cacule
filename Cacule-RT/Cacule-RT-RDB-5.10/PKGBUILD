@@ -72,7 +72,7 @@ source=(
 # ${_patchsource}/clearlinux-patches/0001-clearlinux-patches.patch"
   "${_patchsource}/futex-dev-patches/0001-futex-dev-patches.patch"
 # "${_patchsource}/futex2-trunk-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
-#  "${_patchsource}/futex2/futex2-5.10.patch"
+  "${_patchsource}/futex2/futex2-5.10.patch"
 )
 
 export KBUILD_BUILD_HOST=archlinux

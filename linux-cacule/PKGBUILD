@@ -94,6 +94,7 @@ source=(
 "${_patchsource}/clearlinux-patches-v2/0001-clearlinux-patches.patch"
 "${_patchsource}/v4l2loopback-patches-v2/0001-v4l2loopback-patches.patch"
 "auto-cpu-optimization.sh"
+"${_patchsource}/misc/allpollingrate.patch"
 )
 
 export KBUILD_BUILD_HOST=archlinux
