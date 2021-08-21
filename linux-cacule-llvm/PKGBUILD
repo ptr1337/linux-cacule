@@ -7,6 +7,10 @@
 # A single multi-core CPU actually runs slower with NUMA enabled.
 # See, https://bugs.archlinux.org/task/31187
 _NUMAdisable=y
+# Enable fsync
+_fsync=y
+#enable futex2
+_futex2=y
 #enable winesync
 _winesync=y
 ### Set performance governor as default
@@ -54,7 +58,7 @@ _use_current=
 pkgbase=linux-cacule-llvm
 pkgname=("${pkgbase}" "${pkgbase}-headers")
 pkgver=5.13.12
-pkgrel=3
+pkgrel=4
 _gittag=v${pkgver%.*}-${pkgver##*.}
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets with FULL LTO optimization'
 arch=('x86_64' 'x86_64_v3')
@@ -168,11 +172,21 @@ prepare() {
           scripts/config --disable CONFIG_NUMA
         fi
 
+        if [ -n "$_fsync" ]; then
+          echo "Enable Fsync support"
+          scripts/config --enable CONFIG_FUTEX
+          scripts/config --enable CONFIG_FUTEX_PI
+        fi
+
+        if [ -n "$_futex2" ]; then
+          echo "Enable Futex2 support"
+          scripts/config --enable CONFIG_FUTEX2
+        fi
+
         if [ -n "$_winesync" ]; then
           echo "Enable winesync support"
           scripts/config --module CONFIG_WINESYNC
         fi
-
     ### Set performance governor
         if [ -n "$_per_gov" ]; then
           echo "Setting performance governor..."
@@ -185,38 +199,51 @@ prepare() {
           scripts/config --disable CONFIG_CPU_FREQ_GOV_SCHEDUTIL
         fi
 
-      ### Enable protect file mappings under memory pressure
-          if [ -n "$_mm_protect" ]; then
-            echo "Enabling protect file mappings under memory pressure..."
-            scripts/config --enable CONFIG_UNEVICTABLE_FILE
-            scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
-            scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
-            scripts/config --enable CONFIG_UNEVICTABLE_ANON
-            scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_LOW 65536
-            scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_MIN 32768
-          fi
 
-          if [ "$use_selinux" = "n" ]; then
-            echo "Disabling SELinux..."
-            scripts/config --disable CONFIG_SECURITY_SELINUX
-          fi
+        ### Enable protect file mappings under memory pressure
+        if [ -n "$_mm_protect" ]; then
+          echo "Enabling protect file mappings under memory pressure..."
+          scripts/config --enable CONFIG_UNEVICTABLE_FILE
+          scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
+          scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
+          scripts/config --enable CONFIG_UNEVICTABLE_ANON
+          scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_LOW 65536
+          scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_MIN 32768
+        fi
 
-          if [ "$use_tomoyo" = "n" ]; then
-            echo "Disabling TOMOYO..."
-            scripts/config --disable CONFIG_SECURITY_TOMOYO
-          fi
+        ### Enable multigenerational LRU
+        if [ -n "$_lru_enable" ]; then
+          echo "Enabling multigenerational LRU..."
+          scripts/config --enable CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG
+          scripts/config --enable CONFIG_LRU_GEN
+          scripts/config --set-val CONFIG_NR_LRU_GENS 7
+          scripts/config --set-val CONFIG_TIERS_PER_GEN 4
+          scripts/config --enable CONFIG_LRU_GEN_ENABLED
+          scripts/config --disable CONFIG_LRU_GEN_STATS
+        fi
 
-          if [ "$use_apparmor" = "n" ]; then
-            echo "Disabling AppArmor..."
-            scripts/config --disable CONFIG_SECURITY_APPARMOR
-            scripts/config --set-str CONFIG_LSM lockdown,yama,integrity
-          fi
 
-          if [ "$use_yama" = "n" ]; then
-            echo "Disabling YAMA..."
-            scripts/config --disable CONFIG_SECURITY_YAMA
-            scripts/config --set-str CONFIG_LSM lockdown,integrity,apparmor
-          fi
+        if [ "$use_selinux" = "n" ]; then
+          echo "Disabling SELinux..."
+          scripts/config --disable CONFIG_SECURITY_SELINUX
+        fi
+
+        if [ "$use_tomoyo" = "n" ]; then
+          echo "Disabling TOMOYO..."
+          scripts/config --disable CONFIG_SECURITY_TOMOYO
+        fi
+
+        if [ "$use_apparmor" = "n" ]; then
+          echo "Disabling AppArmor..."
+          scripts/config --disable CONFIG_SECURITY_APPARMOR
+          scripts/config --set-str CONFIG_LSM lockdown,yama,integrity
+        fi
+
+        if [ "$use_yama" = "n" ]; then
+          echo "Disabling YAMA..."
+          scripts/config --disable CONFIG_SECURITY_YAMA
+          scripts/config --set-str CONFIG_LSM lockdown,integrity,apparmor
+        fi
 
           ### Enable Linux Random Number Generator
       	if [ -n "$_lrng_enable" ]; then
@@ -272,6 +299,24 @@ prepare() {
           scripts/config --enable CONFIG_MODULE_COMPRESS_ZSTD
           scripts/config --set-val CONFIG_MODULE_COMPRESS_ZSTD_LEVEL 19
           scripts/config --disable CONFIG_KERNEL_ZSTD_LEVEL_ULTRA
+          echo "Enabling KBUILD_CFLAGS -O3..."
+          scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
+          scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
+          echo "Enable PREEMPT"
+          scripts/config --disable CONFIG_PREEMPT_NONE
+          scripts/config --disable CONFIG_PREEMPT_VOLUNTARY
+          scripts/config --enable CONFIG_PREEMPT
+          scripts/config --enable CONFIG_PREEMPT_COUNT
+          scripts/config --enable CONFIG_PREEMPTION
+          scripts/config --enable CONFIG_PREEMPT_DYNAMIC
+          echo "Enable NTFS3"
+          scripts/config --module CONFIG_NTFS_FS
+          scripts/config --enable CONFIG_NTFS_RW
+          scripts/config --enable CONFIG_NTFS_DEBUG
+          scripts/config --module CONFIG_NTFS3_FS
+          scripts/config --enable CONFIG_NTFS3_64BIT_CLUSTER
+          scripts/config --enable CONFIG_NTFS3_LZX_XPRESS
+          scripts/config --enable CONFIG_NTFS3_FS_POSIX_ACL
 
 
     ### Optionally use running kernel's config
