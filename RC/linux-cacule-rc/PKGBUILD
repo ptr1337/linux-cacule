@@ -51,7 +51,7 @@ pkgbase=linux-cacule-rc
 _major=5.14
 #_minor=1
 #_minorc=$((_minor+1))
-_rcver=rc6
+_rcver=rc7
 pkgver=${_major}.${_rcver}
 #_stable=${_major}.${_minor}
 _stablerc=${_major}-${_rcver}
@@ -106,12 +106,7 @@ sha512sums=('fcad38548c610e02143c3aa702d6f945f9795d47cd5ab0fd3683c53da31e4aa96ba
             'ed2e61717b37570c7f058915b8ee2f6515ec3b22884be4646f3bcf2d5b48f17b57be93cfc63970f6988fc70e6e236b574b30c5ce09f54a56b601827cc1793299'
             'b928e2233fab6aa7919b95ca7c35442dc8e48998f1ef195f24b5ee13f8d275397ddfacb9275031553512273f8045c6a2c8df10b48a5d408f945bd2dd6d677b30'
             '9d19321f93637094bdbaaa91b9a8acb216a4f0e9b2a106c46782b1f2e57c7da98a74fe5fa840f1fd700aa1de831aa71615f5a48b43de70d63d1b9df813916cee')
-            BUILD_FLAGS=(
-                  LLVM=1
-                  LLVM_IAS=1
-                  CC=clang
-                  CXX=clang++
-                )
+
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
 export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
@@ -139,7 +134,7 @@ prepare() {
     ### Setting config
         echo "Setting config..."
         cp ../config .config
-        make ${BUILD_FLAGS[*]} olddefconfig
+        make olddefconfig
 
     ### Prepared version
         make -s kernelrelease > version
@@ -187,7 +182,7 @@ prepare() {
 build() {
   cd $_srcname
 
-  make ${BUILD_FLAGS[*]} all
+  make all
 }
 
 _package() {
