@@ -1,8 +1,8 @@
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 46d3f22575ee7f023bbfc874420d87d92efd915d..b2020277358c57c2c0589c7e518745d1d6c9ffa6 100644
+index f1a23257f05fe3ec935e3a5c410c14546695cf17..b49df9638539b1d28786782a270091a24ac9e5a1 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -20545,6 +20545,18 @@ F:	Documentation/vm/zsmalloc.rst
+@@ -20590,6 +20590,18 @@ F:	Documentation/vm/zsmalloc.rst
  F:	include/linux/zsmalloc.h
  F:	mm/zsmalloc.c
  

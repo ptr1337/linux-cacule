@@ -1,8 +1,8 @@
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 6c8be735cc91059e77aa0c5f79fc67fdcc70a7f1..4cc99f3e81a071d77c6ff1791ecda1db8f4f29f8 100644
+index d77e5445cc00a0282a407492a273fc7a1b067eeb..31fd7136a921c14bde7e4abf3632ac3fe2a9ecfe 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -10727,6 +10727,13 @@ F:	Documentation/litmus-tests/
+@@ -10747,6 +10747,13 @@ F:	Documentation/litmus-tests/
  F:	Documentation/memory-barriers.txt
  F:	tools/memory-model/
  

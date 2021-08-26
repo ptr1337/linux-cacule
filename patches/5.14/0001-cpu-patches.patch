@@ -1,5 +1,5 @@
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 814fe0d349b01d80ab3b80f69b00026098beb22b..ac30a581a4fd4605024a5435ebc445fae54fbb26 100644
+index 814fe0d349b01d80ab3b80f69b00026098beb22b..dd077e4f7b4705d5abaab7c72f254389c0400a07 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -157,7 +157,7 @@ config MPENTIUM4
@@ -327,7 +327,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..ac30a581a4fd4605024a5435ebc445fa
  
 +config GENERIC_CPU2
 +	bool "Generic-x86-64-v2"
-+	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && LANG_VERSION >= 120000 )
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	depends on X86_64
 +	help
 +	  Generic x86-64 CPU.
@@ -335,7 +335,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..ac30a581a4fd4605024a5435ebc445fa
 +
 +config GENERIC_CPU3
 +	bool "Generic-x86-64-v3"
-+	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && LANG_VERSION >= 120000 )
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	depends on X86_64
 +	help
 +	  Generic x86-64-v3 CPU with v3 instructions.
@@ -343,7 +343,7 @@ index 814fe0d349b01d80ab3b80f69b00026098beb22b..ac30a581a4fd4605024a5435ebc445fa
 +
 +config GENERIC_CPU4
 +	bool "Generic-x86-64-v4"
-+	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && LANG_VERSION >= 120000 )
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	depends on X86_64
 +	help
 +	  Generic x86-64 CPU with v4 instructions.
