@@ -57,8 +57,8 @@ _use_current=
 
 pkgbase=linux-cacule-rdb-llvm
 pkgname=("${pkgbase}" "${pkgbase}-headers")
-pkgver=5.13.12
-pkgrel=6
+pkgver=5.13.13
+pkgrel=1
 _gittag=v${pkgver%.*}-${pkgver##*.}
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets with FULL LTO optimization'
 arch=('x86_64' 'x86_64_v3')
@@ -81,7 +81,7 @@ source=(
     "${_patchsource}/xanmod-patches-v2/0001-xanmod-patches.patch"
     "${_patchsource}/zen-patches/0001-zen-patches.patch"
     "${_patchsource}/lqx-patches-v3/0001-lqx-patches.patch"
-    "${_patchsource}/bfq-patches-v6/0001-bfq-patches.patch"
+    "${_patchsource}/bfq-patches-v7/0001-bfq-patches.patch"
     "${_patchsource}/block-patches-v2/0001-block-patches.patch"
     "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
     "${_patchsource}/bbr2-patches-v2/0001-bbr2-patches.patch"
