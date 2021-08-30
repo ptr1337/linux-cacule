@@ -6,7 +6,7 @@
 
 
 pkgbase=linux-hardened-cacule
-pkgver=5.10.61.hardened1
+pkgver=5.13.13.hardened1
 pkgrel=1
 pkgdesc='Security-Hardened Linux with the cacule scheduler'
 url='https://github.com/anthraxx/linux-hardened'
@@ -22,7 +22,7 @@ _srctag=${pkgver%.*}-${pkgver##*.}
 source=(
   https://www.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/${_srcname}.tar.xz
   https://github.com/anthraxx/linux-hardened/releases/download/${_srctag}/linux-hardened-${_srctag}.patch
-  cacule-5.10.patch
+  cacule-5.13.patch
   cpu-patches.patch
   config         # the main kernel config file
 )
