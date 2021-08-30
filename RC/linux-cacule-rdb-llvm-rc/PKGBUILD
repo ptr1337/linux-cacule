@@ -21,7 +21,7 @@ _1k_HZ_ticks=y
 _500_HZ_ticks=
 ### Enable protect file mappings under memory pressure
 _mm_protect=y
-_lru_enable=y 
+_lru_enable=y
 ### Enable Linux Random Number Generator
 _lrng_enable=y
 # Tweak kernel options prior to a build via nconfig
@@ -54,9 +54,9 @@ _localmodcfg=
 # a new kernel is released, but again, convenient for package bumps.
 _use_current=
 
-pkgbase=linux-cacule-rdb
-pkgname=('linux-cacule-rdb' linux-cacule-rdb-headers)
-pkgbase=linux-cacule
+pkgbase=linux-cacule-rdb-llvm
+pkgname=('linux-cacule-rdb-llvm' 'linux-cacule-rdb-llvm-headers')
+pkgbase=linux-cacule-rdb-llvm
 pkgname=("${pkgbase}" "${pkgbase}-headers")
 pkgver=5.14
 pkgrel=1
@@ -71,7 +71,8 @@ makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz')
 _caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
 _patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.14"
-source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver}.tar.xz"
+source=(#"https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver}.tar.xz"
+        "https://github.com/torvalds/linux/archive/refs/tags/v5.14.tar.gz"
         "config"
         "${_caculepatches}/v5.14/cacule-5.14.patch"
         "${_patchsource}/0001-bbr2.patch"
@@ -82,12 +83,14 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "${_patchsource}/misc/0007-string.patch"
         "${_patchsource}/misc/allpollingrate.patch"
         "${_patchsource}/0001-cpu-patches.patch"
+        "${_patchsource}/0001-winesync.patch"
+        "${_patchsource}/0001-v4l2loopback.patch"
         "${_patchsource}/0001-misc.patch"
         "${_patchsource}/0001-zstd.patch"
         "${_patchsource}/0001-mm.patch"
         "${_patchsource}/0001-ksm.patch"
         "${_patchsource}/0001-ntfs3.patch"
-        "${_patchsource}/0001-v4l2loopback.patch"
+        "${_patchsource}/0001-clearlinux-patches.patch"
       #  "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
       #  "${_patchsource}/futex2-stable-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
        # "${_patchsource}/wine-esync-patches/0001-v5.12-winesync.patch"
@@ -342,7 +345,7 @@ prepare() {
     if [ -n "$_localmodcfg" ]; then
         if [ -e "$HOME"/.config/modprobed.db ]; then
             echo "Running Steven Rostedt's make localmodconfig now"
-            make LSMOD="$HOME"/.config/modprobed.db localmodconfig
+            make ${BUILD_FLAGS[*]} LSMOD="$HOME"/.config/modprobed.db localmodconfig
         else
             echo "No modprobed.db data found"
             exit
@@ -350,11 +353,11 @@ prepare() {
     fi
 
     echo "Applying default config..."
-    make olddefconfig
-    make -s kernelrelease > version
+    make ${BUILD_FLAGS[*]} olddefconfig
+    make ${BUILD_FLAGS[*]} -s kernelrelease > version
     echo "Prepared $pkgbase version $(<version)"
 
-    [[ -z "$_makenconfig" ]] || make nconfig
+    [[ -z "$_makenconfig" ]] || make ${BUILD_FLAGS[*]} nconfig
 
     ### Save configuration for later reuse
     cp -Tf ./.config "${startdir}/config-${pkgver}-${pkgrel}${pkgbase#linux}"
@@ -365,10 +368,10 @@ build() {
     echo -e "\E[1;31mCan't cd to ${srcdir:?}/linux-${pkgver} directory! Build failed! \E[0m"
     exit 1
   )
-    make all
+    make ${BUILD_FLAGS[*]} all
 }
 
-package_linux-cacule-rdb() {
+package_linux-cacule-rdb-llvm() {
   pkgdesc="The ${pkgdesc} and modules"
   depends=(coreutils kmod initramfs )
   optdepends=('crda: to set the correct wireless channels of your country'
@@ -393,17 +396,17 @@ package_linux-cacule-rdb() {
   echo "${pkgbase}" | install -Dm644 /dev/stdin "${modulesdir}/pkgbase"
 
   echo "Installing modules..."
-  make INSTALL_MOD_PATH="${pkgdir:?}/usr" INSTALL_MOD_STRIP=1 modules_install
+  make ${BUILD_FLAGS[*]} INSTALL_MOD_PATH="${pkgdir:?}/usr" INSTALL_MOD_STRIP=1 modules_install
 
   # remove build and source links
   rm "${modulesdir}/"{source,build}
 
 }
 
-package_linux-cacule-rdb-headers() {
+package_linux-cacule-rdb-llvm-headers() {
 
   pkgdesc="Headers and scripts for building modules for the ${pkgdesc}"
-  depends=("linux-cacule=${pkgver}" "pahole")
+  depends=("linux-cacule-rdb-llvm=${pkgver}" "pahole")
 
   cd "${srcdir:?}/linux-${pkgver}" || (
     echo -e "\E[1;31mCan't cd to ${srcdir:?}/linux-${pkgver} directory! Package linux headers failed! \E[0m"
