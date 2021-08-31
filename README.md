@@ -83,10 +83,10 @@ There is mostly an easy workaround, but be aware, if you install a Kernel and ha
 Also some modules which uses dkms needs to recompiled with CLANG/LLVM. I just compile the backup kernel LINUX-LTS also with CLANG, so i got no problems anymore.
 - Just do following:
 
-      'sudo nano /etc/dkms/framework.conf'
-      and add following entrys on the bottom of the file:
-      'export LLVM=1'
-      'export CC=clang'
+        sudo nano /etc/dkms/framework.conf
+        and add following entrys on the bottom of the file:
+        export LLVM=1
+        export CC=clang
 
 - If you have this done, just reinstall or install the kernel which is compiled with LLVM/LTO and DKMS wont fail anymore.
 
