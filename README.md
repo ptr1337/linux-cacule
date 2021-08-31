@@ -77,6 +77,22 @@ You can tune the scheduler by setting these sysctl values
 
     More information's you will find here [CachyOS](https://gitlab.com/cachyos) or [Discord](https://discord.gg/k39qfrxPNa)
 
+## How to use CLANG/LLVM/LTO compiled Kernels on Nvidia driver with DKMS:
+
+There is mostly an easy workaround, but be aware, if you install a Kernel and have those parameters still in, the GCC Compiled Kernel will fail.
+Also some modules which uses dkms needs to recompiled with CLANG/LLVM. I just compile the backup kernel LINUX-LTS also with CLANG, so i got no problems anymore.
+- Just do following:
+
+      'sudo nano /etc/dkms/framework.conf'
+      and add following entrys on the bottom of the file:
+      'export LLVM=1'
+      'export CC=clang'
+
+- If you have this done, just reinstall or install the kernel which is compiled with LLVM/LTO and DKMS wont fail anymore.
+
+If you got questions, just hit me up!
+
+
 ### More Informations for the CacULE Scheduler
 
 Here you find more informatiom from the [repo](https://github.com/hamadmarri/cacule-cpu-scheduler) of the creator
