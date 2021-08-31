@@ -6,20 +6,20 @@ The CacULE CPU Scheduler is a improved alternative to CFS Patchset which is base
 
 ### Features
 
-- At the time of compiling you can set several features which you want to use
-- GCC/CLANG Optimization with Auto CPU Optmization
-- Choose between 500Hz, 1000Hz (default), 2000Hz
-- Improved BFQ Scheduler
-- Latest LRU Patchset
-- BBRv2 tcp_congestion_control
-- LLVM FULL LTO provided with \*-llvm Kernel
-- LRNG Framework (default)
-- FUTEX, WINESYNC & FUTEX2 patchset
-- Android ANBOX patchset
-- Latest Paragon NTFS3 driver support
-- Latest & improved ZSTD patchset
-- Latest BTRFS improvements & fixes
-- Protection of clean file pages (page cache) may be used to prevent thrashing, reducing I/O under memory pressure, avoid high latency and prevent livelock in near OOM (Out Of Memory) conditions
+-   At the time of compiling you can set several features which you want to use
+-   GCC/CLANG Optimization with Auto CPU Optmization
+-   Choose between 500Hz, 1000Hz (default), 2000Hz
+-   Improved BFQ Scheduler
+-   Latest LRU Patchset
+-   BBRv2 tcp_congestion_control
+-   LLVM FULL LTO provided with \*-llvm Kernel
+-   LRNG Framework (default)
+-   FUTEX, WINESYNC & FUTEX2 patchset
+-   Android ANBOX patchset
+-   Latest Paragon NTFS3 driver support
+-   Latest & improved ZSTD patchset
+-   Latest BTRFS improvements & fixes
+-   Protection of clean file pages (page cache) may be used to prevent thrashing, reducing I/O under memory pressure, avoid high latency and prevent livelock in near OOM (Out Of Memory) conditions
 
 ### CacULE Tips & Tricks (Sysctl Values)
 
@@ -53,14 +53,14 @@ You can tune the scheduler by setting these sysctl values
 
 **Just run following command:**
 
----
+* * *
 
     wget https://build.cachyos.org/cachyos-repo.tar.xz
     tar xvf cachyos-repo.tar.xz
     cd repo
     sudo ./cachyos-repo.sh
 
----
+* * *
 
     This script will also backup your old pacman.conf.
 
@@ -81,7 +81,6 @@ You can tune the scheduler by setting these sysctl values
 
 There is mostly an easy workaround, but be aware, if you install a Kernel and have those parameters still in, the GCC Compiled Kernel will fail.
 Also some modules which uses dkms needs to recompiled with CLANG/LLVM. I just compile the backup kernel LINUX-LTS also with CLANG, so i got no problems anymore.
-
 - Just do following:
 
         sudo nano /etc/dkms/framework.conf
@@ -92,6 +91,7 @@ Also some modules which uses dkms needs to recompiled with CLANG/LLVM. I just co
 - If you have this done, just reinstall or install the kernel which is compiled with LLVM/LTO and DKMS wont fail anymore.
 
 If you got questions, just hit me up!
+
 
 ### More Informations for the CacULE Scheduler
 
@@ -106,5 +106,7 @@ Here you find more informatiom from the [repo](https://github.com/hamadmarri/cac
 [SirLucjan (Piotr Gorski)](https://github.com/sirlucjan) for many cool patches
 
 [Archlinux](https://archlinux.org) for the great linux operating system
+
+[GarudaLinux](https://garudalinux.org) for suggestions and supports
 
 [And all other Kernel Developers and Supporters](https://github.com/torvalds/linux)
