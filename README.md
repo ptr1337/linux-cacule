@@ -55,10 +55,10 @@ You can tune the scheduler by setting these sysctl values
 
 ---
 
-`wget https://build.cachyos.org/cachyos-repo.tar.xz`
-`tar xvf cachyos-repo.tar.xz`
-`cd repo`
-`sudo ./cachyos-repo.sh`
+    wget https://build.cachyos.org/cachyos-repo.tar.xz
+    tar xvf cachyos-repo.tar.xz
+    cd repo
+    sudo ./cachyos-repo.sh
 
 ---
 
@@ -84,10 +84,10 @@ Also some modules which uses dkms needs to recompiled with CLANG/LLVM. I just co
 
 - Just do following:
 
-      'sudo nano /etc/dkms/framework.conf'
-      and add following entrys on the bottom of the file:
-      'export LLVM=1'
-      'export CC=clang'
+        sudo nano /etc/dkms/framework.conf
+        and add following entrys on the bottom of the file:
+        export LLVM=1
+        export CC=clang
 
 - If you have this done, just reinstall or install the kernel which is compiled with LLVM/LTO and DKMS wont fail anymore.
 
