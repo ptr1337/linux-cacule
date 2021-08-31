@@ -55,10 +55,10 @@ You can tune the scheduler by setting these sysctl values
 
 * * *
 
-`wget https://build.cachyos.org/cachyos-repo.tar.xz`
-`tar xvf cachyos-repo.tar.xz`
-`cd repo`
-`sudo ./cachyos-repo.sh`
+    wget https://build.cachyos.org/cachyos-repo.tar.xz
+    tar xvf cachyos-repo.tar.xz
+    cd repo
+    sudo ./cachyos-repo.sh
 
 * * *
 
