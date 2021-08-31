@@ -12,7 +12,7 @@ _NUMAdisable=y
 _fsync=y
 
 #enable futex2
-_futex2=
+_futex2=y
 
 #enable winesync
 _winesync=y
@@ -74,10 +74,10 @@ pkgbase=linux-cacule
 pkgname=('linux-cacule' 'linux-cacule-headers')
 pkgname=("${pkgbase}" "${pkgbase}-headers")
 pkgver=5.14
-pkgrel=2
+pkgrel=3
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
-_gittag=v${pkgver%.*}-${pkgver##*.}
+_gittag=v${pkgver%.*}-${pkg 6ver##*.}
 arch=('x86_64' 'x86_64_v3')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
 license=('GPL2')
@@ -95,20 +95,22 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "${_patchsource}/misc/0007-string.patch"
         "${_patchsource}/misc/allpollingrate.patch"
         "${_patchsource}/bfq-patches/0001-bfq-patches.patch"
+        "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
         "${_patchsource}/bbr2-patches/0001-bbr2-5.14-introduce-BBRv2.patch"
         "${_patchsource}/block-patches/0001-block-patches.patch"
-     #   "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
+    #   "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
         "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
- #       "${_patchsource}/futex2-trunk-patches/0001-futex2-resync-from-gitlab.collabora.com.patch"
-        "${_patchsource}//lqx-patches/0001-lqx-patches.patch"
+        "${_patchsource}/futex-xanmod-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
+        "${_patchsource}/lqx-patches/0001-lqx-patches.patch"
         "${_patchsource}/lrng-patches/0001-lrng-patches.patch"
+        "${_patchsource}/lru-xanmod-patches/0001-lru-xanmod-patches.patch"
         "${_patchsource}/mm-patches/0001-mm-5.14-protect-mappings-under-memory-pressure.patch"
         "${_patchsource}/pf-patches-v3/0001-pf-patches.patch"
         "${_patchsource}/xanmod-patches/0001-xanmod-patches.patch"
         "${_patchsource}/zen-patches/0001-zen-patches.patch"
         "${_patchsource}/zstd-patches/0001-zstd-patches.patch"
         "${_patchsource}/zstd-upstream-patches/0001-zstd-upstream-patches.patch"
-        "${_patchsource}/ntfs3-patches-v2/0001-ntfs3-patches.patch"
+        "${_patchsource}/ntfs3-patches-v3/0001-ntfs3-patches.patch"
         "${_patchsource}/0001-cpu-patches.patch"
         "${_patchsource}/0001-winesync.patch"
         "${_patchsource}/0001-v4l2loopback.patch"
@@ -302,12 +304,12 @@ prepare() {
           	fi
 
               echo "Enable Anbox"
-#              scripts/config --module  CONFIG_ASHMEM
-#              scripts/config --enable  CONFIG_ANDROID_BINDER_IPC_SELFTEST
-#              scripts/config --enable  CONFIG_ANDROID
-#              scripts/config --enable  CONFIG_ANDROID_BINDER_IPC
-#              scripts/config --enable  CONFIG_ANDROID_BINDERFS
-#              scripts/config --set-str CONFIG_ANDROID_BINDER_DEVICES binder,hwbinder,vndbinder
+              scripts/config --module  CONFIG_ASHMEM
+              scripts/config --enable  CONFIG_ANDROID_BINDER_IPC_SELFTEST
+              scripts/config --enable  CONFIG_ANDROID
+              scripts/config --enable  CONFIG_ANDROID_BINDER_IPC
+              scripts/config --enable  CONFIG_ANDROID_BINDERFS
+              scripts/config --set-str CONFIG_ANDROID_BINDER_DEVICES binder,hwbinder,vndbinder
               echo "Disabling TCP_CONG_CUBIC..."
               scripts/config --module CONFIG_TCP_CONG_CUBIC
               scripts/config --disable CONFIG_DEFAULT_CUBIC
