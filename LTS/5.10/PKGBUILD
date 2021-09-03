@@ -403,7 +403,7 @@ for _p in "${pkgname[@]}"; do
 done
 
 md5sums=('753adc474bf799d569dec4f165ed92c3'
-         '68ad57545f86a06590332537362dd7f3'
+         'b96a0bcdeb2ff62a65ace7f2284005b6'
          '7d8c2aaaed142867c014f44b439f8694'
          '74798df2eba8d58326c73606b03786b7'
          '41f27359b0c2f1ffc810b4a7667d98b4'
