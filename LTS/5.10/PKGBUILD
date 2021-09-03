@@ -48,7 +48,7 @@ _use_current=
 ### IMPORTANT: Do no edit below this line unless you know what you're doing
 
 _major=5.10
-_minor=61
+_minor=62
 _srcname=linux-${_major}
 pkgbase=linux-cacule-lts
 pkgver=${_major}.${_minor}
