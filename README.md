@@ -93,6 +93,10 @@ Also some modules which uses dkms needs to recompiled with CLANG/LLVM. I just co
 
 If you got questions, just hit me up!
 
+## Donations are welcome for the compile server for the repo or a cup of coffee for maintain this repo 
+
+https://paypal.me/pttrr?locale.x=de_DE
+
 ### More Informations for the CacULE Scheduler
 
 Here you find more informatiom from the [repo](https://github.com/hamadmarri/cacule-cpu-scheduler) of the creator
