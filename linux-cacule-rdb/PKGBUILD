@@ -75,8 +75,8 @@ _use_current=
 pkgbase=linux-cacule-rdb
 pkgname=('linux-cacule-rdb' 'linux-cacule-rdb-headers')
 pkgname=("${pkgbase}" "${pkgbase}-headers")
-pkgver=5.14.1
-pkgrel=2
+pkgver=5.14.2
+pkgrel=1
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets compiled'
 _gittag=v${pkgver%.*}-${pkgver##*.}
@@ -101,24 +101,24 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
         "${_patchsource}/bbr2-patches/0001-bbr2-5.14-introduce-BBRv2.patch"
         "${_patchsource}/block-patches/0001-block-patches.patch"
+        "${_patchsource}/btrfs-patches/0001-btrfs-patches.patch"
     #   "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
         "${_patchsource}/0007-v5.14-fsync.patch"
         "${_patchsource}/0007-v5.14-futex2_interface.patch"
         "${_patchsource}/lqx-patches/0001-lqx-patches.patch"
         "${_patchsource}/lrng-patches/0001-lrng-patches.patch"
         "${_patchsource}/mm-patches/0001-mm-5.14-protect-mappings-under-memory-pressure.patch"
-        "${_patchsource}/pf-patches-v3/0001-pf-patches.patch"
+        "${_patchsource}/pf-patches-v4/0001-pf-patches.patch"
         "${_patchsource}/xanmod-patches/0001-xanmod-patches.patch"
         "${_patchsource}/zen-patches/0001-zen-patches.patch"
         "${_patchsource}/zstd-patches-v2/0001-zstd-patches.patch"
-        "${_patchsource}/zstd-upstream-patches/0001-zstd-upstream-patches.patch"
+        "${_patchsource}/zstd-upstream-patches-v2/0001-zstd-upstream-patches.patch"
         "${_patchsource}/ntfs3-patches-v4/0001-ntfs3-patches.patch"
         "${_patchsource}/0001-cpu-patches.patch"
         "${_patchsource}/0001-winesync.patch"
         "${_patchsource}/0001-v4l2loopback.patch"
         "${_patchsource}/0001-ksm.patch"
 	      "auto-cpu-optimization.sh"
-        )
 BUILD_FLAGS=(
 
             )

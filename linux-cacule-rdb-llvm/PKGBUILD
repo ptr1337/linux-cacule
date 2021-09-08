@@ -75,8 +75,8 @@ _use_current=
 pkgbase=linux-cacule-rdb-llvm
 pkgname=('linux-cacule-rdb-llvm' 'linux-cacule-rdb-llvm-headers')
 pkgname=("${pkgbase}" "${pkgbase}-headers")
-pkgver=5.14.1
-pkgrel=3
+pkgver=5.14.2
+pkgrel=1
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux-CacULE Kernel-RDB by Hamad Marri and with some other patchsets compiled with FULL-LTO'
 _gittag=v${pkgver%.*}-${pkgver##*.}
@@ -101,6 +101,7 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
         "${_patchsource}/bbr2-patches/0001-bbr2-5.14-introduce-BBRv2.patch"
         "${_patchsource}/block-patches/0001-block-patches.patch"
+        "${_patchsource}/btrfs-patches/0001-btrfs-patches.patch"
     #   "${_patchsource}/fixes-miscellaneous/0001-fixes-miscellaneous.patch"
         "${_patchsource}/0007-v5.14-fsync.patch"
         "${_patchsource}/0007-v5.14-futex2_interface.patch"
