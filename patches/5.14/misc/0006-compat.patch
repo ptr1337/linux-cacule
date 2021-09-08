@@ -2014,7 +2014,7 @@ index 0b2dad3..efa577b 100644
  	.mmap =		sock_mmap,
  	.release =	sock_close,
  	.fasync =	sock_fasync,
-@@ -3126,418 +3119,6 @@ void socket_seq_show(struct seq_file *seq)
+@@ -3121,420 +3121,6 @@ void socket_seq_show(struct seq_file *seq)
  }
  #endif				/* CONFIG_PROC_FS */
  
@@ -2198,6 +2198,8 @@ index 0b2dad3..efa577b 100644
 -	struct ifreq ifreq;
 -	u32 data32;
 -
+-	if (!is_socket_ioctl_cmd(cmd))
+-		return -ENOTTY;
 -	if (copy_from_user(ifreq.ifr_name, u_ifreq32->ifr_name, IFNAMSIZ))
 -		return -EFAULT;
 -	if (get_user(data32, &u_ifreq32->ifr_data))

@@ -36,7 +36,7 @@ _mm_protect=y
 _lru_enable=y
 
 ### Enable Linux Random Number Generator
-_lrng_enable=y
+_lrng_enable=
 
 # Tweak kernel options prior to a build via nconfig
 _makenconfig=
@@ -93,18 +93,18 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "${_patchsource}/0001-5.14.1-RT.patch"
 #        "${_caculepatches}/v5.14/cacule-5.14.patch"
         "${_patchsource}/misc/0004-folio-mm.patch"
-        "${_patchsource}/misc/0007-string.patch"
+#        "${_patchsource}/misc/0007-string.patch"
         "${_patchsource}/misc/allpollingrate.patch"
         "${_patchsource}/misc/0001-LL-kconfig-add-750Hz-timer-interrupt-kernel-config-o.patch"
         "${_patchsource}/bfq-patches/0001-bfq-patches.patch"
         "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
         "${_patchsource}/bbr2-patches/0001-bbr2-5.14-introduce-BBRv2.patch"
         "${_patchsource}/block-patches/0001-block-patches.patch"
-        "${_patchsource}/fixes-miscellaneous-v2/0001-fixes-miscellaneous.patch"
+#        "${_patchsource}/fixes-miscellaneous-v2/0001-fixes-miscellaneous.patch"
 #        "${_patchsource}/futex-zen-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
         "${_patchsource}/futex2-zen-patches/0001-futex2-resync-from-gitlab.collabora.com.patch"
         "${_patchsource}/lqx-patches/0001-lqx-patches.patch"
-        "${_patchsource}/lrng-patches/0001-lrng-patches.patch"
+#        "${_patchsource}/lrng-patches/0001-lrng-patches.patch"
         "${_patchsource}/mm-patches/0001-mm-5.14-protect-mappings-under-memory-pressure.patch"
         "${_patchsource}/pf-patches-v4/0001-pf-patches.patch"
         "${_patchsource}/xanmod-patches/0001-xanmod-patches.patch"
@@ -523,21 +523,18 @@ package_linux-cfs-rt-headers() {
 }
 
 md5sums=('be936a500fab39069e50b0bcfcc0c369'
-         '5757a483858f181ec95c978f16c7758d'
+         '8b99b4b84c96d770e9db41fc62c27285'
          'cf26387aadf2a90428350ac246b070c9'
          '95eaea20cc85548fda638f0b41617808'
          'a804260e2f301ffe2a17d6e3625a9711'
-         'd6e5581b4fade267a28deb8e73d236f5'
          'f154315498da9bf593c11d88041bde48'
          'f8e172e9ea554bbb1053eb122c3ace35'
          'a0285c065b902ca625119e4ad43cbab4'
          'e45c7962a78d6e82a0d3808868cd6ac0'
          '196d6ac961497aa880264b83160eb140'
          'a3f2cbf318dd2a63af9673f9e34e7125'
-         '719316cce732595270043577fe48c8e7'
          '2891eb036469d04995d9b21a5e389d8a'
          '6787c78ba3e7b0a34fbba9c50da7e3b4'
-         '3cf036429a7c962005a344e10a568d7b'
          '8edec54f500ecb2ff705c2a9f32e0560'
          '01fe9306e6e6786414476789053cc899'
          '28864f14bf33bad92e57bc48bc5c2c78'
