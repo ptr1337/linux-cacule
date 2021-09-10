@@ -54,6 +54,9 @@ _use_auto_optimization=y
 ## Apply Kernel Optimization selecting
 _use_optimization_select=
 
+## Enable PGO
+_use_pgo=
+
 
 # Only compile active modules to VASTLY reduce the number of modules built and
 # the build time.
@@ -81,7 +84,7 @@ arch=(x86_64 x86_64_v3)
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets compiled with FULL-LTO'
 _gittag=v${pkgver%.*}-${pkgver##*.}
 arch=('x86_64' 'x86_64_v3')
-url="https://github.com/hamadmarri/cacule-cpu-scheduler"
+url="https://github.com/ptr1337/linux-cacule-aur"
 license=('GPL2')
 options=('!strip')
 makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
@@ -120,6 +123,10 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "${_patchsource}/0001-ksm.patch"
 	      "auto-cpu-optimization.sh"
         )
+        if [ -n "$_use_pgo" ]; then
+          source+=("${_patchsource}/0001-PGO.patch")
+          md5sums+=("SKIP")
+        fi
 BUILD_FLAGS=(
   LLVM=1
   LLVM_IAS=1
@@ -153,6 +160,12 @@ prepare() {
 
           echo "Setting config..."
           cp ../config .config
+
+          if [ -n "$_use_pgo" ]; then
+            scripts/config --enable CONFIG_ARCH_SUPPORTS_PGO_CLANG
+            scripts/config --enable DEBUG_FS
+            scripts/config --enable CONFIG_PGO_CLANG
+          fi
 
       ### Microarchitecture Optimization (GCC/CLANG)
             if [ -n "$_use_auto_optimization" ]; then
