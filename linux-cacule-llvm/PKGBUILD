@@ -54,11 +54,11 @@ _use_auto_optimization=y
 ## Apply Kernel Optimization selecting
 _use_optimization_select=
 
-## Enable PGO
-_use_pgo=
-
-## Enable CFI
+## Enable CFI (booting seems to be broken at nvidia based systems)
 _use_cfi=
+
+## Enable PGO (patch is failing when cfi is also used)
+_use_pgo=
 
 # Only compile active modules to VASTLY reduce the number of modules built and
 # the build time.
@@ -546,7 +546,7 @@ package_linux-cacule-llvm-headers() {
 
 md5sums=('e111bd84156ac6b19568a495eed46400'
          '54eb5e9283a3a079f85d1dbaf406f697'
-         'cf26387aadf2a90428350ac246b070c9'
+         '8a45ded67e2d5235e652fb0f1672f91d'
          '40a9380b2884f5d417791f06389ba57e'
          'a804260e2f301ffe2a17d6e3625a9711'
          'd6e5581b4fade267a28deb8e73d236f5'

@@ -48,20 +48,20 @@ _use_current=
 ### IMPORTANT: Do no edit below this line unless you know what you're doing
 
 _major=5.10
-_minor=62
+_minor=63
 _srcname=linux-${_major}
 pkgbase=linux-cacule-lts
 pkgver=${_major}.${_minor}
 pkgrel=1
 pkgdesc='Linux-CacULE Kernel LTS 5.10 by Hamad Marri and with some other patchsets'
 arch=('x86_64' 'x86_64_v3')
-url="https://github.com/hamadmarri/cacule-cpu-scheduler"
+url="https://github.com/ptr1337/linux-cacule"
 license=('GPL2')
 makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz')
 options=('!strip')
-_patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.10"
-_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
+_patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.10"
+_caculepatches="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/CacULE"
 source=(
   "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${_major}.tar.xz"
   "https://cdn.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
@@ -403,7 +403,7 @@ for _p in "${pkgname[@]}"; do
 done
 
 md5sums=('753adc474bf799d569dec4f165ed92c3'
-         'b96a0bcdeb2ff62a65ace7f2284005b6'
+         'f8d1908113ccee6e355aad2acabeb597'
          '7d8c2aaaed142867c014f44b439f8694'
          '74798df2eba8d58326c73606b03786b7'
          '41f27359b0c2f1ffc810b4a7667d98b4'

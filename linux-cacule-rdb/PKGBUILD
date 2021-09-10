@@ -524,7 +524,7 @@ package_linux-cacule-rdb-headers() {
 
 md5sums=('e111bd84156ac6b19568a495eed46400'
          'd9053465eaefbc845dd28d4713f9f8b9'
-         'cf26387aadf2a90428350ac246b070c9'
+         '8a45ded67e2d5235e652fb0f1672f91d'
          '024a0126cfcd18e000a2241f35c4d69e'
          'a804260e2f301ffe2a17d6e3625a9711'
          'd6e5581b4fade267a28deb8e73d236f5'

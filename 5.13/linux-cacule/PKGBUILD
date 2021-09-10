@@ -57,13 +57,13 @@ _use_current=
 
 pkgbase=linux-cacule
 pkgname=("${pkgbase}" "${pkgbase}-headers")
-pkgver=5.13.13
+pkgver=5.13.15
 pkgrel=1
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux Kernel with cacule scheduler and lto compiled'
 _gittag=v${pkgver%.*}-${pkgver##*.}
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
-url="https://github.com/hamadmarri/cacule-cpu-scheduler"
+url="https://github.com/ptr1337/linux-cacule"
 license=('GPL2')
 makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz')
