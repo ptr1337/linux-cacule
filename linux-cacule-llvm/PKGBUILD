@@ -57,6 +57,8 @@ _use_optimization_select=
 ## Enable PGO
 _use_pgo=
 
+## Enable CFI
+_use_cfi=
 
 # Only compile active modules to VASTLY reduce the number of modules built and
 # the build time.
@@ -84,13 +86,13 @@ arch=(x86_64 x86_64_v3)
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets compiled with FULL-LTO'
 _gittag=v${pkgver%.*}-${pkgver##*.}
 arch=('x86_64' 'x86_64_v3')
-url="https://github.com/ptr1337/linux-cacule-aur"
+url="https://github.com/ptr1337/linux-cacule"
 license=('GPL2')
 options=('!strip')
 makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz' 'llvm' 'llvm-libs' 'lld')
-_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
-_patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.14"
+_caculepatches="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/CacULE"
+_patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.14"
 source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver}.tar.xz"
         "config"
 #        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
@@ -123,10 +125,13 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "${_patchsource}/0001-ksm.patch"
 	      "auto-cpu-optimization.sh"
         )
+        if [ -n "$_use_cfi" ]; then
+          source+=("${_patchsource}/0002-clang-cfi.patch")
+        fi
         if [ -n "$_use_pgo" ]; then
           source+=("${_patchsource}/0001-PGO.patch")
-          md5sums+=("SKIP")
         fi
+
 BUILD_FLAGS=(
   LLVM=1
   LLVM_IAS=1
@@ -160,6 +165,11 @@ prepare() {
 
           echo "Setting config..."
           cp ../config .config
+
+          if [ -n "$_use_cfi" ]; then
+            scripts/config --enable CONFIG_ARCH_SUPPORTS_CFI_CLANG
+            scripts/config --enable CONFIG_CFI_CLANG
+          fi
 
           if [ -n "$_use_pgo" ]; then
             scripts/config --enable CONFIG_ARCH_SUPPORTS_PGO_CLANG
@@ -564,3 +574,9 @@ md5sums=('e111bd84156ac6b19568a495eed46400'
          '95eb4457f95f3f8dd153983612ee65c0'
          '566435a0444ee45816599f2e0e362c7a'
          '6bfbbe0bbb79379203889ed7df5e5288')
+         if [ -n "$_use_cfi" ]; then
+           md5sums+=("SKIP")
+         fi
+         if [ -n "$_use_pgo" ]; then
+           md5sums+=("SKIP")
+         fi

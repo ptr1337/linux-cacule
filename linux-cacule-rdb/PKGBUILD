@@ -81,13 +81,13 @@ arch=(x86_64 x86_64_v3)
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patchsets compiled'
 _gittag=v${pkgver%.*}-${pkgver##*.}
 arch=('x86_64' 'x86_64_v3')
-url="https://github.com/ptr1337/linux-cacule-aur"
+url="https://github.com/ptr1337/linux-cacule"
 license=('GPL2')
 options=('!strip')
 makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz' 'llvm' 'llvm-libs' 'lld')
-_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
-_patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.14"
+_caculepatches="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/CacULE"
+_patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.14"
 source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver}.tar.xz"
         "config"
 #        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
