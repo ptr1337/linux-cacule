@@ -54,10 +54,10 @@ _use_current=
 
 pkgbase=linux-cacule-rc
 # pkgname=('linux-cacule' linux-cacule-headers)
-_major=5.14
+_major=5.15
 #_minor=1
 #_minorc=$((_minor+1))
-_rcver=rc7
+_rcver=rc1
 pkgver=${_major}.${_rcver}
 #_stable=${_major}.${_minor}
 _stablerc=${_major}-${_rcver}
@@ -70,22 +70,23 @@ license=('GPL2')
 options=('!strip')
 makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz')
-_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
-_patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.14"
+_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule/master/CacULE"
+_patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.15"
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
     #    "${_patchsource}/arch-patches-v3/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_caculepatches}/v5.14/cacule-5.14.patch"
-        "${_patchsource}/misc/0009-compiler-remove-stale-cc-option-checks.patch"
-        "${_patchsource}/0001-bbr2.patch"
-        "${_patchsource}/0001-lrng.patch"
+  #      "${_caculepatches}/v5.15/cacule-5.14.patch"
+  #      "${_patchsource}/misc/0009-compiler-remove-stale-cc-option-checks.patch"
+    #    "${_patchsource}/0001-bbr2.patch"
+  #      "${_patchsource}/0001-lrng.patch"
         "${_patchsource}/misc/0011-pipe-FASYNC.patch"
         "${_patchsource}/misc/0004-folio-mm.patch"
         "${_patchsource}/misc/0007-string.patch"
         "${_patchsource}/0001-cpu-patches.patch"
-        "${_patchsource}/0001-misc.patch"
+  #      "${_patchsource}/0001-misc.patch"
         "${_patchsource}/0001-zstd.patch"
-        "${_patchsource}/0001-mm.patch"
+        "${_patchsource}/cpu.patch"
+  #      "${_patchsource}/0001-mm.patch"
    #     "${_patchsource}/cpu-patches-v2/0001-cpu-patches.patch"
       #  "${_patchsource}/futex-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
       #  "${_patchsource}/futex2-stable-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
@@ -377,17 +378,12 @@ for _p in "${pkgname[@]}"; do
 done
 
 
-md5sums=('20553b344e89b4e7fd9e4a3105ea6d16'
+md5sums=('5606898dc633148586c7d2b2fe13fbe1'
          '90a4aa59a3aba118134fcdfddb430f13'
-         'd92c43182698243cd13d32376cec0f23'
-         '50868332310ae198428861fb7e743d5e'
-         '422fe01f2e2b1ba1c2b9174fa1a75e40'
-         '0e4c45e8449717a7a9324c1fe00d55a8'
          '65544180ea9e8d85960036ae518dd4f7'
          'a804260e2f301ffe2a17d6e3625a9711'
          'd6e5581b4fade267a28deb8e73d236f5'
          'bb22330e270bf36ccf53cb04d6b496d2'
-         '8d74bee9dc3bbd0bed98180fcd09b4d5'
          '52d324bcca2b2c41c739e257d5c6fd6e'
-         '49e7e05cc842b1bb2fb79c568a7b649c'
+         'ff4b20b981d9ae0bdda68f012b03e756'
          '7cf0b5c39d16da18451d1e7e7523d992')
