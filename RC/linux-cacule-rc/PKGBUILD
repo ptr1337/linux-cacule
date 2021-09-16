@@ -26,9 +26,9 @@ _kyber_disable=
 ### Running with a 2000 HZ, 1000HZ or 500HZ tick rate
 _2k_HZ_ticks=
 _1k_HZ_ticks=
-_500_HZ_ticks=
+_750_HZ_ticks=y
 _mm_protect=y
-_lrng_enable=y
+_lrng_enable=
 ## Apply Kernel automatic Optimization
 _use_optimization=y
 ## Apply Kernel Optimization selecting
@@ -41,7 +41,7 @@ _use_optimization_select=
 # This PKGBUILD read the database kept if it exists
 #
 # More at this wiki page ---> https://wiki.archlinux.org/index.php/Modprobed-db
-_localmodcfg=y
+_localmodcfg=
 
 # Use the current kernel's .config file
 # Enabling this option will use the .config of the RUNNING kernel rather than
@@ -70,19 +70,16 @@ license=('GPL2')
 options=('!strip')
 makedepends=('kmod' 'bc' 'libelf' 'python-sphinx' 'python-sphinx_rtd_theme'
              'graphviz' 'imagemagick' 'pahole' 'cpio' 'perl' 'tar' 'xz')
-_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule/master/CacULE"
+_caculepatches="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/CacULE"
 _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.15"
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
     #    "${_patchsource}/arch-patches-v3/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-  #      "${_caculepatches}/v5.15/cacule-5.14.patch"
+        "${_caculepatches}/v5.15/cacule-5.15.patch"
   #      "${_patchsource}/misc/0009-compiler-remove-stale-cc-option-checks.patch"
     #    "${_patchsource}/0001-bbr2.patch"
   #      "${_patchsource}/0001-lrng.patch"
-        "${_patchsource}/misc/0011-pipe-FASYNC.patch"
-        "${_patchsource}/misc/0004-folio-mm.patch"
         "${_patchsource}/misc/0007-string.patch"
-        "${_patchsource}/0001-cpu-patches.patch"
   #      "${_patchsource}/0001-misc.patch"
         "${_patchsource}/0001-zstd.patch"
         "${_patchsource}/cpu.patch"
@@ -260,7 +257,7 @@ prepare() {
 build() {
   cd $_srcname
 
-  make all
+make ${BUILD_FLAGS[*]} all
 }
 
 _package() {
@@ -380,10 +377,8 @@ done
 
 md5sums=('5606898dc633148586c7d2b2fe13fbe1'
          '90a4aa59a3aba118134fcdfddb430f13'
-         '65544180ea9e8d85960036ae518dd4f7'
-         'a804260e2f301ffe2a17d6e3625a9711'
+         '50858a596a7436e37e14af4449c7de60'
          'd6e5581b4fade267a28deb8e73d236f5'
-         'bb22330e270bf36ccf53cb04d6b496d2'
          '52d324bcca2b2c41c739e257d5c6fd6e'
          'ff4b20b981d9ae0bdda68f012b03e756'
-         '7cf0b5c39d16da18451d1e7e7523d992')
+         '6bfbbe0bbb79379203889ed7df5e5288')
