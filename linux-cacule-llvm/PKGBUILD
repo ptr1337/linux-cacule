@@ -369,13 +369,6 @@ prepare() {
               echo "Enabling KBUILD_CFLAGS -O3..."
               scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
               scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
-              echo "Enable PREEMPT"
-              scripts/config --disable CONFIG_PREEMPT_NONE
-              scripts/config --disable CONFIG_PREEMPT_VOLUNTARY
-              scripts/config --enable CONFIG_PREEMPT
-              scripts/config --enable CONFIG_PREEMPT_COUNT
-              scripts/config --enable CONFIG_PREEMPTION
-              scripts/config --enable CONFIG_PREEMPT_DYNAMIC
               echo "Enable NTFS3"
               scripts/config --module CONFIG_NTFS_FS
               scripts/config --enable CONFIG_NTFS_RW
