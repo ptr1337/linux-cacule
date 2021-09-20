@@ -75,8 +75,8 @@ _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
         "${_caculepatches}/v5.15/cacule-5.15.patch"
-        "${_caculepatches}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/misc/5.15-rt.patch"
+        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
+#        "${_patchsource}/misc/5.15-rt.patch"
         "${_patchsource}/misc/0007-v5.15-fsync.patch"
         "${_patchsource}/misc/0003-glitched-cfs.patch"
         "${_patchsource}/misc/more-uarches-for-kernel-5.15+.patch"
@@ -359,10 +359,10 @@ for _p in "${pkgname[@]}"; do
 done
 
 
-md5sums=('5606898dc633148586c7d2b2fe13fbe1'
-         'a0e9d4bb88c965ccc102e24356851f95'
+md5sums=('8f9b7869b6973284cddb631d4e7ca40c'
+         'aed2897ca8daff3174f1e34f739d21c2'
+         '50858a596a7436e37e14af4449c7de60'
          'cf26387aadf2a90428350ac246b070c9'
-         '92afe44f3cc5f4f0d24da7b18f61391d'
          '6236a665dd6c93c5de76c1c658c99910'
          'd3ffe87474459e33c901f6141a047c95'
          'ff4b20b981d9ae0bdda68f012b03e756'

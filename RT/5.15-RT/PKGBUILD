@@ -64,7 +64,7 @@ _stablerc=${_major}-${_rcver}
 _srcname=linux-${_stablerc}
 pkgrel=1
 pkgdesc='Linux-CacULE Kernel-RC by Hamad Marri and with some other patchsets'
-arch=('x86_64')
+arch=('x86_64' 'x86_64_v3')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
 license=('GPL2')
 options=('!strip')
@@ -358,7 +358,7 @@ for _p in "${pkgname[@]}"; do
 done
 
 
-md5sums=('5606898dc633148586c7d2b2fe13fbe1'
+md5sums=('8f9b7869b6973284cddb631d4e7ca40c'
          'a0e9d4bb88c965ccc102e24356851f95'
          'cf26387aadf2a90428350ac246b070c9'
          '92afe44f3cc5f4f0d24da7b18f61391d'
