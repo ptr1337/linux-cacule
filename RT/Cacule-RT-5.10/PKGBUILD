@@ -40,7 +40,7 @@ _use_current=
 
 pkgbase=linux-cacule-rt
 _major=5.10
-_minor=57
+_minor=65
 _srcname=linux-${_major}.${_minor}
 pkgver=${_major}.${_minor}
 pkgrel=1
@@ -53,25 +53,24 @@ makedepends=(
   git
   )
 options=('!strip')
-_patchsource="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/5.10"
-_caculepatches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/CacULE"
-_le9patches="https://raw.githubusercontent.com/ptr1337/linux-cacule-aur/master/patches/le9-patches"
+_patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.10"
+_caculepatches="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/CacULE"
 source=(
   "https://cdn.kernel.org/pub/linux/kernel/v5.x/${_srcname}.tar.xz"
   "config"         # the main kernel config file
-  "${_caculepatches}/v5.10/rt/cacule-5.10-rt.patch"
+  "${_patchsource}/patch-5.10.65-rt53.patch"
+  "${_caculepatches}/v5.10/xanmod-rt/cacule-5.10-rt.patch"
   "${_patchsource}/bbr2-patches-v3/0001-bbr2-5.10-introduce-BBRv2.patch"
 # ${_patchsource}/bfq-patches-v5/0001-bfq-patches.patch"
 # "${_patchsource}/block-patches-v3/0001-block-patches.patch"
   "${_patchsource}/cpu-patches-v2/0001-cpu-patches.patch"
 # "${_patchsource}/fixes-miscellaneous-v11/0001-fixes-miscellaneous.patch"
 #  "${_patchsource}/mm-patches-v4/0001-mm-patches.patch"
-  "${_le9patches}/le9eb_patches/le9eb-5.10.patch"
+#  "${_le9patches}/le9eb_patches/le9eb-5.10.patch"
   "${_patchsource}/lqx-patches-v4/0001-lqx-patches.patch"
   "${_patchsource}/zstd-upstream-patches/0001-zstd-upstream-patches.patch"
 # ${_patchsource}/clearlinux-patches/0001-clearlinux-patches.patch"
-  "${_patchsource}/futex-dev-patches/0001-futex-dev-patches.patch"
-  "${_patchsource}/futex2/futex2-5.10.patch"
+  "${_patchsource}/futex2-trunk-patches-v3/0001-futex2-resync-from-gitlab.collabora.com.patch"
 )
 
 export KBUILD_BUILD_HOST=archlinux
@@ -297,12 +296,12 @@ for _p in "${pkgname[@]}"; do
   }"
 done
 
-md5sums=('32ce5f17b41f45762dce06c35c844638'
-         '85be8b99cd271abeb99b94241e693942'
-         'ed0111102cdd24540985bece74c5be3d'
+md5sums=('234e0c5594736e7ddf60caa79e7a36c3'
+         '59b860c5b3dfc8e2de4c7711d9cb7e5e'
+         '8693e190208b3dce1a8874af70f8f511'
+         '613a025638728724ccdb4869dbd42c27'
          '45704a71e1cb971e337700c52da739f0'
          '1ddeca3dfe8d2dfbf722a6e19ab500cd'
-         '24d19c7be0ab70b474a098436f7a1503'
          'db72f9fe09be3f11db7e1e268a5ac3eb'
          '0575ffbb96ab5e5b1b2e378667e276ca'
-         '596b80bb280533a8d7dbab246f179d4f')
+         '0fabe82284ef611e30d9d4e1e5529215')
