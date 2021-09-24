@@ -12,7 +12,7 @@
 # See, https://bugs.archlinux.org/task/31187
 _NUMAdisable=y
 # Enable fsync
-_fsync=y
+_fsync=
 #enable futex2
 _futex2=
 #enable winesync
@@ -25,8 +25,8 @@ _deadline_disable=y
 _kyber_disable=y
 ### Running with a 2000 HZ, 1000HZ or 500HZ tick rate
 _2k_HZ_ticks=
-_1k_HZ_ticks=
-_750_HZ_ticks=y
+_1k_HZ_ticks=y
+_750_HZ_ticks=
 _mm_protect=
 _lrng_enable=
 ## Apply Kernel automatic Optimization
@@ -64,7 +64,7 @@ _stablerc=${_major}-${_rcver}
 _srcname=linux-${_stablerc}
 pkgrel=1
 pkgdesc='Linux-CacULE Kernel-RC by Hamad Marri and with some other patchsets'
-arch=('x86_64')
+arch=('x86_64' 'x86_64_v3')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
 license=('GPL2')
 options=('!strip')
@@ -75,22 +75,18 @@ _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
         "${_caculepatches}/v5.15/cacule-5.15.patch"
-        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
+#        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
 #        "${_patchsource}/misc/5.15-rt.patch"
-        "${_patchsource}/misc/0007-v5.15-fsync.patch"
-        "${_patchsource}/misc/0003-glitched-cfs.patch"
+#        "${_patchsource}/misc/0007-v5.15-fsync.patch"
+#        "${_patchsource}/misc/0003-glitched-cfs.patch"
         "${_patchsource}/misc/more-uarches-for-kernel-5.15+.patch"
-#        "${_patchsource}/misc/0007-v5.15-winesync.patch"
-        "${_patchsource}/misc/0002-clear-patches.patch"
-        "${_patchsource}/misc/0004-mm-set-8-megabytes-for-address_space-level-file-read.patch"
-        "${_patchsource}/0001-bbr2.patch"
+##        "${_patchsource}/misc/0007-v5.15-winesync.patch"
+        "${_patchsource}/misc/perf.patch"
+#        "${_patchsource}/misc/0002-clear-patches.patch"
+#        "${_patchsource}/misc/0004-mm-set-8-megabytes-for-address_space-level-file-read.patch"
+#        "${_patchsource}/0001-bbr2.patch"
 	       "auto-cpu-optimization.sh"
       )
-  BUILD_FLAGS=(
-#        LLVM=1
-#        LLVM_IAS=1
-      )
-
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
 export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
@@ -119,17 +115,14 @@ prepare() {
         echo "Setting config..."
         cp ../config .config
 
-
-    ### Microarchitecture Optimization (GCC/CLANG)
-      if [ -n "$_use_optimization" ]; then
-       sh "${srcdir}"/auto-cpu-optimization.sh
-      fi
-
-      if [ -n "$_use_optimization_select" ]; then
-        source "${startdir}"/configure
-
-        cpu_arch
-      fi
+        ### Microarchitecture Optimization (GCC/CLANG)
+              if [ -n "$_use_optimization" ]; then
+                sh "${srcdir}"/auto-cpu-optimization.sh
+              fi
+              if [ -n "$_use_optimization_select" ]; then
+                source "${startdir}"/configure
+                cpu_arch
+              fi
 
              ### Enable protect file mappings under memory pressure
             if [ -n "$_mm_protect" ]; then
@@ -273,7 +266,7 @@ _package() {
 
 _package-headers() {
     pkgdesc="Headers and scripts for building modules for the $pkgdesc kernel"
-    depends=('linux-cfs-rt-rc' 'pahole')
+    depends=('linux-cacule-rc' 'pahole')
 
   cd $_srcname
   local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
@@ -361,12 +354,7 @@ done
 
 md5sums=('8f9b7869b6973284cddb631d4e7ca40c'
          'aed2897ca8daff3174f1e34f739d21c2'
-         '50858a596a7436e37e14af4449c7de60'
-         'cf26387aadf2a90428350ac246b070c9'
-         '6236a665dd6c93c5de76c1c658c99910'
-         'd3ffe87474459e33c901f6141a047c95'
+         '0783aae3228c2a709cbd7afc86717ebe'
          'ff4b20b981d9ae0bdda68f012b03e756'
-         '31a83ad2d5c11e560c7bfdfd59659c84'
-         'f0d84fc024b9933bc19db696e0393a4e'
-         '422fe01f2e2b1ba1c2b9174fa1a75e40'
-         '6bfbbe0bbb79379203889ed7df5e5288')
+         'b90a3e4c5b789444b98563fc092bac24'
+         '21c98f19e883879dd3336c1fa143fd31')
