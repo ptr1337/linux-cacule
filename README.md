@@ -49,7 +49,7 @@ net.core.default_qdisc = cake
 net.ipv4.tcp_congestion_control = bbr2
 ```
 
-## We are providing a [repo](https://build.cachyos.org/) which includes all kernels in generic-v3 and generic and more optimized packages
+## We are providing a [repo](https://mirror.cachyos.org/) which includes all kernels in generic-v3 and generic and more optimized packages
 
 ### How to add our Repo automatically with CPU detection (if x86-64-v3 is supported)
 
@@ -58,7 +58,7 @@ net.ipv4.tcp_congestion_control = bbr2
 --------------------------------------------------------------------------------
 
 ```
-wget https://build.cachyos.org/cachyos-repo.tar.xz
+wget https://mirror.cachyos.org/cachyos-repo.tar.xz
 tar xvf cachyos-repo.tar.xz
 cd repo
 sudo ./cachyos-repo.sh

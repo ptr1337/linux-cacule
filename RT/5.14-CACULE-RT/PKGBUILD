@@ -48,10 +48,10 @@ use_yama=n
 use_apparmor=
 
 ## Apply Kernel automatic Optimization
-_use_auto_optimization=
+_use_auto_optimization=y
 
 ## Apply Kernel Optimization selecting
-_use_optimization_select=y
+_use_optimization_select=
 
 
 # Only compile active modules to VASTLY reduce the number of modules built and
