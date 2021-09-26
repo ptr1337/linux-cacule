@@ -27,7 +27,7 @@ _kyber_disable=y
 _2k_HZ_ticks=
 _1k_HZ_ticks=
 _750_HZ_ticks=y
-_mm_protect=
+_mm_protect=y
 _lrng_enable=
 ## Apply Kernel automatic Optimization
 _use_optimization=y
@@ -52,7 +52,7 @@ _use_current=
 
 ### Do not edit below this line unless you know what you're doing
 
-pkgbase=linux-cfs-rt-rc
+pkgbase=linux-cacule-rt-rc
 # pkgname=('linux-cacule' linux-cacule-headers)
 _major=5.15
 #_minor=1
@@ -75,15 +75,19 @@ _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
         "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/misc/5.15-rt.patch"
+        "${_patchsource}/RT/patch-5.15-rc2-rt4.patch"
+        "${_caculepatches}/v5.15/cacule-5.15-rt.patch"
         "${_patchsource}/misc/0007-v5.15-fsync.patch"
         "${_patchsource}/misc/0003-glitched-cfs.patch"
         "${_patchsource}/misc/more-uarches-for-kernel-5.15+.patch"
-#        "${_patchsource}/misc/0007-v5.15-winesync.patch"
+        "${_patchsource}/misc/le9ec-5.15-rc2.patch"
         "${_patchsource}/misc/0002-clear-patches.patch"
-        "${_patchsource}/misc/0004-mm-set-8-megabytes-for-address_space-level-file-read.patch"
+        "${_patchsource}/misc/0010-AMD-CPU-C3-cache.patch"
+        "${_patchsource}/misc/perf.patch"
+        "${_patchsource}/misc/0001-zstd-upstream-patches.patch"
+        "${_patchsource}/misc/0002-init-Kconfig-enable-O3-for-all-arches.patch"
         "${_patchsource}/0001-bbr2.patch"
-	       "auto-cpu-optimization.sh"
+        "auto-cpu-optimization.sh"
       )
   BUILD_FLAGS=(
 #        LLVM=1
@@ -129,17 +133,6 @@ prepare() {
 
         cpu_arch
       fi
-
-             ### Enable protect file mappings under memory pressure
-            if [ -n "$_mm_protect" ]; then
-              echo "Enabling protect file mappings under memory pressure..."
-              scripts/config --enable CONFIG_UNEVICTABLE_FILE
-              scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
-              scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
-              scripts/config --enable CONFIG_UNEVICTABLE_ANON
-              scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_LOW 65536
-              scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_MIN 32768
-            fi
 
               ### Enable Linux Random Number Generator
           	if [ -n "$_lrng_enable" ]; then
@@ -190,13 +183,6 @@ prepare() {
               echo "Enabling KBUILD_CFLAGS -O3..."
               scripts/config --disable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
               scripts/config --enable CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
-              echo "Enable PREEMPT"
-              scripts/config --disable CONFIG_PREEMPT_NONE
-              scripts/config --disable CONFIG_PREEMPT_VOLUNTARY
-              scripts/config --enable CONFIG_PREEMPT
-              scripts/config --enable CONFIG_PREEMPT_COUNT
-              scripts/config --enable CONFIG_PREEMPTION
-              scripts/config --enable CONFIG_PREEMPT_DYNAMIC
 
     ### Optionally use running kernel's config
     # code originally by nous; http://aur.archlinux.org/packages.php?ID=40191
@@ -272,7 +258,7 @@ _package() {
 
 _package-headers() {
     pkgdesc="Headers and scripts for building modules for the $pkgdesc kernel"
-    depends=('linux-cfs-rt-rc' 'pahole')
+    depends=('linux-cacule-rt-rc' 'pahole')
 
   cd $_srcname
   local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
@@ -359,13 +345,18 @@ done
 
 
 md5sums=('8f9b7869b6973284cddb631d4e7ca40c'
-         'a0e9d4bb88c965ccc102e24356851f95'
+         '664ab1c8fa119d136c2b1bea159a495c'
          'cf26387aadf2a90428350ac246b070c9'
-         '92afe44f3cc5f4f0d24da7b18f61391d'
+         '46d8427c563a0f5930e993d87c63a76d'
+         'abe8a90de7b7814e01ea85ba5e4777be'
          '6236a665dd6c93c5de76c1c658c99910'
          'd3ffe87474459e33c901f6141a047c95'
          'ff4b20b981d9ae0bdda68f012b03e756'
+         'b5aca6a351809cd67c039ae547fc6ec4'
          '31a83ad2d5c11e560c7bfdfd59659c84'
-         'f0d84fc024b9933bc19db696e0393a4e'
+         '8c1afbc4ae69ca75723fd0b239c17548'
+         'b90a3e4c5b789444b98563fc092bac24'
+         '74db4069a1c3985e5de43cf28f44e693'
+         'ceb9020f754c9a0c3f526b38abc714dd'
          '422fe01f2e2b1ba1c2b9174fa1a75e40'
-         '6bfbbe0bbb79379203889ed7df5e5288')
+         '21c98f19e883879dd3336c1fa143fd31')
