@@ -91,7 +91,7 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "config"
         "${_patchsource}/arch-patches-v5/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
         "${_patchsource}/misc/patch-5.14.2-rt21.patch"
-        "${_caculepatches}/v5.14/cacule-5.14-rt-full.patch"
+        "${_caculepatches}/v5.14/cacule-5.14-full-rt.patch"
         "${_patchsource}/misc/0004-folio-mm.patch"
         "${_patchsource}/misc/0010-AMD-CPU-C3-cache.patch"
         "${_patchsource}/misc/allpollingrate.patch"
