@@ -33,6 +33,10 @@ _lrng_enable=
 _use_optimization=y
 ## Apply Kernel Optimization selecting
 _use_optimization_select=
+
+## compiling with LLVM/LTO
+_use_llvm_lto=
+
 # Compile ONLY used modules to VASTLYreduce the number of modules built
 # and the build time.
 #
@@ -87,11 +91,12 @@ source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "${_patchsource}/0001-bbr2.patch"
         "auto-cpu-optimization.sh"
       )
+if [ -n "$_use_llvm_lto" ]; then
   BUILD_FLAGS=(
         LLVM=1
         LLVM_IAS=1
       )
-
+fi
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
 export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
