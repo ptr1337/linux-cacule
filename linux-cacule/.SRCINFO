@@ -1,7 +1,7 @@
 pkgbase = linux-cacule
 	pkgdesc = Linux-CacULE Kernel by Hamad Marri and with some other patchsets
 	pkgver = 5.14.8
-	pkgrel = 2
+	pkgrel = 3
 	url = https://github.com/ptr1337/linux-cacule
 	arch = x86_64
 	arch = x86_64_v3
