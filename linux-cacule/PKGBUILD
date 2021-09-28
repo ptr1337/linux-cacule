@@ -55,7 +55,7 @@ _use_auto_optimization=y
 _use_optimization_select=
 
 ### Use LLVM with FULL-LTO
-_use_llvm_lto=
+_use_llvm_lto=y
 
 ## Enable CFI (booting seems to be broken at nvidia based systems)
 _use_cfi=
@@ -564,14 +564,10 @@ package_linux-cacule-headers() {
 }
 
 md5sums=('ce6434b646ade20e292fb28c1aacde58'
-         'bcc1c4aa13a4c22e12418e1ee5ba6f92'
+         'c1d4b49a8699d4d527704758130d4f9b'
          'ef749be7f2048456ae738f93229bf354'
          '40a9380b2884f5d417791f06389ba57e'
-         'a804260e2f301ffe2a17d6e3625a9711'
-         'e2a4af58b9d784226792fdc71d2cabba'
          '430972ae1e936f99d8dc2a1f4fdaf774'
-         'd6e5581b4fade267a28deb8e73d236f5'
-         '2e2baa635eda7d6a66b5f7437c055a37'
          '9d7612159f8745044254077ce8a76df6'
          'f8e172e9ea554bbb1053eb122c3ace35'
          'af7328eb8c72c754e5bc8c7be1ca2f1c'
@@ -584,10 +580,10 @@ md5sums=('ce6434b646ade20e292fb28c1aacde58'
          '0849b25513dc47e3defa00f26f60eedb'
          '6787c78ba3e7b0a34fbba9c50da7e3b4'
          '366c90b64f9582c0733b8fb607a07594'
-         '623d8c6b2131a0bb9f2953b798c09bb5'
+         'd24fd0f81fbeed243b1b71fde7659548'
          'ccfbfe2efd7e51dbd67581a7d892230f'
          '28864f14bf33bad92e57bc48bc5c2c78'
-         'cfef1423ad1e6aecad63f0d5eacaea37'
+         '381bc4f0ff885e9b67e5899476a30416'
          '808981a36c81165953017e5e432c1fa1'
          '74db4069a1c3985e5de43cf28f44e693'
          '41a41f2a5ba649da97cdb2b499ddb818'
