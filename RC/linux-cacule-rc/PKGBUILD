@@ -37,7 +37,7 @@ _use_optimization_select=
 ## compiling with LLVM/LTO
 _use_llvm_lto=
 
-# Compile ONLY used modules to VASTLYreduce the number of modules built
+# Comfpile ONLY used modules to VASTLYreduce the number of modules built
 # and the build time.
 #
 # To keep track of which modules are needed for your specific system/hardware,
@@ -128,7 +128,7 @@ prepare() {
 
     ### Microarchitecture Optimization (GCC/CLANG)
       if [ -n "$_use_optimization" ]; then
-       sh "${srcdir}"/auto-cpu-optimization.sh
+       "${srcdir}"/auto-cpu-optimization.sh
       fi
 
       if [ -n "$_use_optimization_select" ]; then
