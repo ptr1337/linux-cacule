@@ -55,7 +55,7 @@ _use_auto_optimization=y
 _use_optimization_select=
 
 ### Use LLVM with FULL-LTO
-_use_llvm_lto=y
+_use_llvm_lto=
 
 ## Enable CFI (booting seems to be broken at nvidia based systems)
 _use_cfi=
