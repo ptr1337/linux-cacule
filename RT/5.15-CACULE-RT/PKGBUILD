@@ -75,7 +75,7 @@ _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
         "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/RT/patch-5.15-rc3-rt5.patch"
+        "${_patchsource}/RT/patch-5.15-rc3-rt6.patch"
         "${_caculepatches}/v5.15/cacule-5.15-rt.patch"
         "${_patchsource}/misc/0007-v5.15-fsync.patch"
         "${_patchsource}/misc/0003-glitched-cfs.patch"
