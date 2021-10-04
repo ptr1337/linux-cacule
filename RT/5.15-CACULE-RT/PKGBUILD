@@ -28,7 +28,7 @@ _2k_HZ_ticks=
 _1k_HZ_ticks=
 _750_HZ_ticks=y
 _mm_protect=y
-_lrng_enable=
+_lrng_enable=y
 ## Apply Kernel automatic Optimization
 _use_optimization=
 ## Apply Kernel Optimization selecting
@@ -57,7 +57,7 @@ pkgbase=linux-cacule-rt-rc
 _major=5.15
 #_minor=1
 #_minorc=$((_minor+1))
-_rcver=rc3
+_rcver=rc4
 pkgver=${_major}.${_rcver}
 #_stable=${_major}.${_minor}
 _stablerc=${_major}-${_rcver}
@@ -74,17 +74,20 @@ _caculepatches="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/
 _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.15"
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
-        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/RT/patch-5.15-rc3-rt6.patch"
-        "${_caculepatches}/v5.15/cacule-5.15-rt.patch"
-        "${_patchsource}/misc/0007-v5.15-fsync.patch"
-        "${_patchsource}/misc/0003-glitched-cfs.patch"
+#        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
+        "${_patchsource}/RT/patch-5.15-rc4-rt6.patch"
+        "${_caculepatches}/v5.15/cacule-5.15-rt-full.patch"
+#        "${_patchsource}/misc/0007-v5.15-fsync.patch"
+#        "${_patchsource}/misc/0003-glitched-cfs.patch"
         "${_patchsource}/misc/more-uarches-for-kernel-5.15+.patch"
-        "${_patchsource}/misc/le9ec-5.15-rc2.patch"
-        "${_patchsource}/misc/0002-clear-patches.patch"
+#        "${_patchsource}/misc/le9ec-5.15-rc2.patch"
+#        "${_patchsource}/misc/0002-clear-patches.patch"
         "${_patchsource}/misc/amd/0006-amd-cppc.patch"
-        "${_patchsource}/misc/0001-zstd-upstream-patches.patch"
-        "${_patchsource}/misc/0002-init-Kconfig-enable-O3-for-all-arches.patch"
+#        "${_patchsource}/misc/0002-init-Kconfig-enable-O3-for-all-arches.patch"
+        "${_patchsource}/0001-mm.patch"
+        "${_patchsource}/0001-misc.patch"
+#        "${_patchsource}/0001-lrng.patch"
+        "${_patchsource}/0001-zstd.patch"
         "${_patchsource}/0001-bbr2.patch"
         "auto-cpu-optimization.sh"
       )
@@ -132,7 +135,16 @@ prepare() {
 
         cpu_arch
       fi
-
+      ### Enable protect file mappings under memory pressure
+            if [ -n "$_mm_protect" ]; then
+              echo "Enabling protect file mappings under memory pressure..."
+              scripts/config --enable CONFIG_UNEVICTABLE_FILE
+              scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_LOW 262144
+              scripts/config --set-val CONFIG_UNEVICTABLE_FILE_KBYTES_MIN 131072
+              scripts/config --enable CONFIG_UNEVICTABLE_ANON
+              scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_LOW 65536
+              scripts/config --set-val CONFIG_UNEVICTABLE_ANON_KBYTES_MIN 32768
+            fi
               ### Enable Linux Random Number Generator
           	if [ -n "$_lrng_enable" ]; then
           		echo "Enabling Linux Random Number Generator ..."
@@ -343,19 +355,14 @@ for _p in "${pkgname[@]}"; do
 done
 
 
-md5sums=('f996cb6694304111742d60480aafd522'
-         '664ab1c8fa119d136c2b1bea159a495c'
-         'cf26387aadf2a90428350ac246b070c9'
-         'd42d2bf2791e4d31d74544e4f142c24a'
-         'abe8a90de7b7814e01ea85ba5e4777be'
-         '6236a665dd6c93c5de76c1c658c99910'
-         'd3ffe87474459e33c901f6141a047c95'
+md5sums=('00dd752ba53fed55793f07864cbedac8'
+         'fc3b93d973fc1ec930f3c9e08d7cba98'
+         'f47c2123c7f3560e765c2326e41351f4'
+         '438f11fc66109be2a531d98efb2da1d1'
          'ff4b20b981d9ae0bdda68f012b03e756'
-         'b5aca6a351809cd67c039ae547fc6ec4'
-         '31a83ad2d5c11e560c7bfdfd59659c84'
          '430972ae1e936f99d8dc2a1f4fdaf774'
-         'a804260e2f301ffe2a17d6e3625a9711'
-         '74db4069a1c3985e5de43cf28f44e693'
-         'ceb9020f754c9a0c3f526b38abc714dd'
+         'e422617aff583cec11129e0f185e9549'
+         'db32c669e1d4dec440341815fc81a108'
+         '52d324bcca2b2c41c739e257d5c6fd6e'
          '422fe01f2e2b1ba1c2b9174fa1a75e40'
          '21c98f19e883879dd3336c1fa143fd31')

@@ -28,7 +28,7 @@ _2k_HZ_ticks=
 _1k_HZ_ticks=
 _750_HZ_ticks=y
 _mm_protect=y
-_lrng_enable=
+_lrng_enable=y
 ## Apply Kernel automatic Optimization
 _use_optimization=y
 ## Apply Kernel Optimization selecting
@@ -56,7 +56,7 @@ pkgbase=linux-cacule-rdb-rt-rc
 _major=5.15
 #_minor=1
 #_minorc=$((_minor+1))
-_rcver=rc3
+_rcver=rc4
 pkgver=${_major}.${_rcver}
 #_stable=${_major}.${_minor}
 _stablerc=${_major}-${_rcver}
