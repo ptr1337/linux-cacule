@@ -2,23 +2,25 @@
 
 ## General Informations
 
-The CacULE CPU Scheduler is a improved alternative to CFS Patchset which is based on interactivity score mechanism. The interactivity score is inspired by the ULE Scheduler (FreeBSD Scheduler). The goal of this scheduler is to enhance system performance, responsiveness and latency.
+The CacULE CPU Scheduler is a improved alternative to CFS Patch-set which is based on interactivity score mechanism. The interactivity score is inspired by the ULE Scheduler (FreeBSD Scheduler). The goal of this scheduler is to enhance system performance, responsiveness and latency.
 
 ## Features
 
 - At the time of compiling you can set several features which you want to use
-- GCC/CLANG Optimization with Auto CPU Optmization
-- Choose between 500Hz, 1000Hz (default), 2000Hz
+- GCC/CLANG Optimization with Auto CPU Optimization
+- Choose between LLVM/LTO or GCC
+- Choose between 500Hz, , 750 Hz, 1000Hz (default), 2000Hz
 - Improved BFQ Scheduler
-- Latest LRU Patchset
+- Latest LRU Patch-set
 - BBRv2 tcp_congestion_control
-- LLVM FULL LTO provided with *-llvm Kernel
+- LLVM FULL LTO provided with *-llvm Kernel (in the repo)
 - LRNG Framework (default)
-- FUTEX, WINESYNC & FUTEX2 patchset
-- Android ANBOX patchset
+- FUTEX, WINESYNC & FUTEX2 patch-set
+- Android ANBOX patch-set
 - Latest Paragon NTFS3 driver support
-- Latest & improved ZSTD patchset
+- Latest & improved ZSTD patch-set
 - Latest BTRFS improvements & fixes
+- KSMBD Module for Samba3 Server
 - Protection of clean file pages (page cache) may be used to prevent thrashing, reducing I/O under memory pressure, avoid high latency and prevent livelock in near OOM (Out Of Memory) conditions
 
 ## CacULE Tips & Tricks (Sysctl Values)
@@ -85,7 +87,7 @@ More information's you will find here [CachyOS](https://gitlab.com/cachyos) or [
 
 ## How to use CLANG/LLVM/LTO compiled Kernels on Nvidia driver with DKMS:
 
-There is mostly an easy workaround, but be aware, if you install a Kernel and have those parameters still in, the GCC Compiled Kernel will fail. Also some modules which uses dkms needs to recompiled with CLANG/LLVM. I just compile the backup kernel LINUX-LTS also with CLANG, so i got no problems anymore.
+There is mostly an easy workaround, but be aware, if you install a Kernel and have those parameters still in, the GCC Compiled Kernel will fail. Also some modules which uses DKMS needs to recompiled with CLANG/LLVM. I just compile the backup kernel LINUX-LTS also with CLANG, so i got no problems anymore.
 
 - Just do following:
 
@@ -106,7 +108,7 @@ If you got questions, just hit me up!
 
 ### More Informations for the CacULE Scheduler
 
-Here you find more informatiom from the [repo](https://github.com/hamadmarri/cacule-cpu-scheduler) of the creator
+Here you find more information from the [repo](https://github.com/cachyos/cacule-cpu-scheduler)
 
 ### Valueable Contributors
 

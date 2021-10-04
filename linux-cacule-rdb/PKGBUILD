@@ -79,10 +79,8 @@ _localmodcfg=
 _use_current=
 
 pkgbase=linux-cacule-rdb
-pkgname=('linux-cacule-rdb' 'linux-cacule-rdb-headers')
-pkgname=("${pkgbase}" "${pkgbase}-headers")
-pkgver=5.14.9
-pkgrel=3
+pkgver=5.14.10
+pkgrel=1
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patches'
 _gittag=v${pkgver%.*}-${pkgver##*.}
@@ -98,29 +96,29 @@ fi
 _caculepatches="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/CacULE"
 _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.14"
 source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver}.tar.xz"
-        "config"
-#        "${_patchsource}/arch-patches-v5/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/arch-patches-v9/0001-arch-patches.patch"
+"config"
+#        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
+        "${_patchsource}/arch-patches-10/0001-arch-patches.patch"
         "${_caculepatches}/v5.14/cacule-5.14-full.patch"
         "${_patchsource}/misc/amd/0006-amd-cppc.patch"
         "${_patchsource}/misc/zen-tweaks-cacule.patch"
         "${_patchsource}/ll-patches/0001-LL-kconfig-add-750Hz-timer-interrupt-kernel-config-o.patch"
         "${_patchsource}/ll-patches/0003-sched-core-nr_migrate-256-increases-number-of-tasks-.patch"
         "${_patchsource}/ll-patches/0004-mm-set-8-megabytes-for-address_space-level-file-read.patch"
-#        "${_patchsource}/writeback-patches/0001-writeback-patches.patch"
 #        "${_patchsource}/bfq-patches-v2/0001-bfq-patches.patch"
         "${_patchsource}/android-patches/0001-android-export-symbold-and-enable-building-ashmem-an.patch"
         "${_patchsource}/bbr2-patches/0001-bbr2-5.14-introduce-BBRv2.patch"
         "${_patchsource}/block-patches/0001-block-patches.patch"
         "${_patchsource}/btrfs-patches-v5/0001-btrfs-patches.patch"
-        "${_patchsource}/hwmon-patches/0001-hwmon-patches.patch"
         "${_patchsource}/fixes-miscellaneous-v5/0001-fixes-miscellaneous.patch"
-        "${_patchsource}/futex-zen-patches/0001-futex-resync-from-gitlab.collabora.com.patch"
-        "${_patchsource}/futex2-zen-patches/0001-futex2-resync-from-gitlab.collabora.com.patch"
+        "${_patchsource}/futex-xanmod-patches-v2/0001-futex-resync-from-gitlab.collabora.com.patch"
+        "${_patchsource}/futex2-xanmod-patches-v2/0001-futex2-resync-from-gitlab.collabora.com.patch"
+        "${_patchsource}/ksmbd-patches-v13/0001-ksmbd-patches.patch"
+        "${_patchsource}/hwmon-patches/0001-hwmon-patches.patch"
         "${_patchsource}/lqx-patches/0001-lqx-patches.patch"
         "${_patchsource}/lrng-patches-v2/0001-lrng-patches.patch"
         "${_patchsource}/lru-zen-patches-v3/0001-lru-zen-patches.patch"
-        "${_patchsource}/pf-patches-v7/0001-pf-patches.patch"
+        "${_patchsource}/pf-patches-v8/0001-pf-patches.patch"
         "${_patchsource}/xanmod-patches-v2/0001-xanmod-patches.patch"
         "${_patchsource}/zen-patches-v3/0001-zen-patches.patch"
         "${_patchsource}/zstd-patches-v2/0001-zstd-patches.patch"
@@ -130,8 +128,8 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "${_patchsource}/0001-winesync.patch"
         "${_patchsource}/0001-v4l2loopback.patch"
         "${_patchsource}/0001-ksm.patch"
-	      "auto-cpu-optimization.sh"
-        )
+        "auto-cpu-optimization.sh"
+                                )
 
   if [ -n "$_use_cfi" ]; then
 source+=("${_patchsource}/0002-clang-cfi.patch")
@@ -148,8 +146,7 @@ source+=("${_patchsource}/0001-PGO.patch")
   LLVM_IAS=1
   CC=clang
   CXX=clang++
-
-                )
+              )
   fi
 
 export KBUILD_BUILD_HOST=archlinux
@@ -393,13 +390,13 @@ build() {
     make ${BUILD_FLAGS[*]} all
 }
 
-package_linux-cacule-rdb() {
-  pkgdesc="The ${pkgdesc} and modules"
-  depends=(coreutils kmod initramfs )
-  optdepends=('crda: to set the correct wireless channels of your country'
-              'linux-firmware: firmware images needed for some devices')
-  provides=(VIRTUALBOX-GUEST-MODULES WIREGUARD-MODULE)
-  replaces=()
+_package() {
+    pkgdesc="The $pkgdesc kernel and modules"
+    depends=('coreutils' 'kmod' 'initramfs')
+    optdepends=('crda: to set the correct wireless channels of your country'
+                'linux-firmware: firmware images needed for some devices'
+                'modprobed-db: Keeps track of EVERY kernel module that has ever been probed - useful for those of us who make localmodconfig')
+    provides=(VIRTUALBOX-GUEST-MODULES WIREGUARD-MODULE)
 
   cd "${srcdir:?}/linux-${pkgver}" || (
     echo -e "\E[1;31mCan't cd to ${srcdir:?}/linux-${pkgver} directory! Package linux kernel failed! \E[0m"
@@ -425,10 +422,10 @@ package_linux-cacule-rdb() {
 
 }
 
-package_linux-cacule-rdb-headers() {
-
+_package-headers() {
   pkgdesc="Headers and scripts for building modules for the ${pkgdesc}"
   depends=("linux-cacule-rdb=${pkgver}" "pahole")
+
 
   cd "${srcdir:?}/linux-${pkgver}" || (
     echo -e "\E[1;31mCan't cd to ${srcdir:?}/linux-${pkgver} directory! Package linux headers failed! \E[0m"
