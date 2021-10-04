@@ -77,16 +77,16 @@ source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
 #        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
         "${_patchsource}/RT/patch-5.15-rc4-rt6.patch"
         "${_caculepatches}/v5.15/cacule-5.15-rt-full.patch"
-#        "${_patchsource}/misc/0007-v5.15-fsync.patch"
+        "${_patchsource}/misc/0007-v5.15-fsync.patch"
 #        "${_patchsource}/misc/0003-glitched-cfs.patch"
         "${_patchsource}/misc/more-uarches-for-kernel-5.15+.patch"
 #        "${_patchsource}/misc/le9ec-5.15-rc2.patch"
 #        "${_patchsource}/misc/0002-clear-patches.patch"
         "${_patchsource}/misc/amd/0006-amd-cppc.patch"
-#        "${_patchsource}/misc/0002-init-Kconfig-enable-O3-for-all-arches.patch"
+        "${_patchsource}/misc/0002-init-Kconfig-enable-O3-for-all-arches.patch"
         "${_patchsource}/0001-mm.patch"
         "${_patchsource}/0001-misc.patch"
-#        "${_patchsource}/0001-lrng.patch"
+        "${_patchsource}/0001-lrng.patch"
         "${_patchsource}/0001-zstd.patch"
         "${_patchsource}/0001-bbr2.patch"
         "auto-cpu-optimization.sh"
@@ -359,10 +359,13 @@ md5sums=('00dd752ba53fed55793f07864cbedac8'
          'fc3b93d973fc1ec930f3c9e08d7cba98'
          'f47c2123c7f3560e765c2326e41351f4'
          '438f11fc66109be2a531d98efb2da1d1'
+         '6236a665dd6c93c5de76c1c658c99910'
          'ff4b20b981d9ae0bdda68f012b03e756'
          '430972ae1e936f99d8dc2a1f4fdaf774'
+         'ceb9020f754c9a0c3f526b38abc714dd'
          'e422617aff583cec11129e0f185e9549'
          'db32c669e1d4dec440341815fc81a108'
+         '80fe84d2b357c2a66b467d2c66bd09fb'
          '52d324bcca2b2c41c739e257d5c6fd6e'
          '422fe01f2e2b1ba1c2b9174fa1a75e40'
          '21c98f19e883879dd3336c1fa143fd31')
