@@ -62,7 +62,7 @@ pkgver=${_major}.${_rcver}
 #_stable=${_major}.${_minor}
 _stablerc=${_major}-${_rcver}
 _srcname=linux-${_stablerc}
-pkgrel=1
+pkgrel=2
 pkgdesc='Linux-CacULE Kernel-RC by Hamad Marri and with some other patchsets'
 arch=('x86_64' 'x86_64_v3')
 url="https://github.com/hamadmarri/cacule-cpu-scheduler"
@@ -75,7 +75,7 @@ _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
 #        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/RT/patch-5.15-rc4-rt6.patch"
+        "${_patchsource}/RT/patch-5.15-rc4-rt7.patch"
         "${_caculepatches}/v5.15/cacule-5.15-rt-full.patch"
         "${_patchsource}/misc/0007-v5.15-fsync.patch"
 #        "${_patchsource}/misc/0003-glitched-cfs.patch"
