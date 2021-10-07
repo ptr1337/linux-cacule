@@ -504,8 +504,8 @@ _package-headers() {
 
 }
 
-md5sums=('9f4fe4d784f3c5dd34e9251f83202eba'
-         '7d00407bc4f6212e76751fd9b70137f7'
+md5sums=('c467f0e8c5ab6e0ec7c47555ea4a8da3'
+         'f35189d2e99654c84a601c0fb3c7272e'
          '581faf85cd625c41bbdd0cadbd0e451e'
          '024a0126cfcd18e000a2241f35c4d69e'
          '430972ae1e936f99d8dc2a1f4fdaf774'
@@ -529,7 +529,7 @@ md5sums=('9f4fe4d784f3c5dd34e9251f83202eba'
          '28864f14bf33bad92e57bc48bc5c2c78'
          'cfef1423ad1e6aecad63f0d5eacaea37'
          '808981a36c81165953017e5e432c1fa1'
-         '1fc22bb415b91dcdca81ddf3f40af061'
+         '2cd671c79536f8ae6b58d874c8496433'
          '82c0c2242d2a9d317b2601380f87488a'
          'bb22330e270bf36ccf53cb04d6b496d2'
          '4c493a3e0f3486be8ad1b6c67c9c6917'
