@@ -52,7 +52,7 @@ _use_auto_optimization=y
 _use_optimization_select=
 
 ### Use LLVM with FULL-LTO
-_use_llvm_lto=y
+_use_llvm_lto=
 
 ## Enable CFI (booting seems to be broken at nvidia based systems)
 _use_cfi=
@@ -79,7 +79,7 @@ _use_current=
 
 pkgbase=linux-cacule
 pkgver=5.14.10
-pkgrel=1
+pkgrel=2
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux-CacULE Kernel by Hamad Marri and with some other patchsets'
 _gittag=v${pkgver%.*}-${pkgver##*.}
@@ -108,15 +108,15 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
         "${_patchsource}/bbr2-patches/0001-bbr2-5.14-introduce-BBRv2.patch"
         "${_patchsource}/block-patches/0001-block-patches.patch"
         "${_patchsource}/btrfs-patches-v5/0001-btrfs-patches.patch"
-        "${_patchsource}/fixes-miscellaneous-v5/0001-fixes-miscellaneous.patch"
+        "${_patchsource}/fixes-miscellaneous-v7/0001-fixes-miscellaneous.patch"
         "${_patchsource}/futex-xanmod-patches-v2/0001-futex-resync-from-gitlab.collabora.com.patch"
         "${_patchsource}/futex2-xanmod-patches-v2/0001-futex2-resync-from-gitlab.collabora.com.patch"
-        "${_patchsource}/ksmbd-patches-v14/0001-ksmbd-patches.patch"
+        "${_patchsource}/ksmbd-patches-v15/0001-ksmbd-patches.patch"
         "${_patchsource}/hwmon-patches/0001-hwmon-patches.patch"
         "${_patchsource}/lqx-patches/0001-lqx-patches.patch"
         "${_patchsource}/lrng-patches-v2/0001-lrng-patches.patch"
         "${_patchsource}/lru-zen-patches-v3/0001-lru-zen-patches.patch"
-        "${_patchsource}/pf-patches-v8/0001-pf-patches.patch"
+        "${_patchsource}/pf-patches-v9/0001-pf-patches.patch"
         "${_patchsource}/xanmod-patches-v2/0001-xanmod-patches.patch"
         "${_patchsource}/zen-patches-v3/0001-zen-patches.patch"
         "${_patchsource}/zstd-patches-v2/0001-zstd-patches.patch"
