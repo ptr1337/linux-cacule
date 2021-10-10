@@ -84,7 +84,7 @@ else
 pkgbase=linux-cacule
 fi
 pkgver=5.14.11
-pkgrel=1
+pkgrel=2
 arch=(x86_64 x86_64_v3)
 pkgdesc='Linux-CacULE-RDB Kernel by Hamad Marri and with some other patches'
 _gittag=v${pkgver%.*}-${pkgver##*.}
@@ -104,6 +104,7 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
 #        "${_patchsource}/arch-patches-v9/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
           "${_patchsource}/arch-patches-v10/0001-arch-patches.patch"
           "${_caculepatches}/v5.14/cacule-5.14-full.patch"
+          "${_patchsource}/0001-CK-TIMER.patch"
           "${_patchsource}/misc/amd/0006-amd-cppc.patch"
           "${_patchsource}/misc/zen-tweaks-cacule.patch"
           "${_patchsource}/ll-patches/0001-LL-kconfig-add-750Hz-timer-interrupt-kernel-config-o.patch"
@@ -137,10 +138,12 @@ source=("https://cdn.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver
 
   if [ -n "$_use_cfi" ]; then
 source+=("${_patchsource}/0002-clang-cfi.patch")
+md5sums+=("SKIP")
   fi
 
   if [ -n "$_use_pgo" ]; then
 source+=("${_patchsource}/0001-PGO.patch")
+md5sums+=("SKIP")
   fi
 
 
