@@ -57,7 +57,7 @@ pkgbase=linux-cacule-rt-rc
 _major=5.15
 #_minor=1
 #_minorc=$((_minor+1))
-_rcver=rc4
+_rcver=rc5
 pkgver=${_major}.${_rcver}
 #_stable=${_major}.${_minor}
 _stablerc=${_major}-${_rcver}
@@ -75,7 +75,7 @@ _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
 #        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/RT/patch-5.15-rc4-rt7.patch"
+        "${_patchsource}/RT/patch-5.15-rc5-rt9.patch"
         "${_caculepatches}/v5.15/cacule-5.15-rt-full.patch"
         "${_patchsource}/misc/0007-v5.15-fsync.patch"
 #        "${_patchsource}/misc/0003-glitched-cfs.patch"
@@ -87,13 +87,13 @@ source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "${_patchsource}/0001-mm.patch"
         "${_patchsource}/0001-misc.patch"
         "${_patchsource}/0001-lrng.patch"
-        "${_patchsource}/0001-zstd.patch"
+        "${_patchsource}/zstd-dev-patches-v6/0001-zstd-dev-patches.patch"
         "${_patchsource}/0001-bbr2.patch"
         "auto-cpu-optimization.sh"
       )
   BUILD_FLAGS=(
-#        LLVM=1
-#        LLVM_IAS=1
+        LLVM=1
+        LLVM_IAS=1
       )
 
 export KBUILD_BUILD_HOST=archlinux
@@ -355,9 +355,9 @@ for _p in "${pkgname[@]}"; do
 done
 
 
-md5sums=('00dd752ba53fed55793f07864cbedac8'
+md5sums=('493b75bec74e5dfc887c7224df404dd3'
          'fc3b93d973fc1ec930f3c9e08d7cba98'
-         'f47c2123c7f3560e765c2326e41351f4'
+         'ee8300edb6364f4bfa71482f89004c5c'
          '438f11fc66109be2a531d98efb2da1d1'
          '6236a665dd6c93c5de76c1c658c99910'
          'ff4b20b981d9ae0bdda68f012b03e756'
@@ -366,6 +366,6 @@ md5sums=('00dd752ba53fed55793f07864cbedac8'
          'e422617aff583cec11129e0f185e9549'
          'db32c669e1d4dec440341815fc81a108'
          '80fe84d2b357c2a66b467d2c66bd09fb'
-         '52d324bcca2b2c41c739e257d5c6fd6e'
+         '97d9c9da437152c2f1161e5da5b5d7d4'
          '422fe01f2e2b1ba1c2b9174fa1a75e40'
          '21c98f19e883879dd3336c1fa143fd31')
