@@ -1,4 +1,4 @@
-pkgbase = linux-cachyos-cacule
+pkgbase = linux-cacule
 	pkgdesc = Linux-cacule Kernel by CachyOS and with some other patches and other improvements
 	pkgver = 5.14.11
 	pkgrel = 3
@@ -90,7 +90,7 @@ pkgbase = linux-cachyos-cacule
 	md5sums = 95eb4457f95f3f8dd153983612ee65c0
 	md5sums = 21c98f19e883879dd3336c1fa143fd31
 
-pkgname = linux-cachyos-cacule
+pkgname = linux-cacule
 	pkgdesc = The Linux-cacule Kernel by CachyOS and with some other patches and other improvements kernel and modules
 	depends = coreutils
 	depends = kmod
@@ -101,7 +101,7 @@ pkgname = linux-cachyos-cacule
 	provides = VIRTUALBOX-GUEST-MODULES
 	provides = WIREGUARD-MODULE
 
-pkgname = linux-cachyos-cacule-headers
+pkgname = linux-cacule-headers
 	pkgdesc = Headers and scripts for building modules for the Linux-cacule Kernel by CachyOS and with some other patches and other improvements
-	depends = linux-cachyos-cacule=5.14.11
+	depends = linux-cacule=5.14.11
 	depends = pahole
