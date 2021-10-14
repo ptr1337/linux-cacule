@@ -14,9 +14,9 @@ _NUMAdisable=y
 # Enable fsync
 _fsync=y
 #enable futex2
-_futex2=y
+_futex2=
 #enable winesync
-_winesync=y
+_winesync=
 ### Set performance governor as default
 _per_gov=y
 ### Disable Deadline I/O scheduler
@@ -77,13 +77,18 @@ source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
 #        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
         "${_patchsource}/RT/patch-5.15-rc5-rt9.patch"
         "${_caculepatches}/v5.15/cacule-5.15-rt-full.patch"
+        "${_patchsource}/misc/0007-v5.15-fsync.patch"
+#        "${_patchsource}/misc/0003-glitched-cfs.patch"
+        "${_patchsource}/misc/more-uarches-for-kernel-5.15+.patch"
+#        "${_patchsource}/misc/le9ec-5.15-rc2.patch"
+#        "${_patchsource}/misc/0002-clear-patches.patch"
+        "${_patchsource}/misc/amd/0006-amd-cppc.patch"
+        "${_patchsource}/misc/0002-init-Kconfig-enable-O3-for-all-arches.patch"
+        "${_patchsource}/0001-mm.patch"
         "${_patchsource}/0001-misc.patch"
-        "${_patchsource}/0001-zstd.patch"
-        "${_patchsource}/0002-ntfs3.patch"
-        "${_patchsource}/0003-mm.patch"
-        "${_patchsource}/0004-lrng.patch"
-        "${_patchsource}/0006-futex.patch"
-        "${_patchsource}/0007-bfq.patch"
+        "${_patchsource}/0001-lrng.patch"
+        "${_patchsource}/zstd-dev-patches-v6/0001-zstd-dev-patches.patch"
+        "${_patchsource}/0001-bbr2.patch"
         "auto-cpu-optimization.sh"
       )
   BUILD_FLAGS=(
