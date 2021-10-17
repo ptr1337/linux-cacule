@@ -1,3 +1,5 @@
+# Switchting to this one repo! https://github.com/CachyOS/linux-cachyos
+
 # <center>Linux Kernel With CacULE Scheduler, Several Other Patches &amp; Improvements</center>
 
 ## General Informations
