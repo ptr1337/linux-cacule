@@ -33,6 +33,8 @@ _lrng_enable=y
 _use_optimization=
 ## Apply Kernel Optimization selecting
 _use_optimization_select=y
+
+_makenconfig=y
 # Compile ONLY used modules to VASTLYreduce the number of modules built
 # and the build time.
 #
@@ -57,7 +59,7 @@ pkgbase=linux-cacule-rt-rc
 _major=5.15
 #_minor=1
 #_minorc=$((_minor+1))
-_rcver=rc5
+_rcver=rc7
 pkgver=${_major}.${_rcver}
 #_stable=${_major}.${_minor}
 _stablerc=${_major}-${_rcver}
@@ -74,26 +76,11 @@ _caculepatches="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/
 _patchsource="https://raw.githubusercontent.com/ptr1337/kernel-patches/master/5.15"
 source=("https://git.kernel.org/torvalds/t/linux-${_stablerc}.tar.gz"
         "config"
-#        "${_patchsource}/arch-patches/0001-ZEN-Add-sysctl-and-CONFIG-to-disallow-unprivileged-C.patch"
-        "${_patchsource}/RT/patch-5.15-rc5-rt9.patch"
-        "${_caculepatches}/v5.15/cacule-5.15-rt-full.patch"
-        "${_patchsource}/misc/0007-v5.15-fsync.patch"
-#        "${_patchsource}/misc/0003-glitched-cfs.patch"
-        "${_patchsource}/misc/more-uarches-for-kernel-5.15+.patch"
-#        "${_patchsource}/misc/le9ec-5.15-rc2.patch"
-#        "${_patchsource}/misc/0002-clear-patches.patch"
-        "${_patchsource}/misc/amd/0006-amd-cppc.patch"
-        "${_patchsource}/misc/0002-init-Kconfig-enable-O3-for-all-arches.patch"
-        "${_patchsource}/0001-mm.patch"
-        "${_patchsource}/0001-misc.patch"
-        "${_patchsource}/0001-lrng.patch"
-        "${_patchsource}/zstd-dev-patches-v6/0001-zstd-dev-patches.patch"
-        "${_patchsource}/0001-bbr2.patch"
-        "auto-cpu-optimization.sh"
+        "0001-5.15-RC7-rebased.patch"
       )
   BUILD_FLAGS=(
-        LLVM=1
-        LLVM_IAS=1
+#        LLVM=1
+#        LLVM_IAS=1
       )
 
 export KBUILD_BUILD_HOST=archlinux
